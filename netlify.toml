@@ -1,0 +1,27 @@
+[build]
+  publish = "public"
+
+[context.production]
+  [context.production.environment]
+    NODE_ENV = "production"
+
+[context.develop]
+  [context.develop.environment]
+    NODE_ENV = "staging"
+
+[context.deploy-preview]
+  [context.deploy-preview.environment]
+    NODE_ENV = "preview"
+
+# SPA routing - all routes serve index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"

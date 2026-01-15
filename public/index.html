@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COLLECTIVE Events</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: transparent;
+      color: #1a1a1a;
+      line-height: 1.5;
+    }
+
+    .events-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+      padding: 1rem;
+    }
+
+    .event-card {
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .event-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .event-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .event-content {
+      padding: 1.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .event-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .event-location {
+      background: #f0f0f0;
+      color: #666;
+      padding: 0.25rem 0.625rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .event-date {
+      font-size: 0.875rem;
+      color: #888;
+      font-weight: 500;
+    }
+
+    .event-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .event-description {
+      font-size: 0.875rem;
+      color: #666;
+      margin-bottom: 1rem;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .event-venue {
+      font-size: 0.8125rem;
+      color: #888;
+      margin-bottom: 1rem;
+    }
+
+    .event-venue strong {
+      color: #666;
+    }
+
+    .event-cta {
+      display: inline-block;
+      background: #1a1a1a;
+      color: #fff;
+      padding: 0.625rem 1.25rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-align: center;
+      transition: background 0.2s ease;
+    }
+
+    .event-cta:hover {
+      background: #333;
+    }
+
+    .event-price {
+      display: inline-block;
+      margin-left: 0.5rem;
+      font-size: 0.8125rem;
+      color: #22c55e;
+      font-weight: 600;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #888;
+    }
+
+    .error {
+      text-align: center;
+      padding: 3rem;
+      color: #dc2626;
+    }
+
+    .no-events {
+      text-align: center;
+      padding: 3rem;
+      color: #666;
+    }
+
+    /* Dark mode variant - add class="dark" to body */
+    body.dark {
+      background: #0a0a0a;
+      color: #e5e5e5;
+    }
+
+    body.dark .event-card {
+      background: #171717;
+      border: 1px solid #262626;
+    }
+
+    body.dark .event-location {
+      background: #262626;
+      color: #a3a3a3;
+    }
+
+    body.dark .event-title {
+      color: #f5f5f5;
+    }
+
+    body.dark .event-description {
+      color: #a3a3a3;
+    }
+
+    body.dark .event-cta {
+      background: #fbbf24;
+      color: #0a0a0a;
+    }
+
+    body.dark .event-cta:hover {
+      background: #f59e0b;
+    }
+  </style>
+</head>
+<body class="dark">
+  <div id="events-root" class="events-container">
+    <div class="loading">Loading events...</div>
+  </div>
+
+  <script>
+    // Configuration
+    const API_URL = 'https://api.notluck.co.uk/collective/events';
+    const DEFAULT_LIMIT = 6;
+
+    // Format date nicely
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
+
+    // Format time
+    function formatTime(timeStr) {
+      if (!timeStr) return '';
+      // Handle HH:MM format
+      if (timeStr.includes(':')) {
+        const [hours, mins] = timeStr.split(':');
+        return `${hours}:${mins}`;
+      }
+      return timeStr;
+    }
+
+    // Render a single event card
+    function renderEventCard(event) {
+      const imageUrl = event.featuredImage || '';
+      const venueName = event.venue?.name || '';
+      const venueCity = event.venue?.city || '';
+      const venuePostcode = event.venue?.postcode || '';
+      const venueDisplay = [venueName, venueCity, venuePostcode].filter(Boolean).join(', ');
+
+      return `
+        <article class="event-card">
+          ${imageUrl ? `<img src="${imageUrl}" alt="${event.title}" class="event-image">` : '<div class="event-image"></div>'}
+          <div class="event-content">
+            <div class="event-meta">
+              ${event.locationTag ? `<span class="event-location">${event.locationTag}</span>` : ''}
+              <span class="event-date">${formatDate(event.date)}${event.startTime ? ` · ${formatTime(event.startTime)}` : ''}</span>
+            </div>
+            <h3 class="event-title">${event.title}</h3>
+            <p class="event-description">${event.shortDescription || ''}</p>
+            ${venueDisplay ? `<p class="event-venue"><strong>${venueName}</strong>${venueCity ? `, ${venueCity}` : ''}</p>` : ''}
+            <div>
+              <a href="${event.bookingUrl || '#'}" class="event-cta" target="_top">Learn More</a>
+              ${event.price ? `<span class="event-price">${event.price === 'Free' ? 'FREE' : event.price}</span>` : ''}
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    // Fetch and render events
+    async function loadEvents() {
+      const container = document.getElementById('events-root');
+      
+      try {
+        // Get params from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const limit = urlParams.get('limit') || DEFAULT_LIMIT;
+        const status = urlParams.get('status') || 'live';
+
+        const response = await fetch(`${API_URL}?status=${status}&limit=${limit}`);
+        
+        if (!response.ok) {
+          throw new Error(`API Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.events || data.events.length === 0) {
+          container.innerHTML = '<div class="no-events">No upcoming events. Check back soon!</div>';
+          return;
+        }
+
+        container.innerHTML = data.events.map(renderEventCard).join('');
+
+      } catch (error) {
+        console.error('Failed to load events:', error);
+        container.innerHTML = `<div class="error">Unable to load events. Please try again later.</div>`;
+      }
+    }
+
+    // Load on page ready
+    document.addEventListener('DOMContentLoaded', loadEvents);
+  </script>
+</body>
+</html>
