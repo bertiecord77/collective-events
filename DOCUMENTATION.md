@@ -144,9 +144,10 @@ event.venue             // null (often) or { address, what3words }
    - Speaker is single object (`event.speaker`), not array
    - See "Verified API Field Names" section above
 
-3. **[ ] Test event detail page end-to-end**
+3. **[x] Test event detail page end-to-end** - FIXED 2026-01-16
    - Click event card → loads event page → booking button works
-   - NEEDS TESTING after fix deployment
+   - Fixed: Event cards now wrapped in `<a>` links
+   - Fixed: `fetchEvent()` now correctly finds event by slug
 
 ### HIGH PRIORITY
 4. **[ ] SEO verification**
@@ -154,8 +155,8 @@ event.venue             // null (often) or { address, what3words }
    - Check if edge function SEO injection is working
    - Consider SSG approach if SEO is poor
 
-5. **[ ] Event cards clickable on homepage**
-   - Verify clicking cards navigates to event detail page
+5. **[x] Event cards clickable on homepage** - FIXED 2026-01-16
+   - Fixed: All event cards now wrapped in links to `/event/{slug}`
 
 6. **[ ] Add to Calendar functionality**
    - Test Google Calendar integration
@@ -281,6 +282,12 @@ curl https://api.notluck.co.uk/collective/events/YOUR-EVENT-SLUG
 ---
 
 ## Session Notes
+
+### 2026-01-16 (Session 2 continued)
+- **EVENT CARDS NOT CLICKABLE:** Homepage event cards were `<article>` not wrapped in `<a>` links
+- Fixed: Wrapped all event cards in `<a href="/event/{slug}">` links
+- Fixed: Both upcoming and past event cards on homepage now clickable
+- User flow: Click card → Event detail page → Book Your Place button
 
 ### 2026-01-16 (Session 2)
 - **ROOT CAUSE FOUND:** `fetchEvent()` was broken - API doesn't support slug parameter
