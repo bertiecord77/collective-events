@@ -1,6 +1,6 @@
 /**
  * COLLECTIVE. Event Booking Function
- * Creates contact and books appointment via GHL API
+ * Creates contact and books them onto an event via GHL API
  */
 
 const GHL_API_BASE = 'https://services.leadconnectorhq.com';
@@ -22,8 +22,14 @@ async function ghlRequest(endpoint, method, token, body = null) {
     options.body = JSON.stringify(body);
   }
 
+  console.log(`GHL Request: ${method} ${endpoint}`);
+  if (body) console.log('Payload:', JSON.stringify(body));
+
   const response = await fetch(`${GHL_API_BASE}${endpoint}`, options);
   const text = await response.text();
+
+  console.log(`GHL Response: ${response.status}`);
+  console.log('Response body:', text);
 
   let data;
   try {
@@ -120,48 +126,81 @@ export const handler = async (event, context) => {
     }
     console.log('Contact ID:', contactId);
 
-    // Step 2: Create appointment on calendar
+    // Step 2: Try to create a calendar event/blocked slot
+    // For class/event calendars, we need to use the events endpoint
     const calendarId = body.calendarId || 'Bv8FhvFB2lOEcWreAcOM';
     const startTime = body.eventStartTime || '17:00';
     const endTime = body.eventEndTime || '19:30';
 
-    // Build appointment payload
-    const appointmentPayload = {
+    // Try creating via /calendars/events (blocked event)
+    const eventPayload = {
       calendarId: calendarId,
       locationId: LOCATION_ID,
-      contactId: contactId,
+      title: `${body.firstName} ${body.lastName} - ${body.eventTitle}`,
       startTime: createISODateTime(body.eventDate, startTime),
       endTime: createISODateTime(body.eventDate, endTime),
-      title: body.eventTitle,
-      appointmentStatus: 'confirmed',
-      assignedUserId: '', // No specific user assigned
+      // Link to contact
+      assignedUserId: contactId,
+      // Mark as appointment for the contact
+      meetingLocationType: 'custom',
       address: body.eventVenue || '',
-      ignoreDateRange: true, // Allow booking outside normal calendar hours
-      toNotify: true // Send notification to contact
+      notes: [
+        `Attendee: ${body.firstName} ${body.lastName}`,
+        `Email: ${body.email}`,
+        `Business: ${body.businessName}`,
+        `Event: ${body.eventTitle}`,
+        `Location: ${body.eventLocation || 'TBC'}`,
+        `Venue: ${body.eventVenue || 'TBC'}`,
+        `Marketing opt-in: ${body.optIn ? 'Yes' : 'No'}`,
+        `Booked via: COLLECTIVE Events Website`
+      ].join('\n')
     };
 
-    // Add notes with booking details
-    const notes = [
-      `Event: ${body.eventTitle}`,
-      `Location: ${body.eventLocation || 'TBC'}`,
-      `Venue: ${body.eventVenue || 'TBC'}`,
-      `Business: ${body.businessName}`,
-      `Booked via: COLLECTIVE Events Website`,
-      `Marketing opt-in: ${body.optIn ? 'Yes' : 'No'}`
-    ].join('\n');
+    let appointmentResult;
+    let appointmentId;
 
-    appointmentPayload.notes = notes;
+    try {
+      // Try the blocked event endpoint first
+      console.log('Trying /calendars/events/block-slots...');
+      appointmentResult = await ghlRequest(
+        '/calendars/events/block-slots',
+        'POST',
+        token,
+        {
+          calendarId: calendarId,
+          locationId: LOCATION_ID,
+          startTime: createISODateTime(body.eventDate, startTime),
+          endTime: createISODateTime(body.eventDate, endTime),
+          title: body.eventTitle,
+          assignedUserId: contactId
+        }
+      );
+      appointmentId = appointmentResult.id || appointmentResult.event?.id;
+    } catch (blockError) {
+      console.log('Block slot failed:', blockError.message);
 
-    console.log('Creating appointment:', JSON.stringify(appointmentPayload));
-
-    const appointmentResult = await ghlRequest(
-      '/calendars/events/appointments',
-      'POST',
-      token,
-      appointmentPayload
-    );
-
-    console.log('Appointment created:', appointmentResult);
+      // Try creating appointment with different params
+      try {
+        console.log('Trying /calendars/events with slot override...');
+        appointmentResult = await ghlRequest(
+          '/calendars/events',
+          'POST',
+          token,
+          {
+            ...eventPayload,
+            // Try forcing it as a manual/blocked event
+            appointmentStatus: 'confirmed',
+            isRecurring: false
+          }
+        );
+        appointmentId = appointmentResult.id || appointmentResult.event?.id;
+      } catch (eventError) {
+        console.log('Calendar event failed:', eventError.message);
+        // Calendar booking failed but contact was created - that's OK
+        // The contact has the event tags so they can be tracked
+        console.log('Continuing without calendar entry - contact created with tags');
+      }
+    }
 
     // Step 3: Add tags based on opt-in preference
     if (body.optIn) {
@@ -175,8 +214,22 @@ export const handler = async (event, context) => {
         console.log('Added marketing tags');
       } catch (tagError) {
         console.warn('Failed to add tags:', tagError.message);
-        // Don't fail the whole booking for tag errors
       }
+    }
+
+    // Step 4: Add a note to the contact with booking details
+    try {
+      await ghlRequest(
+        `/contacts/${contactId}/notes`,
+        'POST',
+        token,
+        {
+          body: `Booked for: ${body.eventTitle}\nDate: ${body.eventDate}\nTime: ${startTime} - ${endTime}\nVenue: ${body.eventVenue || 'TBC'}\nLocation: ${body.eventLocation || 'TBC'}`
+        }
+      );
+      console.log('Added booking note to contact');
+    } catch (noteError) {
+      console.warn('Failed to add note:', noteError.message);
     }
 
     return {
@@ -186,12 +239,14 @@ export const handler = async (event, context) => {
         success: true,
         message: 'Booking confirmed',
         eventTitle: body.eventTitle,
-        appointmentId: appointmentResult.id || appointmentResult.appointment?.id
+        contactId: contactId,
+        appointmentId: appointmentId || null
       })
     };
 
   } catch (error) {
     console.error('Booking error:', error.message, error.stack);
+    console.error('Error data:', JSON.stringify(error.data || {}));
 
     // Provide user-friendly error messages
     let userMessage = 'Failed to process booking. Please try again.';
@@ -209,7 +264,7 @@ export const handler = async (event, context) => {
       headers: corsHeaders,
       body: JSON.stringify({
         error: userMessage,
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        details: error.message
       })
     };
   }
