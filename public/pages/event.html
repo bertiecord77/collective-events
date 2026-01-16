@@ -1361,6 +1361,7 @@
         eventEndTime: currentEvent.endTime || '19:30',
         eventLocation: currentEvent.locationTag || '',
         eventVenue: currentEvent.venue?.name || currentEvent.venueName || '',
+        eventVenueAddress: currentEvent.venue?.address || currentEvent.address || '',
         calendarId: currentEvent.calendarId || CALENDAR_ID
       };
 
