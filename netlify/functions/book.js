@@ -60,14 +60,34 @@ function createISODateTime(dateStr, timeStr) {
 export const handler = async (event, context) => {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Content-Type': 'application/json'
+  };
+
+  // Debug log collector
+  const debugLogs = [];
+  const log = (msg) => {
+    console.log(msg);
+    debugLogs.push(msg);
   };
 
   // Handle CORS preflight
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: corsHeaders, body: '' };
+  }
+
+  // GET request returns debug info
+  if (event.httpMethod === 'GET') {
+    return {
+      statusCode: 200,
+      headers: corsHeaders,
+      body: JSON.stringify({
+        status: 'Book function is running',
+        hasToken: !!process.env.COLLECTIVE_API_TOKEN,
+        timestamp: new Date().toISOString()
+      })
+    };
   }
 
   if (event.httpMethod !== 'POST') {
@@ -84,9 +104,9 @@ export const handler = async (event, context) => {
       throw new Error('API token not configured');
     }
 
-    console.log('Booking request received');
+    log('Booking request received');
     const body = JSON.parse(event.body || '{}');
-    console.log('Request body:', JSON.stringify(body));
+    log('Request body: ' + JSON.stringify(body));
 
     // Validate required fields
     const required = ['firstName', 'lastName', 'email', 'businessName', 'eventTitle', 'eventDate'];
@@ -101,7 +121,7 @@ export const handler = async (event, context) => {
     }
 
     // Step 1: Create or update contact using upsert
-    console.log('Creating/updating contact...');
+    log('Creating/updating contact...');
     const contactPayload = {
       firstName: body.firstName,
       lastName: body.lastName,
@@ -124,7 +144,7 @@ export const handler = async (event, context) => {
     if (!contactId) {
       throw new Error('Failed to create contact - no ID returned');
     }
-    console.log('Contact ID:', contactId);
+    log('Contact ID: ' + contactId);
 
     // Step 2: Try to create a calendar event/blocked slot
     // For class/event calendars, we need to use the events endpoint
@@ -161,7 +181,7 @@ export const handler = async (event, context) => {
 
     try {
       // Try the blocked event endpoint first
-      console.log('Trying /calendars/events/block-slots...');
+      log('Trying /calendars/events/block-slots...');
       appointmentResult = await ghlRequest(
         '/calendars/events/block-slots',
         'POST',
@@ -177,11 +197,11 @@ export const handler = async (event, context) => {
       );
       appointmentId = appointmentResult.id || appointmentResult.event?.id;
     } catch (blockError) {
-      console.log('Block slot failed:', blockError.message);
+      log('Block slot failed: ' + blockError.message);
 
       // Try creating appointment with different params
       try {
-        console.log('Trying /calendars/events with slot override...');
+        log('Trying /calendars/events with slot override...');
         appointmentResult = await ghlRequest(
           '/calendars/events',
           'POST',
@@ -195,10 +215,10 @@ export const handler = async (event, context) => {
         );
         appointmentId = appointmentResult.id || appointmentResult.event?.id;
       } catch (eventError) {
-        console.log('Calendar event failed:', eventError.message);
+        log('Calendar event failed: ' + eventError.message);
         // Calendar booking failed but contact was created - that's OK
         // The contact has the event tags so they can be tracked
-        console.log('Continuing without calendar entry - contact created with tags');
+        log('Continuing without calendar entry - contact created with tags');
       }
     }
 
@@ -211,9 +231,9 @@ export const handler = async (event, context) => {
           token,
           { tags: ['COLLECTIVE Newsletter', 'Marketing Opted In'] }
         );
-        console.log('Added marketing tags');
+        log('Added marketing tags');
       } catch (tagError) {
-        console.warn('Failed to add tags:', tagError.message);
+        log('Failed to add tags: ' + tagError.message);
       }
     }
 
@@ -227,9 +247,9 @@ export const handler = async (event, context) => {
           body: `Booked for: ${body.eventTitle}\nDate: ${body.eventDate}\nTime: ${startTime} - ${endTime}\nVenue: ${body.eventVenue || 'TBC'}\nLocation: ${body.eventLocation || 'TBC'}`
         }
       );
-      console.log('Added booking note to contact');
+      log('Added booking note to contact');
     } catch (noteError) {
-      console.warn('Failed to add note:', noteError.message);
+      log('Failed to add note: ' + noteError.message);
     }
 
     return {
@@ -240,13 +260,16 @@ export const handler = async (event, context) => {
         message: 'Booking confirmed',
         eventTitle: body.eventTitle,
         contactId: contactId,
-        appointmentId: appointmentId || null
+        appointmentId: appointmentId || null,
+        debug: debugLogs
       })
     };
 
   } catch (error) {
     console.error('Booking error:', error.message, error.stack);
     console.error('Error data:', JSON.stringify(error.data || {}));
+    debugLogs.push(`ERROR: ${error.message}`);
+    debugLogs.push(`Error data: ${JSON.stringify(error.data || {})}`);
 
     // Provide user-friendly error messages
     let userMessage = 'Failed to process booking. Please try again.';
@@ -264,7 +287,8 @@ export const handler = async (event, context) => {
       headers: corsHeaders,
       body: JSON.stringify({
         error: userMessage,
-        details: error.message
+        details: error.message,
+        debug: debugLogs
       })
     };
   }
