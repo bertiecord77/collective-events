@@ -386,7 +386,45 @@
               </div>
             </div>
 
+            <div id="address-row" class="info-row" style="display: none;">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              <div class="info-row-content">
+                <div class="info-row-label">Address</div>
+                <div id="event-address" class="info-row-value"></div>
+              </div>
+            </div>
+
+            <div id="price-row" class="info-row">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div class="info-row-content">
+                <div class="info-row-label">Price</div>
+                <div id="event-price" class="info-row-value">Free</div>
+              </div>
+            </div>
+
             <div id="cta-container" class="event-cta"></div>
+
+            <!-- Map Links -->
+            <div id="map-links" class="event-map-links" style="display: none; margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--border);">
+              <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+                <a id="google-maps-link" href="#" target="_blank" class="btn btn-secondary" style="flex: 1; font-size: var(--text-sm);">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                  </svg>
+                  Google Maps
+                </a>
+                <a id="what3words-link" href="#" target="_blank" class="btn btn-secondary" style="flex: 1; font-size: var(--text-sm); display: none;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 3h6v6H3V3zm12 0h6v6h-6V3zM3 15h6v6H3v-6zm12 0h6v6h-6v-6z"/>
+                  </svg>
+                  what3words
+                </a>
+              </div>
+            </div>
           </div>
 
           <!-- Share Card -->
@@ -520,7 +558,16 @@
 
       // Date & Time
       document.getElementById('event-date').textContent = formatDate(event.date);
-      document.getElementById('event-time').textContent = formatTime(event.date) || 'TBA';
+
+      // Build time string from startTime and endTime
+      let timeStr = 'TBA';
+      if (event.startTime) {
+        timeStr = event.startTime;
+        if (event.endTime) {
+          timeStr += ' - ' + event.endTime;
+        }
+      }
+      document.getElementById('event-time').textContent = timeStr;
 
       // Location
       document.getElementById('event-location').textContent = event.locationTag || 'TBA';
@@ -531,37 +578,80 @@
         document.getElementById('event-venue').textContent = event.venueName;
       }
 
-      // CTA Button
-      const ctaContainer = document.getElementById('cta-container');
-      if (isUpcoming(event.date) && event.registrationUrl) {
-        ctaContainer.innerHTML = `
-          <a href="${event.registrationUrl}" target="_blank" class="btn btn-primary btn-lg">
-            Register Now
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </a>
-        `;
-      } else if (isUpcoming(event.date)) {
-        ctaContainer.innerHTML = `
-          <button class="btn btn-secondary btn-lg" disabled style="width: 100%; justify-content: center;">
-            Registration Coming Soon
-          </button>
-        `;
+      // Price
+      document.getElementById('event-price').textContent = event.price || 'Free';
+
+      // Address
+      if (event.venue?.address || event.address) {
+        document.getElementById('address-row').style.display = 'flex';
+        document.getElementById('event-address').textContent = event.venue?.address || event.address;
       }
 
-      // Speakers
-      if (event.speakers && event.speakers.length > 0) {
+      // Map links
+      const venueAddress = event.venue?.address || event.address;
+      const what3words = event.venue?.what3words || event.what3words;
+
+      if (venueAddress || what3words) {
+        document.getElementById('map-links').style.display = 'block';
+
+        if (venueAddress) {
+          const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venueAddress)}`;
+          document.getElementById('google-maps-link').href = mapsUrl;
+        }
+
+        if (what3words) {
+          document.getElementById('what3words-link').style.display = 'flex';
+          document.getElementById('what3words-link').href = `https://what3words.com/${what3words.replace('///', '')}`;
+        }
+      }
+
+      // CTA Button - use bookingUrl (from API) or registrationUrl
+      const bookingUrl = event.bookingUrl || event.registrationUrl;
+      const ctaContainer = document.getElementById('cta-container');
+
+      if (isUpcoming(event.date)) {
+        let ctaHtml = '';
+
+        if (bookingUrl) {
+          ctaHtml += `
+            <a href="${bookingUrl}" target="_blank" class="btn btn--primary" style="width: 100%; margin-bottom: var(--space-2);">
+              Book Your Place
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          `;
+        }
+
+        // Add to Calendar button
+        ctaHtml += `
+          <button onclick="addToCalendar()" class="btn btn--secondary" style="width: 100%;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            Add to Calendar
+          </button>
+        `;
+
+        ctaContainer.innerHTML = ctaHtml;
+      }
+
+      // Speakers - handle both speakers array and single speaker object
+      const speakers = event.speakers || (event.speaker?.name ? [event.speaker] : []);
+      if (speakers.length > 0) {
         document.getElementById('event-speakers').style.display = 'block';
         const speakersGrid = document.getElementById('speakers-grid');
-        speakersGrid.innerHTML = event.speakers.map(speaker => `
-          <a href="/speaker/${speaker.slug || speaker.id}" class="speaker-card">
-            <img src="${speaker.image || '/assets/images/avatar-placeholder.png'}" alt="${speaker.name}" class="speaker-avatar">
+        speakersGrid.innerHTML = speakers.map(speaker => `
+          <div class="speaker-card">
+            <img src="${speaker.photo || speaker.image || 'https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/JcB0t2fZpGS0lMrqKDWQ/media/68efb5e54fd19d3e46a54d41.jpeg'}" alt="${speaker.name}" class="speaker-avatar" onerror="this.src='https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/JcB0t2fZpGS0lMrqKDWQ/media/68efb5e54fd19d3e46a54d41.jpeg'">
             <div class="speaker-info">
               <h3>${speaker.name}</h3>
               <p>${speaker.title || ''}</p>
             </div>
-          </a>
+          </div>
         `).join('');
       }
 
@@ -614,6 +704,39 @@
       navigator.clipboard.writeText(window.location.href).then(() => {
         alert('Link copied to clipboard!');
       });
+    }
+
+    function addToCalendar() {
+      if (!currentEvent) return;
+
+      const event = currentEvent;
+      const title = encodeURIComponent(event.title);
+      const location = encodeURIComponent(event.venue?.address || event.locationTag || '');
+      const description = encodeURIComponent(event.shortDescription || '');
+
+      // Parse date and time
+      const eventDate = new Date(event.date);
+      let startTime = event.startTime || '17:00';
+      let endTime = event.endTime || '19:30';
+
+      // Create start and end datetime strings
+      const [startHour, startMin] = startTime.split(':');
+      const [endHour, endMin] = endTime.split(':');
+
+      const startDate = new Date(eventDate);
+      startDate.setHours(parseInt(startHour), parseInt(startMin), 0);
+
+      const endDate = new Date(eventDate);
+      endDate.setHours(parseInt(endHour), parseInt(endMin), 0);
+
+      // Format for Google Calendar (YYYYMMDDTHHmmss)
+      const formatGoogleDate = (date) => {
+        return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+      };
+
+      const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${formatGoogleDate(startDate)}/${formatGoogleDate(endDate)}&details=${description}&location=${location}`;
+
+      window.open(googleUrl, '_blank');
     }
 
     // Initialize
