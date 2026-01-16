@@ -566,6 +566,89 @@
       animation: spin 0.75s linear infinite;
       margin-right: var(--space-2);
     }
+
+    /* Reservation Timer */
+    .reservation-timer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-4);
+      background: rgba(229, 246, 8, 0.1);
+      border: 1px solid var(--lime);
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-4);
+      font-size: var(--text-sm);
+    }
+
+    .reservation-timer svg {
+      width: 18px;
+      height: 18px;
+      color: var(--lime);
+    }
+
+    .reservation-timer .timer-text {
+      color: var(--text-muted);
+    }
+
+    .reservation-timer .timer-countdown {
+      font-weight: 600;
+      color: var(--lime);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .reservation-timer.warning {
+      background: rgba(255, 107, 107, 0.1);
+      border-color: #ff6b6b;
+    }
+
+    .reservation-timer.warning .timer-countdown,
+    .reservation-timer.warning svg {
+      color: #ff6b6b;
+    }
+
+    .reservation-timer.expired {
+      background: rgba(255, 107, 107, 0.15);
+      border-color: #ff6b6b;
+    }
+
+    /* Booking Loading Overlay */
+    .booking-loading {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 10;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-4);
+      border-radius: var(--radius-lg);
+    }
+
+    .booking-loading.active {
+      display: flex;
+    }
+
+    .booking-loading .spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--border);
+      border-top-color: var(--lime);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .booking-loading p {
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .booking-loading .loading-step {
+      font-size: var(--text-sm);
+      color: var(--lime);
+      margin-top: var(--space-2);
+    }
   </style>
 </head>
 <body>
@@ -747,6 +830,13 @@
   <!-- Booking Modal -->
   <div id="booking-modal" class="booking-modal" onclick="if(event.target === this) closeBookingModal()">
     <div class="booking-modal-content">
+      <!-- Loading Overlay -->
+      <div id="booking-loading" class="booking-loading">
+        <div class="spinner"></div>
+        <p>Confirming your booking...</p>
+        <div id="loading-step" class="loading-step">Connecting to booking system</div>
+      </div>
+
       <!-- Form View -->
       <div id="booking-form-view">
         <div class="booking-modal-header">
@@ -762,6 +852,15 @@
         </div>
 
         <form id="booking-form" class="booking-form" onsubmit="submitBooking(event)">
+          <!-- Reservation Timer -->
+          <div id="reservation-timer" class="reservation-timer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12,6 12,12 16,14"/>
+            </svg>
+            <span class="timer-text">Your place is reserved for</span>
+            <span id="timer-countdown" class="timer-countdown">5:00</span>
+          </div>
           <div class="form-row">
             <div class="form-group">
               <label class="form-label" for="firstName">First Name <span class="required">*</span></label>
@@ -1122,6 +1221,10 @@
 
     const BOOKING_API = '/.netlify/functions/book';
     const CALENDAR_ID = 'Bv8FhvFB2lOEcWreAcOM';
+    const RESERVATION_TIME = 5 * 60; // 5 minutes in seconds
+
+    let reservationTimer = null;
+    let reservationSeconds = RESERVATION_TIME;
 
     function openBookingModal() {
       if (!currentEvent) return;
@@ -1134,9 +1237,16 @@
       document.getElementById('form-error').classList.remove('visible');
       document.getElementById('form-error').textContent = '';
 
+      // Reset and hide loading overlay
+      document.getElementById('booking-loading').classList.remove('active');
+
       // Show form view, hide success view
       document.getElementById('booking-form-view').style.display = 'block';
       document.getElementById('booking-success-view').classList.remove('active');
+
+      // Reset timer
+      resetReservationTimer();
+      startReservationTimer();
 
       // Show modal
       document.getElementById('booking-modal').classList.add('active');
@@ -1151,6 +1261,73 @@
     function closeBookingModal() {
       document.getElementById('booking-modal').classList.remove('active');
       document.body.style.overflow = '';
+      stopReservationTimer();
+    }
+
+    // ============================================
+    // Reservation Timer Functions
+    // ============================================
+
+    function resetReservationTimer() {
+      reservationSeconds = RESERVATION_TIME;
+      const timerEl = document.getElementById('reservation-timer');
+      timerEl.classList.remove('warning', 'expired');
+      // Restore original timer HTML in case it was showing expired state
+      timerEl.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12,6 12,12 16,14"/>
+        </svg>
+        <span class="timer-text">Your place is reserved for</span>
+        <span id="timer-countdown" class="timer-countdown">5:00</span>
+      `;
+      updateTimerDisplay();
+    }
+
+    function startReservationTimer() {
+      stopReservationTimer();
+      reservationTimer = setInterval(() => {
+        reservationSeconds--;
+        updateTimerDisplay();
+
+        if (reservationSeconds <= 0) {
+          handleTimerExpired();
+        } else if (reservationSeconds <= 60) {
+          // Warning state when under 1 minute
+          document.getElementById('reservation-timer').classList.add('warning');
+        }
+      }, 1000);
+    }
+
+    function stopReservationTimer() {
+      if (reservationTimer) {
+        clearInterval(reservationTimer);
+        reservationTimer = null;
+      }
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(reservationSeconds / 60);
+      const seconds = reservationSeconds % 60;
+      const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      document.getElementById('timer-countdown').textContent = display;
+    }
+
+    function handleTimerExpired() {
+      stopReservationTimer();
+      const timerEl = document.getElementById('reservation-timer');
+      timerEl.classList.add('expired');
+      timerEl.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span class="timer-text" style="color: #ff6b6b;">Session expired</span>
+        <button onclick="resetReservationTimer(); startReservationTimer();" style="background: none; border: 1px solid #ff6b6b; color: #ff6b6b; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+          Restart
+        </button>
+      `;
     }
 
     // Close on Escape key
@@ -1165,6 +1342,8 @@
 
       const submitBtn = document.getElementById('submit-btn');
       const errorDiv = document.getElementById('form-error');
+      const loadingOverlay = document.getElementById('booking-loading');
+      const loadingStep = document.getElementById('loading-step');
 
       // Get form data
       const formData = {
@@ -1200,10 +1379,27 @@
         return;
       }
 
-      // Show loading state
+      // Stop timer and show loading overlay
+      stopReservationTimer();
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="btn-spinner"></span> Booking...';
       errorDiv.classList.remove('visible');
+      loadingOverlay.classList.add('active');
+      loadingStep.textContent = 'Connecting to booking system...';
+
+      // Simulate progress steps for better UX
+      const progressSteps = [
+        { text: 'Creating your profile...', delay: 800 },
+        { text: 'Reserving your place...', delay: 1500 },
+        { text: 'Confirming booking...', delay: 2500 }
+      ];
+
+      let stepIndex = 0;
+      const progressInterval = setInterval(() => {
+        if (stepIndex < progressSteps.length) {
+          loadingStep.textContent = progressSteps[stepIndex].text;
+          stepIndex++;
+        }
+      }, 1200);
 
       try {
         const response = await fetch(BOOKING_API, {
@@ -1216,11 +1412,24 @@
 
         const result = await response.json();
 
-        if (!response.ok) {
+        clearInterval(progressInterval);
+
+        if (!response.ok || !result.success) {
           throw new Error(result.error || 'Booking failed. Please try again.');
         }
 
-        // Success! Show success view
+        // Check if booking was confirmed
+        if (result.confirmed) {
+          loadingStep.textContent = 'Booking confirmed!';
+        } else {
+          loadingStep.textContent = 'Booking submitted...';
+        }
+
+        // Brief pause to show success state
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Hide loading, show success view
+        loadingOverlay.classList.remove('active');
         document.getElementById('booking-form-view').style.display = 'none';
         document.getElementById('booking-success-view').classList.add('active');
 
@@ -1230,12 +1439,16 @@
 
       } catch (error) {
         console.error('Booking error:', error);
+        clearInterval(progressInterval);
+        loadingOverlay.classList.remove('active');
         errorDiv.textContent = error.message || 'Something went wrong. Please try again.';
         errorDiv.classList.add('visible');
+        // Restart timer on error
+        resetReservationTimer();
+        startReservationTimer();
       } finally {
         // Reset button
         submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Book Now';
       }
     }
 
