@@ -6,27 +6,41 @@
   <title>COLLECTIVE. Events | Creative Digital Innovation</title>
   <meta name="description" content="Join the COLLECTIVE. community for inspiring events, workshops and networking across Nottingham, Mansfield and Chesterfield.">
 
-  <!-- Fonts -->
+  <!-- Fonts - Work Sans (brand secondary font for digital) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-primary: #0a0a0b;
-      --bg-secondary: #111113;
+      /* COLLECTIVE. Brand Colors */
+      --black: #000000;
+      --white: #FFFFFF;
+      --grey: #EBEBE9;
+      --lime: #E5F608;           /* Disruptive Lime - primary accent */
+      --lime-60: rgba(229, 246, 8, 0.6);
+      --lime-30: rgba(229, 246, 8, 0.3);
+      --lilac: #C5B6F1;          /* Lively Lilac - secondary accent */
+      --lilac-60: rgba(197, 182, 241, 0.6);
+      --lilac-30: rgba(197, 182, 241, 0.3);
+
+      /* UI Colors */
+      --bg-primary: #000000;
+      --bg-secondary: #0a0a0a;
       --bg-card: rgba(255, 255, 255, 0.03);
       --bg-card-hover: rgba(255, 255, 255, 0.06);
       --text-primary: #ffffff;
       --text-secondary: rgba(255, 255, 255, 0.7);
       --text-muted: rgba(255, 255, 255, 0.4);
-      --accent: #6366f1;
-      --accent-glow: rgba(99, 102, 241, 0.4);
-      --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
-      --gradient-2: linear-gradient(135deg, #06b6d4 0%, #6366f1 100%);
       --border-color: rgba(255, 255, 255, 0.08);
       --border-glow: rgba(255, 255, 255, 0.15);
-      --card-radius: 24px;
+
+      /* Gradients */
+      --gradient-brand: linear-gradient(135deg, var(--lime) 0%, var(--lilac) 100%);
+      --gradient-lime: linear-gradient(135deg, var(--lime) 0%, #c4d406 100%);
+      --gradient-lilac: linear-gradient(135deg, var(--lilac) 0%, #9b87e0 100%);
+
+      --card-radius: 20px;
       --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -41,7 +55,7 @@
     }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg-primary);
       color: var(--text-primary);
       line-height: 1.6;
@@ -57,44 +71,55 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
-      opacity: 0.03;
+      opacity: 0.02;
       z-index: 1000;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     }
 
-    /* Gradient orbs */
+    /* Gradient orbs - using brand colors */
     .orb {
       position: fixed;
       border-radius: 50%;
-      filter: blur(100px);
-      opacity: 0.15;
+      filter: blur(120px);
+      opacity: 0.2;
       pointer-events: none;
-      animation: float 20s ease-in-out infinite;
+      animation: float 25s ease-in-out infinite;
     }
 
     .orb-1 {
-      width: 600px;
-      height: 600px;
-      background: var(--gradient-1);
-      top: -200px;
+      width: 700px;
+      height: 700px;
+      background: var(--lime);
+      top: -300px;
       right: -200px;
       animation-delay: 0s;
     }
 
     .orb-2 {
-      width: 400px;
-      height: 400px;
-      background: var(--gradient-2);
-      bottom: -100px;
-      left: -100px;
-      animation-delay: -10s;
+      width: 500px;
+      height: 500px;
+      background: var(--lilac);
+      bottom: -150px;
+      left: -150px;
+      animation-delay: -12s;
+    }
+
+    .orb-3 {
+      width: 300px;
+      height: 300px;
+      background: var(--lime);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.1;
+      animation-delay: -6s;
     }
 
     @keyframes float {
       0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      25% { transform: translate(30px, -30px) rotate(5deg); }
-      50% { transform: translate(-20px, 20px) rotate(-5deg); }
-      75% { transform: translate(20px, 30px) rotate(3deg); }
+      25% { transform: translate(40px, -40px) rotate(5deg); }
+      50% { transform: translate(-30px, 30px) rotate(-5deg); }
+      75% { transform: translate(30px, 40px) rotate(3deg); }
     }
 
     /* Navigation */
@@ -104,35 +129,29 @@
       left: 0;
       right: 0;
       z-index: 100;
-      padding: 1.5rem 2rem;
+      padding: 1.25rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       backdrop-filter: blur(20px);
-      background: rgba(10, 10, 11, 0.8);
+      background: rgba(0, 0, 0, 0.7);
       border-bottom: 1px solid var(--border-color);
       transition: all 0.3s var(--transition-smooth);
     }
 
     nav.scrolled {
-      padding: 1rem 2rem;
-      background: rgba(10, 10, 11, 0.95);
+      padding: 0.875rem 2rem;
+      background: rgba(0, 0, 0, 0.9);
     }
 
-    .logo {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      background: var(--gradient-1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -0.02em;
+    .logo-img {
+      height: 32px;
+      width: auto;
     }
 
     .nav-links {
       display: flex;
-      gap: 2rem;
+      gap: 2.5rem;
       list-style: none;
     }
 
@@ -152,12 +171,12 @@
       left: 0;
       width: 0;
       height: 2px;
-      background: var(--gradient-1);
+      background: var(--lime);
       transition: width 0.3s var(--transition-smooth);
     }
 
     .nav-links a:hover {
-      color: var(--text-primary);
+      color: var(--lime);
     }
 
     .nav-links a:hover::after {
@@ -180,12 +199,12 @@
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
+      padding: 0.5rem 1.25rem;
+      background: rgba(229, 246, 8, 0.1);
+      border: 1px solid var(--lime-30);
       border-radius: 100px;
       font-size: 0.85rem;
-      color: var(--text-secondary);
+      color: var(--lime);
       margin-bottom: 2rem;
       opacity: 0;
       transform: translateY(20px);
@@ -195,20 +214,19 @@
     .hero-badge .dot {
       width: 8px;
       height: 8px;
-      background: #22c55e;
+      background: var(--lime);
       border-radius: 50%;
       animation: pulse 2s ease-in-out infinite;
     }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.2); }
+      50% { opacity: 0.5; transform: scale(1.3); }
     }
 
     .hero h1 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(3rem, 10vw, 7rem);
-      font-weight: 700;
+      font-size: clamp(3rem, 10vw, 6.5rem);
+      font-weight: 800;
       line-height: 1;
       letter-spacing: -0.04em;
       margin-bottom: 1.5rem;
@@ -217,11 +235,12 @@
       animation: fadeInUp 0.8s var(--transition-smooth) 0.4s forwards;
     }
 
-    .hero h1 .gradient-text {
-      background: var(--gradient-1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .hero h1 .highlight {
+      color: var(--lime);
+    }
+
+    .hero h1 .highlight-lilac {
+      color: var(--lilac);
     }
 
     .hero p {
@@ -229,6 +248,7 @@
       color: var(--text-secondary);
       max-width: 600px;
       margin-bottom: 3rem;
+      font-weight: 400;
       opacity: 0;
       transform: translateY(30px);
       animation: fadeInUp 0.8s var(--transition-smooth) 0.6s forwards;
@@ -263,28 +283,29 @@
       transition: all 0.3s var(--transition-smooth);
       cursor: pointer;
       border: none;
+      font-family: inherit;
     }
 
     .btn-primary {
-      background: var(--gradient-1);
-      color: white;
-      box-shadow: 0 4px 20px var(--accent-glow);
+      background: var(--lime);
+      color: var(--black);
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 30px var(--accent-glow);
+      box-shadow: 0 8px 30px var(--lime-30);
     }
 
     .btn-secondary {
-      background: var(--bg-card);
+      background: transparent;
       color: var(--text-primary);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border-glow);
     }
 
     .btn-secondary:hover {
-      background: var(--bg-card-hover);
-      border-color: var(--border-glow);
+      background: var(--bg-card);
+      border-color: var(--lilac);
+      color: var(--lilac);
     }
 
     /* Scroll indicator */
@@ -300,7 +321,8 @@
       color: var(--text-muted);
       font-size: 0.75rem;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.15em;
+      font-weight: 500;
       opacity: 0;
       animation: fadeInUp 0.8s var(--transition-smooth) 1s forwards;
     }
@@ -320,7 +342,7 @@
       left: 0;
       width: 100%;
       height: 20px;
-      background: var(--accent);
+      background: var(--lime);
       animation: scrollLine 2s ease-in-out infinite;
     }
 
@@ -349,7 +371,6 @@
     }
 
     .section-header h2 {
-      font-family: 'Space Grotesk', sans-serif;
       font-size: clamp(2rem, 5vw, 3.5rem);
       font-weight: 700;
       letter-spacing: -0.03em;
@@ -382,17 +403,18 @@
       font-weight: 500;
       cursor: pointer;
       transition: all 0.3s var(--transition-smooth);
+      font-family: inherit;
     }
 
     .filter-btn:hover,
     .filter-btn.active {
       background: var(--bg-card-hover);
-      border-color: var(--accent);
-      color: var(--text-primary);
+      border-color: var(--lime);
+      color: var(--lime);
     }
 
     .filter-btn.active {
-      background: rgba(99, 102, 241, 0.15);
+      background: rgba(229, 246, 8, 0.1);
     }
 
     /* Events Grid */
@@ -425,7 +447,7 @@
       inset: 0;
       border-radius: var(--card-radius);
       padding: 1px;
-      background: linear-gradient(135deg, transparent 40%, var(--accent) 100%);
+      background: linear-gradient(135deg, transparent 40%, var(--lime) 100%);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: xor;
@@ -437,7 +459,7 @@
     .event-card:hover {
       transform: translateY(-8px);
       border-color: transparent;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 20px 50px rgba(229, 246, 8, 0.1);
     }
 
     .event-card:hover::before {
@@ -446,7 +468,7 @@
 
     .event-image {
       position: relative;
-      height: 200px;
+      height: 220px;
       overflow: hidden;
     }
 
@@ -464,7 +486,7 @@
     .event-image .placeholder {
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -480,7 +502,7 @@
       position: absolute;
       top: 1rem;
       left: 1rem;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 12px;
@@ -491,10 +513,10 @@
 
     .event-date-badge .day {
       display: block;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.5rem;
+      font-size: 1.75rem;
       font-weight: 700;
       line-height: 1;
+      color: var(--lime);
     }
 
     .event-date-badge .month {
@@ -504,19 +526,30 @@
       letter-spacing: 0.05em;
       color: var(--text-secondary);
       margin-top: 0.25rem;
+      font-weight: 500;
     }
 
     .event-location-badge {
       position: absolute;
       top: 1rem;
       right: 1rem;
-      background: var(--gradient-1);
+      background: var(--lime);
+      color: var(--black);
       border-radius: 100px;
-      padding: 0.4rem 0.8rem;
-      font-size: 0.75rem;
-      font-weight: 600;
+      padding: 0.4rem 0.9rem;
+      font-size: 0.7rem;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+    }
+
+    .event-location-badge.mansfield {
+      background: var(--lilac);
+    }
+
+    .event-location-badge.chesterfield {
+      background: var(--grey);
+      color: var(--black);
     }
 
     .event-content {
@@ -544,7 +577,6 @@
     }
 
     .event-title {
-      font-family: 'Space Grotesk', sans-serif;
       font-size: 1.35rem;
       font-weight: 600;
       line-height: 1.3;
@@ -575,12 +607,13 @@
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: var(--gradient-2);
+      background: var(--gradient-brand);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 600;
       font-size: 0.9rem;
+      color: var(--black);
     }
 
     .event-speaker-info {
@@ -602,19 +635,19 @@
       align-items: center;
       gap: 0.5rem;
       padding: 0.6rem 1.2rem;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-color);
+      background: transparent;
+      border: 1px solid var(--lime);
       border-radius: 100px;
-      color: var(--text-primary);
+      color: var(--lime);
       font-size: 0.85rem;
-      font-weight: 500;
+      font-weight: 600;
       text-decoration: none;
       transition: all 0.3s var(--transition-smooth);
     }
 
     .event-cta:hover {
-      background: var(--accent);
-      border-color: var(--accent);
+      background: var(--lime);
+      color: var(--black);
     }
 
     .event-cta svg {
@@ -653,20 +686,21 @@
     }
 
     .stat-number {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 3.5rem;
-      font-weight: 700;
-      background: var(--gradient-1);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-size: 4rem;
+      font-weight: 800;
+      color: var(--lime);
       line-height: 1;
       margin-bottom: 0.5rem;
+    }
+
+    .stat-number.lilac {
+      color: var(--lilac);
     }
 
     .stat-label {
       color: var(--text-secondary);
       font-size: 1rem;
+      font-weight: 500;
     }
 
     /* Locations Section */
@@ -694,9 +728,17 @@
       left: 0;
       right: 0;
       height: 4px;
-      background: var(--gradient-1);
+      background: var(--lime);
       transform: scaleX(0);
       transition: transform 0.4s var(--transition-smooth);
+    }
+
+    .location-card.mansfield::before {
+      background: var(--lilac);
+    }
+
+    .location-card.chesterfield::before {
+      background: var(--grey);
     }
 
     .location-card:hover {
@@ -708,27 +750,28 @@
       transform: scaleX(1);
     }
 
-    .location-icon {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 1.5rem;
-      background: var(--bg-card-hover);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .location-image {
+      width: 100%;
+      height: 150px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
     }
 
-    .location-icon svg {
-      width: 28px;
-      height: 28px;
-      color: var(--accent);
+    .location-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s var(--transition-smooth);
+    }
+
+    .location-card:hover .location-image img {
+      transform: scale(1.05);
     }
 
     .location-card h3 {
-      font-family: 'Space Grotesk', sans-serif;
       font-size: 1.5rem;
-      font-weight: 600;
+      font-weight: 700;
       margin-bottom: 0.5rem;
     }
 
@@ -761,9 +804,9 @@
       left: -50%;
       width: 200%;
       height: 200%;
-      background: conic-gradient(from 0deg, transparent, var(--accent), transparent 30%);
-      animation: rotate 8s linear infinite;
-      opacity: 0.1;
+      background: conic-gradient(from 0deg, transparent, var(--lime), var(--lilac), transparent 40%);
+      animation: rotate 10s linear infinite;
+      opacity: 0.08;
     }
 
     @keyframes rotate {
@@ -771,7 +814,6 @@
     }
 
     .cta-card h2 {
-      font-family: 'Space Grotesk', sans-serif;
       font-size: 2.5rem;
       font-weight: 700;
       margin-bottom: 1rem;
@@ -804,9 +846,9 @@
       gap: 3rem;
     }
 
-    .footer-brand .logo {
+    .footer-brand .logo-img {
+      height: 28px;
       margin-bottom: 1rem;
-      display: inline-block;
     }
 
     .footer-brand p {
@@ -821,6 +863,7 @@
       letter-spacing: 0.1em;
       color: var(--text-muted);
       margin-bottom: 1.5rem;
+      font-weight: 600;
     }
 
     .footer-links ul {
@@ -839,7 +882,7 @@
     }
 
     .footer-links a:hover {
-      color: var(--text-primary);
+      color: var(--lime);
     }
 
     .footer-bottom {
@@ -873,9 +916,9 @@
     }
 
     .social-links a:hover {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: white;
+      background: var(--lime);
+      border-color: var(--lime);
+      color: var(--black);
     }
 
     /* Loading State */
@@ -889,7 +932,7 @@
       width: 40px;
       height: 40px;
       border: 3px solid var(--border-color);
-      border-top-color: var(--accent);
+      border-top-color: var(--lime);
       border-radius: 50%;
       animation: spin 1s linear infinite;
       margin: 0 auto 1rem;
@@ -966,10 +1009,11 @@
   <div class="noise"></div>
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
 
   <!-- Navigation -->
   <nav id="navbar">
-    <div class="logo">COLLECTIVE.</div>
+    <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." class="logo-img">
     <ul class="nav-links">
       <li><a href="#events">Events</a></li>
       <li><a href="#locations">Locations</a></li>
@@ -985,8 +1029,8 @@
       <span id="event-count">Loading events...</span>
     </div>
     <h1>
-      Where <span class="gradient-text">Creative</span><br>
-      Minds Connect
+      Where <span class="highlight">Creative</span><br>
+      Minds <span class="highlight-lilac">Connect</span>
     </h1>
     <p>
       Join our community of digital innovators, creatives, and tech enthusiasts
@@ -995,7 +1039,7 @@
     <div class="hero-cta">
       <a href="#events" class="btn btn-primary">
         View Upcoming Events
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <line x1="5" y1="12" x2="19" y2="12"></line>
           <polyline points="12 5 19 12 12 19"></polyline>
         </svg>
@@ -1035,11 +1079,11 @@
     <section class="stats-section" id="about">
       <div class="stats-grid">
         <div class="stat-item">
-          <div class="stat-number">20+</div>
-          <div class="stat-label">Events Hosted</div>
+          <div class="stat-number" id="stat-events">-</div>
+          <div class="stat-label">Upcoming Events</div>
         </div>
         <div class="stat-item">
-          <div class="stat-number">500+</div>
+          <div class="stat-number lilac" id="stat-members">-</div>
           <div class="stat-label">Community Members</div>
         </div>
         <div class="stat-item">
@@ -1047,7 +1091,7 @@
           <div class="stat-label">Locations</div>
         </div>
         <div class="stat-item">
-          <div class="stat-number">50+</div>
+          <div class="stat-number lilac" id="stat-speakers">-</div>
           <div class="stat-label">Speakers</div>
         </div>
       </div>
@@ -1061,32 +1105,23 @@
       </div>
 
       <div class="locations-grid">
-        <div class="location-card">
-          <div class="location-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
+        <div class="location-card nottingham">
+          <div class="location-image">
+            <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69454390106fdc3abdfa3264.png" alt="Nottingham events">
           </div>
           <h3>Nottingham</h3>
           <p>Our flagship location in the heart of the creative quarter.</p>
         </div>
-        <div class="location-card">
-          <div class="location-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
+        <div class="location-card mansfield">
+          <div class="location-image">
+            <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69413d35ca7298e25b32203a.png" alt="Mansfield events">
           </div>
           <h3>Mansfield</h3>
           <p>Expanding our reach to North Nottinghamshire's creative community.</p>
         </div>
-        <div class="location-card">
-          <div class="location-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
+        <div class="location-card chesterfield">
+          <div class="location-image">
+            <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/6967cbfe02f1be4a61702e71.png" alt="Chesterfield events">
           </div>
           <h3>Chesterfield</h3>
           <p>Connecting Derbyshire's digital and creative professionals.</p>
@@ -1101,7 +1136,7 @@
         <p>Join our growing community and never miss an event. Free to attend, always.</p>
         <a href="https://cdicollective.co.uk" class="btn btn-primary" target="_blank">
           Join the Community
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"></line>
             <polyline points="12 5 19 12 12 19"></polyline>
           </svg>
@@ -1114,7 +1149,7 @@
   <footer>
     <div class="footer-content">
       <div class="footer-brand">
-        <div class="logo">COLLECTIVE.</div>
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68a869c41614bd2d4f9e6688.png" alt="COLLECTIVE." class="logo-img">
         <p>Building connections across the East Midlands creative, digital and tech community since 2024.</p>
       </div>
       <div class="footer-links">
@@ -1144,12 +1179,12 @@
     <div class="footer-bottom">
       <span>&copy; 2024 COLLECTIVE. All rights reserved.</span>
       <div class="social-links">
-        <a href="#" aria-label="LinkedIn">
+        <a href="https://linkedin.com/company/cdicollective" target="_blank" aria-label="LinkedIn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
           </svg>
         </a>
-        <a href="#" aria-label="Instagram">
+        <a href="https://instagram.com/cdicollective" target="_blank" aria-label="Instagram">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
           </svg>
@@ -1161,6 +1196,13 @@
   <script>
     // Configuration
     const API_URL = 'https://api.notluck.co.uk/collective/events';
+
+    // Location-specific images (fallback when no featured image)
+    const LOCATION_IMAGES = {
+      'Nottingham': 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69454390106fdc3abdfa3264.png',
+      'Mansfield': 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69413d35ca7298e25b32203a.png',
+      'Chesterfield': 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/6967cbfe02f1be4a61702e71.png'
+    };
 
     // State
     let allEvents = [];
@@ -1190,18 +1232,34 @@
       return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
     }
 
+    // Get location badge class
+    function getLocationClass(location) {
+      if (!location) return '';
+      const loc = location.toLowerCase();
+      if (loc.includes('mansfield')) return 'mansfield';
+      if (loc.includes('chesterfield')) return 'chesterfield';
+      return '';
+    }
+
+    // Get image for event (use location fallback if no featured image)
+    function getEventImage(event) {
+      if (event.featuredImage) return event.featuredImage;
+      return LOCATION_IMAGES[event.locationTag] || null;
+    }
+
     // Render event card
     function renderEventCard(event, index) {
       const date = formatDate(event.date);
       const time = formatTime(event.startTime, event.endTime);
-      const hasImage = event.featuredImage;
+      const eventImage = getEventImage(event);
       const hasSpeaker = event.speaker?.name;
+      const locationClass = getLocationClass(event.locationTag);
 
       return `
         <article class="event-card" style="transition-delay: ${index * 0.1}s" data-location="${event.locationTag || ''}">
           <div class="event-image">
-            ${hasImage
-              ? `<img src="${event.featuredImage}" alt="${event.title}" loading="lazy">`
+            ${eventImage
+              ? `<img src="${eventImage}" alt="${event.title}" loading="lazy">`
               : `<div class="placeholder">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -1215,7 +1273,7 @@
               <span class="day">${date.day}</span>
               <span class="month">${date.month}</span>
             </div>
-            ${event.locationTag ? `<div class="event-location-badge">${event.locationTag}</div>` : ''}
+            ${event.locationTag ? `<div class="event-location-badge ${locationClass}">${event.locationTag}</div>` : ''}
           </div>
           <div class="event-content">
             <div class="event-meta">
@@ -1318,6 +1376,20 @@
       renderEvents(filtered);
     }
 
+    // Update stats
+    function updateStats(events) {
+      // Count unique speakers
+      const speakers = new Set();
+      events.forEach(e => {
+        if (e.speaker?.name) speakers.add(e.speaker.name);
+      });
+
+      document.getElementById('stat-events').textContent = events.length;
+      document.getElementById('stat-speakers').textContent = speakers.size;
+      // Members would come from contacts API - placeholder for now
+      document.getElementById('stat-members').textContent = '500+';
+    }
+
     // Load events
     async function loadEvents() {
       try {
@@ -1327,9 +1399,14 @@
         const data = await response.json();
         allEvents = data.events || [];
 
+        console.log('Loaded events:', allEvents);
+
         // Update hero badge
         const countEl = document.getElementById('event-count');
         countEl.textContent = `${allEvents.length} upcoming event${allEvents.length !== 1 ? 's' : ''}`;
+
+        // Update stats
+        updateStats(allEvents);
 
         renderEvents(allEvents);
 
