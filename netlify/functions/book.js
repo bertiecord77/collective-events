@@ -50,10 +50,12 @@ async function ghlRequest(endpoint, method, token, body = null) {
 function formatGHLDateTime(dateStr, timeStr) {
   if (!dateStr) return '';
 
-  const date = new Date(dateStr);
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const year = date.getFullYear();
+  // Parse date explicitly to avoid timezone issues
+  // dateStr is expected as "YYYY-MM-DD"
+  const dateParts = dateStr.split('-');
+  const year = parseInt(dateParts[0], 10);
+  const month = String(parseInt(dateParts[1], 10)).padStart(2, '0');
+  const day = String(parseInt(dateParts[2], 10)).padStart(2, '0');
 
   let hours = 17;
   let minutes = 0;
@@ -263,6 +265,8 @@ export const handler = async (event, context) => {
 
     const eventStartDateTime = formatGHLDateTime(body.eventDate, startTime);
     const eventEndDateTime = formatGHLDateTime(body.eventDate, endTime);
+
+    log(`Formatted datetime - Input: ${body.eventDate} ${startTime} -> Output: ${eventStartDateTime}`);
 
     const webhookPayload = {
       contact_id: contactId,
