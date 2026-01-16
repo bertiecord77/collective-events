@@ -1,9 +1,10 @@
 /**
  * COLLECTIVE. Event Booking Function
- * Creates contact and books them onto an event via GHL API
+ * Creates contact via API, triggers appointment via webhook
  */
 
 const GHL_API_BASE = 'https://services.leadconnectorhq.com';
+const GHL_WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/JcB0t2fZpGS0lMrqKDWQ/webhook-trigger/eb256439-b6f6-48e1-8fcc-747fe78b7f4b';
 const LOCATION_ID = 'JcB0t2fZpGS0lMrqKDWQ';
 const API_VERSION = '2021-07-28';
 
@@ -22,14 +23,8 @@ async function ghlRequest(endpoint, method, token, body = null) {
     options.body = JSON.stringify(body);
   }
 
-  console.log(`GHL Request: ${method} ${endpoint}`);
-  if (body) console.log('Payload:', JSON.stringify(body));
-
   const response = await fetch(`${GHL_API_BASE}${endpoint}`, options);
   const text = await response.text();
-
-  console.log(`GHL Response: ${response.status}`);
-  console.log('Response body:', text);
 
   let data;
   try {
@@ -48,13 +43,30 @@ async function ghlRequest(endpoint, method, token, body = null) {
   return data;
 }
 
-// Create ISO datetime string from date and time
-function createISODateTime(dateStr, timeStr) {
-  // dateStr is "YYYY-MM-DD", timeStr is "HH:MM"
-  const [hours, minutes] = (timeStr || '17:00').split(':').map(Number);
+// Format date/time for GHL automation: "MM-DD-YYYY HH:MM AM/PM"
+function formatGHLDateTime(dateStr, timeStr) {
+  if (!dateStr) return '';
+
   const date = new Date(dateStr);
-  date.setHours(hours, minutes, 0, 0);
-  return date.toISOString();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const year = date.getFullYear();
+
+  // Parse time (expects "HH:MM" in 24hr format)
+  let hours = 17;
+  let minutes = 0;
+
+  if (timeStr) {
+    const timeParts = timeStr.split(':');
+    hours = parseInt(timeParts[0], 10);
+    minutes = parseInt(timeParts[1], 10) || 0;
+  }
+
+  // Convert to 12-hour format
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const hour12 = hours % 12 || 12;
+
+  return `${month}-${day}-${year} ${String(hour12).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${ampm}`;
 }
 
 export const handler = async (event, context) => {
@@ -120,8 +132,8 @@ export const handler = async (event, context) => {
       };
     }
 
-    // Step 1: Create or update contact using upsert
-    log('Creating/updating contact...');
+    // Step 1: Create or update contact using API (this gives us the contact ID)
+    log('Creating/updating contact via API...');
     const contactPayload = {
       firstName: body.firstName,
       lastName: body.lastName,
@@ -146,76 +158,65 @@ export const handler = async (event, context) => {
     }
     log('Contact ID: ' + contactId);
 
-    // Step 2: Try to create a calendar event/blocked slot
-    // For class/event calendars, we need to use the events endpoint
-    const calendarId = body.calendarId || 'Bv8FhvFB2lOEcWreAcOM';
+    // Step 2: Send webhook to trigger automation (which creates the appointment with override)
     const startTime = body.eventStartTime || '17:00';
     const endTime = body.eventEndTime || '19:30';
+    const calendarId = body.calendarId || 'Bv8FhvFB2lOEcWreAcOM';
 
-    // Try creating via /calendars/events (blocked event)
-    const eventPayload = {
-      calendarId: calendarId,
-      locationId: LOCATION_ID,
-      title: `${body.firstName} ${body.lastName} - ${body.eventTitle}`,
-      startTime: createISODateTime(body.eventDate, startTime),
-      endTime: createISODateTime(body.eventDate, endTime),
-      // Link to contact
-      assignedUserId: contactId,
-      // Mark as appointment for the contact
-      meetingLocationType: 'custom',
-      address: body.eventVenue || '',
-      notes: [
-        `Attendee: ${body.firstName} ${body.lastName}`,
-        `Email: ${body.email}`,
-        `Business: ${body.businessName}`,
-        `Event: ${body.eventTitle}`,
-        `Location: ${body.eventLocation || 'TBC'}`,
-        `Venue: ${body.eventVenue || 'TBC'}`,
-        `Marketing opt-in: ${body.optIn ? 'Yes' : 'No'}`,
-        `Booked via: COLLECTIVE Events Website`
-      ].join('\n')
+    // Format dates for GHL automation
+    const eventStartDateTime = formatGHLDateTime(body.eventDate, startTime);
+    const eventEndDateTime = formatGHLDateTime(body.eventDate, endTime);
+
+    const webhookPayload = {
+      // Contact info
+      contact_id: contactId,
+      first_name: body.firstName,
+      last_name: body.lastName,
+      full_name: `${body.firstName} ${body.lastName}`,
+      email: body.email,
+      phone: body.phone || '',
+      company_name: body.businessName,
+
+      // Event details - formatted for GHL automation
+      event_title: body.eventTitle,
+      event_name: body.eventTitle,
+      event_date: body.eventDate,
+      event_start_datetime: eventStartDateTime,
+      event_end_datetime: eventEndDateTime,
+      event_start_time: startTime,
+      event_end_time: endTime,
+      event_location: body.eventLocation || '',
+      event_venue: body.eventVenue || '',
+      event_id: body.eventId || '',
+      calendar_id: calendarId,
+
+      // Preferences
+      opt_in: body.optIn ? 'Yes' : 'No',
+      marketing_consent: body.optIn ? 'true' : 'false',
+
+      // Metadata
+      source: 'COLLECTIVE Events Website',
+      booking_timestamp: new Date().toISOString(),
+      tags: `COLLECTIVE Event Booking,COLLECTIVE: ${body.eventTitle}`
     };
 
-    let appointmentResult;
-    let appointmentId;
+    log('Sending webhook to trigger automation...');
+    log('Webhook payload: ' + JSON.stringify(webhookPayload));
 
-    try {
-      // Create appointment via the appointments endpoint
-      log('Creating appointment via /calendars/events/appointments...');
-      const appointmentPayload = {
-        calendarId: calendarId,
-        locationId: LOCATION_ID,
-        contactId: contactId,
-        startTime: createISODateTime(body.eventDate, startTime),
-        endTime: createISODateTime(body.eventDate, endTime),
-        title: body.eventTitle,
-        appointmentStatus: 'confirmed',
-        address: body.eventVenue || body.eventLocation || '',
-        // Override slot restrictions
-        ignoreDateRange: true,
-        ignoreSlotAvailability: true,
-        skipAvailabilityCheck: true,
-        toNotify: false
-      };
-      log('Appointment payload: ' + JSON.stringify(appointmentPayload));
+    const webhookResponse = await fetch(GHL_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(webhookPayload)
+    });
 
-      appointmentResult = await ghlRequest(
-        '/calendars/events/appointments',
-        'POST',
-        token,
-        appointmentPayload
-      );
-      appointmentId = appointmentResult.id || appointmentResult.appointment?.id;
-      log('Appointment created: ' + appointmentId);
-    } catch (appointmentError) {
-      log('Appointment creation failed: ' + appointmentError.message);
-      log('Error details: ' + JSON.stringify(appointmentError.data || {}));
-      // Calendar booking failed but contact was created - that's OK
-      // The contact has the event tags so they can be tracked
-      log('Continuing without calendar entry - contact created with tags');
+    const webhookText = await webhookResponse.text();
+    log('Webhook response: ' + webhookResponse.status + ' - ' + webhookText);
+
+    if (!webhookResponse.ok) {
+      log('Webhook failed but contact was created');
     }
 
-    // Step 3: Add tags based on opt-in preference
+    // Step 3: Add marketing tags if opted in
     if (body.optIn) {
       try {
         await ghlRequest(
@@ -230,7 +231,7 @@ export const handler = async (event, context) => {
       }
     }
 
-    // Step 4: Add a note to the contact with booking details
+    // Step 4: Add booking note to contact
     try {
       await ghlRequest(
         `/contacts/${contactId}/notes`,
@@ -253,23 +254,18 @@ export const handler = async (event, context) => {
         message: 'Booking confirmed',
         eventTitle: body.eventTitle,
         contactId: contactId,
-        appointmentId: appointmentId || null,
         debug: debugLogs
       })
     };
 
   } catch (error) {
     console.error('Booking error:', error.message, error.stack);
-    console.error('Error data:', JSON.stringify(error.data || {}));
     debugLogs.push(`ERROR: ${error.message}`);
     debugLogs.push(`Error data: ${JSON.stringify(error.data || {})}`);
 
-    // Provide user-friendly error messages
     let userMessage = 'Failed to process booking. Please try again.';
 
-    if (error.message.includes('slot') || error.message.includes('available')) {
-      userMessage = 'This event slot is no longer available. Please refresh and try again.';
-    } else if (error.message.includes('contact')) {
+    if (error.message.includes('contact')) {
       userMessage = 'Unable to create your booking. Please check your details and try again.';
     } else if (error.message.includes('token') || error.message.includes('unauthorized')) {
       userMessage = 'Booking system temporarily unavailable. Please try again later.';
