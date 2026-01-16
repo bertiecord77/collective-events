@@ -282,6 +282,75 @@
       max-width: 1200px;
       margin: 0 auto;
     }
+
+    /* Card styles for related events */
+    .related-grid .card {
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+      height: 100%;
+    }
+
+    .related-grid .card-image {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+    }
+
+    .related-grid .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform var(--transition-base);
+    }
+
+    .related-grid .card:hover .card-image img {
+      transform: scale(1.05);
+    }
+
+    .related-grid .card-content {
+      padding: var(--space-4);
+      flex: 1;
+    }
+
+    .related-grid .card-meta {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      margin-bottom: var(--space-2);
+    }
+
+    .related-grid .card-title {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .card-hover {
+      transition: transform var(--transition-base), border-color var(--transition-base);
+    }
+
+    .card-hover:hover {
+      transform: translateY(-4px);
+      border-color: var(--lime);
+    }
+
+    /* Badge color variants */
+    .badge-lime {
+      background: var(--lime);
+      color: var(--black);
+    }
+
+    .badge-lilac {
+      background: var(--lilac);
+      color: var(--black);
+    }
+
+    .badge-grey {
+      background: var(--grey);
+      color: var(--black);
+    }
   </style>
 </head>
 <body>
@@ -496,7 +565,7 @@
     </div>
   </footer>
 
-  <script src="/assets/js/api.js?v=2"></script>
+  <script src="/assets/js/api.js?v=3"></script>
   <script>
     // Check API loaded correctly
     if (!window.CollectiveAPI) {
