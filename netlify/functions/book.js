@@ -7,7 +7,7 @@ const GHL_API_BASE = 'https://services.leadconnectorhq.com';
 const API_VERSION = '2021-07-28';
 const LOCATION_ID = 'JcB0t2fZpGS0lMrqKDWQ';
 
-// Helper to make GHL API requests
+// Helper to make GHL API requests - returns both data and full response for error handling
 async function ghlRequest(endpoint, token, options = {}) {
   const url = `${GHL_API_BASE}${endpoint}`;
   console.log(`GHL Request: ${options.method || 'GET'} ${url}`);
@@ -23,7 +23,7 @@ async function ghlRequest(endpoint, token, options = {}) {
   });
 
   const text = await response.text();
-  console.log(`GHL Response: ${response.status} - ${text.substring(0, 500)}`);
+  console.log(`GHL Response: ${response.status} - ${text.substring(0, 800)}`);
 
   let data;
   try {
@@ -33,8 +33,12 @@ async function ghlRequest(endpoint, token, options = {}) {
   }
 
   if (!response.ok) {
+    // Create error with full response data attached
     const errorMsg = data.message || data.error || data.msg || `GHL API Error ${response.status}`;
-    throw new Error(errorMsg);
+    const error = new Error(errorMsg);
+    error.data = data;
+    error.status = response.status;
+    throw error;
   }
 
   return data;
@@ -245,31 +249,42 @@ export const handler = async (event, context) => {
       } catch (createError) {
         // Handle duplicate contact error
         const errMsg = createError.message.toLowerCase();
-        if (errMsg.includes('duplicate') || errMsg.includes('already exists')) {
-          console.log('Duplicate contact detected, retrying search...');
+        console.log('Create contact error:', errMsg);
+        console.log('Error data:', JSON.stringify(createError.data || {}));
 
-          // Wait a moment then search again
-          await new Promise(r => setTimeout(r, 500));
-          contact = await findContactByEmail(body.email, token);
+        if (errMsg.includes('duplicate') || errMsg.includes('already exists') || errMsg.includes('does not allow')) {
+          console.log('Duplicate contact detected, checking error response for ID...');
 
-          if (contact) {
-            console.log('Found contact on retry:', contact.id);
+          // Some APIs return the existing contact ID in the error response
+          const errorData = createError.data || {};
+          if (errorData.contactId || errorData.id || errorData.contact?.id) {
+            const existingId = errorData.contactId || errorData.id || errorData.contact?.id;
+            console.log('Found contact ID in error response:', existingId);
+            contact = { id: existingId };
           } else {
-            // Last resort: list all contacts and find manually
-            console.log('Still not found, listing contacts...');
-            try {
-              const listResult = await ghlRequest(
-                `/contacts/?locationId=${LOCATION_ID}&limit=100`,
-                token
-              );
-              contact = listResult.contacts?.find(c =>
-                c.email?.toLowerCase() === body.email.toLowerCase()
-              );
-              if (contact) {
-                console.log('Found contact in list:', contact.id);
+            // Try to search again
+            console.log('No ID in error, retrying search...');
+            await new Promise(r => setTimeout(r, 500));
+            contact = await findContactByEmail(body.email, token);
+
+            if (!contact) {
+              // Last resort: list all contacts
+              console.log('Still not found, listing contacts...');
+              try {
+                const listResult = await ghlRequest(
+                  `/contacts/?locationId=${LOCATION_ID}&limit=100`,
+                  token
+                );
+                console.log('Listed', listResult.contacts?.length || 0, 'contacts');
+                contact = listResult.contacts?.find(c =>
+                  c.email?.toLowerCase() === body.email.toLowerCase()
+                );
+                if (contact) {
+                  console.log('Found contact in list:', contact.id);
+                }
+              } catch (listError) {
+                console.log('List contacts failed:', listError.message);
               }
-            } catch (listError) {
-              console.log('List contacts failed:', listError.message);
             }
           }
         } else {
