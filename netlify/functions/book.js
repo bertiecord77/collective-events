@@ -167,14 +167,23 @@ export const handler = async (event, context) => {
       };
     }
 
-    // Get API token
-    const token = process.env.COLLECTIVE_API_TOKEN;
+    // Get API token - check multiple possible env var names
+    const token = process.env.COLLECTIVE_API_TOKEN || process.env.GHL_API_TOKEN || process.env.API_TOKEN;
+
+    // Debug: Log available env vars (names only, not values)
+    console.log('Available env vars:', Object.keys(process.env).filter(k =>
+      k.includes('TOKEN') || k.includes('API') || k.includes('GHL') || k.includes('COLLECTIVE')
+    ));
+
     if (!token) {
-      console.error('COLLECTIVE_API_TOKEN not configured');
+      console.error('No API token found. Checked: COLLECTIVE_API_TOKEN, GHL_API_TOKEN, API_TOKEN');
       return {
         statusCode: 500,
         headers: corsHeaders,
-        body: JSON.stringify({ error: 'Server configuration error' })
+        body: JSON.stringify({
+          error: 'Server configuration error',
+          hint: 'COLLECTIVE_API_TOKEN environment variable not set in Netlify'
+        })
       };
     }
 
