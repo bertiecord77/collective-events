@@ -496,9 +496,25 @@
     </div>
   </footer>
 
+  <script>
+    // Global error handler
+    window.onerror = function(msg, url, lineNo, columnNo, error) {
+      console.error('Global error:', msg, 'at', url, 'line', lineNo);
+      document.getElementById('loading').innerHTML = '<p style="color: red;">JavaScript Error: ' + msg + '</p>';
+      return false;
+    };
+  </script>
   <script src="/assets/js/api.js"></script>
   <script>
-    const { fetchEvent, fetchEvents, getEventImage, formatDate, formatTime, getLocationColor, isUpcoming } = window.CollectiveAPI;
+    console.log('Event page script starting...');
+    console.log('window.CollectiveAPI:', window.CollectiveAPI);
+
+    if (!window.CollectiveAPI) {
+      console.error('CollectiveAPI not loaded!');
+      document.getElementById('loading').innerHTML = '<p style="color: red;">Error: API library not loaded. Please refresh the page.</p>';
+    }
+
+    const { fetchEvent, fetchEvents, getEventImage, formatDate, formatTime, getLocationColor, isUpcoming } = window.CollectiveAPI || {};
 
     let currentEvent = null;
 
