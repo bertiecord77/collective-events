@@ -1089,6 +1089,7 @@
         <button class="filter-btn" data-filter="Nottingham">Nottingham</button>
         <button class="filter-btn" data-filter="Mansfield">Mansfield</button>
         <button class="filter-btn" data-filter="Chesterfield">Chesterfield</button>
+        <button class="filter-btn" data-filter="Derby">Derby</button>
       </div>
 
       <div class="events-grid" id="events-grid">
@@ -1111,7 +1112,7 @@
           <div class="stat-label">Community Members</div>
         </div>
         <div class="stat-item">
-          <div class="stat-number">3</div>
+          <div class="stat-number">4</div>
           <div class="stat-label">Locations</div>
         </div>
         <div class="stat-item">
@@ -1149,6 +1150,13 @@
           </div>
           <h3>Chesterfield</h3>
           <p>Connecting Derbyshire's digital and creative professionals.</p>
+        </a>
+        <a href="/derby" class="location-card nottingham">
+          <div class="location-image">
+            <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69454390106fdc3abdfa3264.png" alt="Derby events">
+          </div>
+          <h3>Derby</h3>
+          <p>Expanding into Derby's thriving creative and tech community.</p>
         </a>
       </div>
     </section>
@@ -1215,6 +1223,7 @@
           <li><a href="/nottingham">Nottingham</a></li>
           <li><a href="/mansfield">Mansfield</a></li>
           <li><a href="/chesterfield">Chesterfield</a></li>
+          <li><a href="/derby">Derby</a></li>
         </ul>
       </div>
       <div class="footer-links">
@@ -1226,7 +1235,10 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span>&copy; 2025 COLLECTIVE. All rights reserved.</span>
+      <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start;">
+        <span style="color: var(--text-secondary); font-size: 0.9rem;">Proudly built in Notts by <a href="/notluck" style="color: var(--lime); text-decoration: none;">NotLuck</a></span>
+        <span>&copy; 2025 COLLECTIVE. All rights reserved.</span>
+      </div>
       <div class="social-links">
         <a href="https://linkedin.com/company/cdicollective" target="_blank" aria-label="LinkedIn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -1250,7 +1262,8 @@
     const LOCATION_IMAGES = {
       'Nottingham': 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69454390106fdc3abdfa3264.png',
       'Mansfield': 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69413d35ca7298e25b32203a.png',
-      'Chesterfield': 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/6967cbfe02f1be4a61702e71.png'
+      'Chesterfield': 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/6967cbfe02f1be4a61702e71.png',
+      'Derby': 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69454390106fdc3abdfa3264.png'
     };
 
     // State
