@@ -130,9 +130,13 @@ async function updateAppointmentDetails(token, appointmentId, details, log) {
   log(`Updating appointment ${appointmentId} with details...`);
 
   try {
+    // Build location string for email template
+    const locationStr = [details.eventVenue, details.eventLocation].filter(Boolean).join(', ') || 'TBC';
+
     const updatePayload = {
       title: details.eventTitle,
-      address: details.eventVenue || details.eventLocation || '',
+      address: locationStr,
+      meetingLocation: locationStr,  // For {{appointment.meeting_location}} in emails
       notes: [
         `Event: ${details.eventTitle}`,
         `Date: ${details.eventDate}`,
