@@ -1362,6 +1362,10 @@
         eventLocation: currentEvent.locationTag || '',
         eventVenue: currentEvent.venue?.name || currentEvent.venueName || '',
         eventVenueAddress: currentEvent.venue?.address || currentEvent.address || '',
+        eventVenueWhat3Words: currentEvent.venue?.what3words || currentEvent.what3words || '',
+        eventVenueAccessibility: currentEvent.venue?.accessibility || currentEvent.accessibility || '',
+        eventVenueParking: currentEvent.venue?.parking || currentEvent.parking || '',
+        eventVenueNotes: currentEvent.venue?.notes || '',
         calendarId: currentEvent.calendarId || CALENDAR_ID
       };
 

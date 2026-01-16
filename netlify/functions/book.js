@@ -125,6 +125,90 @@ async function waitForAppointment(token, contactId, calendarId, eventDate, log, 
   return null;
 }
 
+// Build rich notes for the appointment
+function buildAppointmentNotes(details) {
+  const lines = [];
+
+  // Event details header
+  lines.push('═══════════════════════════════════');
+  lines.push('EVENT DETAILS');
+  lines.push('═══════════════════════════════════');
+  lines.push(`📅 ${details.eventTitle}`);
+  lines.push(`📆 Date: ${details.eventDate}`);
+  lines.push(`🕐 Time: ${details.startTime} - ${details.endTime}`);
+  lines.push('');
+
+  // Venue information
+  lines.push('───────────────────────────────────');
+  lines.push('VENUE INFORMATION');
+  lines.push('───────────────────────────────────');
+
+  if (details.eventVenue) {
+    lines.push(`🏢 Venue: ${details.eventVenue}`);
+  }
+
+  if (details.eventVenueAddress) {
+    lines.push(`📍 Address: ${details.eventVenueAddress}`);
+    // Add Google Maps link
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(details.eventVenueAddress)}`;
+    lines.push(`🗺️ Google Maps: ${mapsUrl}`);
+  }
+
+  if (details.eventVenueWhat3Words) {
+    const w3w = details.eventVenueWhat3Words.replace('///', '');
+    lines.push('');
+    lines.push(`📌 what3words: ///${w3w}`);
+    lines.push(`   └─ https://what3words.com/${w3w}`);
+    lines.push('   ℹ️ what3words pinpoints the exact entrance location.');
+    lines.push('      Download the free app or click the link above.');
+  }
+
+  // Accessibility & Parking
+  if (details.eventVenueAccessibility || details.eventVenueParking) {
+    lines.push('');
+    lines.push('───────────────────────────────────');
+    lines.push('ACCESS & PARKING');
+    lines.push('───────────────────────────────────');
+
+    if (details.eventVenueAccessibility) {
+      lines.push(`♿ Accessibility: ${details.eventVenueAccessibility}`);
+    }
+    if (details.eventVenueParking) {
+      lines.push(`🅿️ Parking: ${details.eventVenueParking}`);
+    }
+  }
+
+  // Venue notes
+  if (details.eventVenueNotes) {
+    lines.push('');
+    lines.push('───────────────────────────────────');
+    lines.push('VENUE NOTES');
+    lines.push('───────────────────────────────────');
+    lines.push(details.eventVenueNotes);
+  }
+
+  // Attendee details
+  lines.push('');
+  lines.push('═══════════════════════════════════');
+  lines.push('ATTENDEE');
+  lines.push('═══════════════════════════════════');
+  lines.push(`👤 ${details.firstName} ${details.lastName}`);
+  lines.push(`📧 ${details.email}`);
+  if (details.phone) {
+    lines.push(`📱 ${details.phone}`);
+  }
+  lines.push(`🏢 ${details.businessName}`);
+  lines.push(`📬 Marketing opt-in: ${details.optIn ? 'Yes' : 'No'}`);
+
+  // Footer
+  lines.push('');
+  lines.push('───────────────────────────────────');
+  lines.push(`Booked via COLLECTIVE Events Website`);
+  lines.push(`${new Date().toLocaleString('en-GB', { dateStyle: 'full', timeStyle: 'short' })}`);
+
+  return lines.join('\n');
+}
+
 // Update appointment with full details
 async function updateAppointmentDetails(token, appointmentId, details, log) {
   log(`Updating appointment ${appointmentId} with details...`);
@@ -139,22 +223,7 @@ async function updateAppointmentDetails(token, appointmentId, details, log) {
       title: details.eventTitle,
       address: venueAddress,
       meetingLocation: venueAddress,  // For {{appointment.meeting_location}} in emails
-      notes: [
-        `Event: ${details.eventTitle}`,
-        `Date: ${details.eventDate}`,
-        `Time: ${details.startTime} - ${details.endTime}`,
-        `Location: ${details.eventLocation || 'TBC'}`,
-        `Venue: ${details.eventVenue || 'TBC'}`,
-        ``,
-        `Attendee: ${details.firstName} ${details.lastName}`,
-        `Email: ${details.email}`,
-        `Phone: ${details.phone || 'Not provided'}`,
-        `Business: ${details.businessName}`,
-        `Marketing opt-in: ${details.optIn ? 'Yes' : 'No'}`,
-        ``,
-        `Booked via: COLLECTIVE Events Website`,
-        `Booked at: ${new Date().toISOString()}`
-      ].join('\n')
+      notes: buildAppointmentNotes(details)
     };
 
     await ghlRequest(
@@ -359,6 +428,10 @@ export const handler = async (event, context) => {
       eventLocation: body.eventLocation,
       eventVenue: body.eventVenue,
       eventVenueAddress: body.eventVenueAddress,
+      eventVenueWhat3Words: body.eventVenueWhat3Words,
+      eventVenueAccessibility: body.eventVenueAccessibility,
+      eventVenueParking: body.eventVenueParking,
+      eventVenueNotes: body.eventVenueNotes,
       firstName: body.firstName,
       lastName: body.lastName,
       email: body.email,
