@@ -780,6 +780,194 @@
       font-size: 0.95rem;
     }
 
+    /* Past Events Timeline */
+    .timeline-section {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+    }
+
+    .timeline-container {
+      position: relative;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .timeline-line {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--lime), var(--lilac), var(--lime));
+      transform: translateX(-50%);
+    }
+
+    .timeline-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 4rem;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s var(--transition-smooth);
+    }
+
+    .timeline-item.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .timeline-item:nth-child(odd) {
+      flex-direction: row;
+    }
+
+    .timeline-item:nth-child(even) {
+      flex-direction: row-reverse;
+    }
+
+    .timeline-content {
+      width: calc(50% - 40px);
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--card-radius);
+      padding: 1.5rem;
+      position: relative;
+      transition: all 0.3s var(--transition-smooth);
+    }
+
+    .timeline-content:hover {
+      border-color: var(--lime-30);
+      transform: scale(1.02);
+    }
+
+    .timeline-item:nth-child(odd) .timeline-content {
+      margin-right: 40px;
+    }
+
+    .timeline-item:nth-child(even) .timeline-content {
+      margin-left: 40px;
+    }
+
+    .timeline-dot {
+      width: 20px;
+      height: 20px;
+      background: var(--lime);
+      border-radius: 50%;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 20px var(--lime-30);
+      z-index: 1;
+    }
+
+    .timeline-item:nth-child(even) .timeline-dot {
+      background: var(--lilac);
+      box-shadow: 0 0 20px var(--lilac-30);
+    }
+
+    .timeline-date {
+      font-size: 0.85rem;
+      color: var(--lime);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .timeline-item:nth-child(even) .timeline-date {
+      color: var(--lilac);
+    }
+
+    .timeline-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .timeline-location {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .timeline-location svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .timeline-speaker {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .timeline-speaker-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--gradient-brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--black);
+    }
+
+    .timeline-speaker-name {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .timeline-image {
+      width: 100%;
+      height: 120px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .timeline-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .timeline-empty {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+      .timeline-line {
+        left: 20px;
+      }
+
+      .timeline-item,
+      .timeline-item:nth-child(odd),
+      .timeline-item:nth-child(even) {
+        flex-direction: row;
+      }
+
+      .timeline-content,
+      .timeline-item:nth-child(odd) .timeline-content,
+      .timeline-item:nth-child(even) .timeline-content {
+        width: calc(100% - 60px);
+        margin-left: 50px;
+        margin-right: 0;
+      }
+
+      .timeline-dot {
+        left: 20px;
+      }
+    }
+
     /* CTA Section */
     .cta-section {
       text-align: center;
@@ -1129,6 +1317,24 @@
       </div>
     </section>
 
+    <!-- Past Events Timeline -->
+    <section class="timeline-section" id="past-events">
+      <div class="section-header" style="padding-top: 2rem;">
+        <h2>Our Journey</h2>
+        <p>A look back at the conversations, connections, and community moments that have shaped COLLECTIVE.</p>
+      </div>
+
+      <div class="timeline-container">
+        <div class="timeline-line"></div>
+        <div id="timeline-content">
+          <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading past events...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- CTA Section -->
     <section class="cta-section">
       <div class="cta-card">
@@ -1156,7 +1362,7 @@
         <h4>Events</h4>
         <ul>
           <li><a href="#events">Upcoming</a></li>
-          <li><a href="?status=past">Past Events</a></li>
+          <li><a href="#past-events">Past Events</a></li>
           <li><a href="https://cdicollective.co.uk" target="_blank">Book Now</a></li>
         </ul>
       </div>
@@ -1426,6 +1632,117 @@
       }
     }
 
+    // Format full date for timeline
+    function formatFullDate(dateStr) {
+      if (!dateStr) return 'Date TBC';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
+
+    // Render timeline item
+    function renderTimelineItem(event, index) {
+      const eventImage = getEventImage(event);
+      const hasSpeaker = event.speaker?.name;
+
+      return `
+        <div class="timeline-item" style="transition-delay: ${index * 0.15}s">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            ${eventImage ? `
+              <div class="timeline-image">
+                <img src="${eventImage}" alt="${event.title}" loading="lazy">
+              </div>
+            ` : ''}
+            <div class="timeline-date">${formatFullDate(event.date)}</div>
+            <h4 class="timeline-title">${event.title}</h4>
+            <div class="timeline-location">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              ${event.locationTag || 'East Midlands'}
+            </div>
+            ${hasSpeaker ? `
+              <div class="timeline-speaker">
+                <div class="timeline-speaker-avatar">${getInitials(event.speaker.name)}</div>
+                <span class="timeline-speaker-name">${event.speaker.name}</span>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // Render past events timeline
+    function renderTimeline(events) {
+      const container = document.getElementById('timeline-content');
+
+      if (!events || events.length === 0) {
+        container.innerHTML = `
+          <div class="timeline-empty">
+            <p>No past events yet. Stay tuned for our upcoming events!</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Sort by date descending (most recent first)
+      const sortedEvents = [...events].sort((a, b) => {
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return new Date(b.date) - new Date(a.date);
+      });
+
+      container.innerHTML = sortedEvents.map((event, index) => renderTimelineItem(event, index)).join('');
+
+      // Setup scroll animations for timeline items
+      const timelineObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.timeline-item').forEach(el => {
+        timelineObserver.observe(el);
+      });
+    }
+
+    // Load past events
+    async function loadPastEvents() {
+      try {
+        const response = await fetch(`${API_URL}?status=past&limit=20`);
+        if (!response.ok) throw new Error('Failed to fetch past events');
+
+        const data = await response.json();
+        const pastEvents = data.events || [];
+
+        console.log('Loaded past events:', pastEvents);
+
+        // Update total speakers stat with past events too
+        const allSpeakers = new Set();
+        [...allEvents, ...pastEvents].forEach(e => {
+          if (e.speaker?.name) allSpeakers.add(e.speaker.name);
+        });
+        document.getElementById('stat-speakers').textContent = allSpeakers.size || '-';
+
+        renderTimeline(pastEvents);
+
+      } catch (error) {
+        console.error('Error loading past events:', error);
+        document.getElementById('timeline-content').innerHTML = `
+          <div class="timeline-empty">
+            <p>Unable to load past events.</p>
+          </div>
+        `;
+      }
+    }
+
     // Intersection Observer for animations
     function setupScrollAnimations() {
       const observer = new IntersectionObserver((entries) => {
@@ -1459,6 +1776,7 @@
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
       loadEvents();
+      loadPastEvents();
       setupScrollAnimations();
       setupNavbar();
       setupFilters();
