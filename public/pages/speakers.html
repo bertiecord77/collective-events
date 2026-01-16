@@ -197,7 +197,6 @@
         <a href="/" class="nav-link">Events</a>
         <a href="/speakers" class="nav-link active">Speakers</a>
         <a href="/about" class="nav-link">About</a>
-        <a href="/notluck" class="nav-link">NotLuck</a>
       </div>
     </div>
   </nav>
@@ -283,33 +282,60 @@
 
   <script src="/assets/js/api.js"></script>
   <script>
-    const { fetchSpeakers, fetchEvents, fetchStats, DEFAULT_IMAGE } = window.CollectiveAPI;
+    const { fetchEvents, DEFAULT_IMAGE } = window.CollectiveAPI;
 
     async function loadSpeakers() {
-      // Load speakers and events in parallel
-      const [speakersData, eventsData, stats] = await Promise.all([
-        fetchSpeakers({ limit: 100 }),
-        fetchEvents({ limit: 100 }),
-        fetchStats()
-      ]);
-
-      const speakers = speakersData.speakers || [];
+      // Load all events and extract speakers from them
+      const eventsData = await fetchEvents({ limit: 200 });
       const events = eventsData.events || [];
 
-      // Update stats
-      document.getElementById('stat-speakers').textContent = speakers.length;
-      document.getElementById('stat-events').textContent = events.length || stats.events || 0;
-
-      // Count events per speaker
+      // Extract unique speakers from events
+      const speakersMap = new Map();
       const speakerEventCounts = {};
+
       events.forEach(event => {
-        if (event.speakers) {
+        // Handle single speaker field
+        if (event.speaker && event.speaker.name) {
+          const key = event.speaker.name;
+          if (!speakersMap.has(key)) {
+            speakersMap.set(key, {
+              name: event.speaker.name,
+              title: event.speaker.title,
+              company: event.speaker.company,
+              bio: event.speaker.bio,
+              image: event.speaker.photo,
+              slug: key.toLowerCase().replace(/\s+/g, '-')
+            });
+          }
+          speakerEventCounts[key] = (speakerEventCounts[key] || 0) + 1;
+        }
+
+        // Handle speakers array
+        if (event.speakers && Array.isArray(event.speakers)) {
           event.speakers.forEach(s => {
-            const key = s.id || s.slug || s.name;
-            speakerEventCounts[key] = (speakerEventCounts[key] || 0) + 1;
+            if (s.name) {
+              const key = s.name;
+              if (!speakersMap.has(key)) {
+                speakersMap.set(key, {
+                  name: s.name,
+                  title: s.title,
+                  company: s.company,
+                  bio: s.bio,
+                  image: s.photo || s.image,
+                  slug: key.toLowerCase().replace(/\s+/g, '-')
+                });
+              }
+              speakerEventCounts[key] = (speakerEventCounts[key] || 0) + 1;
+            }
           });
         }
       });
+
+      const speakers = Array.from(speakersMap.values());
+
+      // Update stats
+      document.getElementById('stat-speakers').textContent = speakers.length;
+      document.getElementById('stat-events').textContent = events.length;
 
       // Render speakers
       renderSpeakers(speakers, speakerEventCounts);
@@ -330,29 +356,30 @@
 
       // Sort speakers by event count (most active first)
       speakers.sort((a, b) => {
-        const countA = eventCounts[a.id] || eventCounts[a.slug] || 0;
-        const countB = eventCounts[b.id] || eventCounts[b.slug] || 0;
+        const countA = eventCounts[a.name] || 0;
+        const countB = eventCounts[b.name] || 0;
         return countB - countA;
       });
 
       grid.innerHTML = speakers.map(speaker => {
-        const eventCount = eventCounts[speaker.id] || eventCounts[speaker.slug] || 0;
+        const eventCount = eventCounts[speaker.name] || 0;
 
         return `
-          <a href="/speaker/${speaker.slug || speaker.id}" class="speaker-card">
+          <div class="speaker-card">
             <img
               src="${speaker.image || DEFAULT_IMAGE}"
               alt="${speaker.name}"
               class="speaker-card-avatar"
               loading="lazy"
+              onerror="this.src='${DEFAULT_IMAGE}'"
             >
             <h3>${speaker.name}</h3>
             ${speaker.title ? `<p class="speaker-card-title">${speaker.title}</p>` : ''}
             ${speaker.company ? `<p class="speaker-card-company">${speaker.company}</p>` : ''}
             <p class="speaker-card-events">
-              ${eventCount > 0 ? `${eventCount} event${eventCount !== 1 ? 's' : ''}` : 'Upcoming speaker'}
+              ${eventCount > 0 ? `${eventCount} event${eventCount !== 1 ? 's' : ''}` : 'Speaker'}
             </p>
-          </a>
+          </div>
         `;
       }).join('');
     }

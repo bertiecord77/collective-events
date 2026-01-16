@@ -227,7 +227,6 @@
         <a href="/" class="nav-link">Events</a>
         <a href="/speakers" class="nav-link">Speakers</a>
         <a href="/about" class="nav-link">About</a>
-        <a href="/notluck" class="nav-link">NotLuck</a>
       </div>
     </div>
   </nav>
@@ -424,9 +423,12 @@
     }
 
     async function loadEvents(locationKey) {
-      // Fetch all events for this location
-      const data = await fetchEvents({ location: locationKey });
-      const events = data.events || [];
+      // Fetch all events and filter by location (case-insensitive)
+      const data = await fetchEvents({ limit: 200 });
+      const allEvents = data.events || [];
+      const events = allEvents.filter(e =>
+        e.locationTag?.toLowerCase() === locationKey.toLowerCase()
+      );
 
       const upcoming = events.filter(e => isUpcoming(e.date));
       const past = events.filter(e => !isUpcoming(e.date)).slice(0, 6);

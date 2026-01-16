@@ -1026,6 +1026,55 @@
         padding: 2.5rem 1.5rem;
       }
     }
+
+    /* Partner Banner */
+    .partners-section {
+      background: var(--lime);
+      padding: 2rem 0;
+      overflow: hidden;
+    }
+
+    .partners-track {
+      display: flex;
+      animation: scroll-partners 30s linear infinite;
+      width: max-content;
+    }
+
+    .partners-track:hover {
+      animation-play-state: paused;
+    }
+
+    .partner-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 3rem;
+      height: 60px;
+      flex-shrink: 0;
+    }
+
+    .partner-item img {
+      height: 40px;
+      width: auto;
+      max-width: 180px;
+      object-fit: contain;
+      filter: brightness(0);
+      opacity: 0.8;
+      transition: opacity 0.3s ease;
+    }
+
+    .partner-item:hover img {
+      opacity: 1;
+    }
+
+    @keyframes scroll-partners {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
   </style>
 </head>
 <body>
@@ -1042,7 +1091,6 @@
       <li><a href="/">Events</a></li>
       <li><a href="/speakers">Speakers</a></li>
       <li><a href="/about">About</a></li>
-      <li><a href="/notluck">NotLuck</a></li>
     </ul>
   </nav>
 
@@ -1118,6 +1166,50 @@
         <div class="stat-item">
           <div class="stat-number lilac" id="stat-speakers">-</div>
           <div class="stat-label">Speakers</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Partners Banner -->
+    <section class="partners-section">
+      <div class="partners-track">
+        <!-- First set of logos -->
+        <div class="partner-item">
+          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68ebf5b1dba3a0c6b6a3fb7a.jpeg" alt="University of Derby">
+        </div>
+        <div class="partner-item">
+          <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/14/Nottingham_Trent_University_logo.svg/200px-Nottingham_Trent_University_logo.svg.png" alt="Nottingham Trent University">
+        </div>
+        <div class="partner-item">
+          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68ebf5b1c2b02e9150003dc4.jpeg" alt="Mansfield District Council">
+        </div>
+        <div class="partner-item">
+          <img src="https://www.ukri.org/wp-content/uploads/2022/03/IUK-Logo-RGB-800x374px-1.png" alt="Innovate UK">
+        </div>
+        <div class="partner-item">
+          <img src="https://notluck.co.uk/wp-content/uploads/2024/01/NotLuck-Full-Logo-White.png" alt="NotLuck">
+        </div>
+        <div class="partner-item">
+          <img src="https://www.emcca.gov.uk/wp-content/themes/developer/assets/img/logo.svg" alt="East Midlands Combined County Authority">
+        </div>
+        <!-- Duplicate set for seamless loop -->
+        <div class="partner-item">
+          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68ebf5b1dba3a0c6b6a3fb7a.jpeg" alt="University of Derby">
+        </div>
+        <div class="partner-item">
+          <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/14/Nottingham_Trent_University_logo.svg/200px-Nottingham_Trent_University_logo.svg.png" alt="Nottingham Trent University">
+        </div>
+        <div class="partner-item">
+          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68ebf5b1c2b02e9150003dc4.jpeg" alt="Mansfield District Council">
+        </div>
+        <div class="partner-item">
+          <img src="https://www.ukri.org/wp-content/uploads/2022/03/IUK-Logo-RGB-800x374px-1.png" alt="Innovate UK">
+        </div>
+        <div class="partner-item">
+          <img src="https://notluck.co.uk/wp-content/uploads/2024/01/NotLuck-Full-Logo-White.png" alt="NotLuck">
+        </div>
+        <div class="partner-item">
+          <img src="https://www.emcca.gov.uk/wp-content/themes/developer/assets/img/logo.svg" alt="East Midlands Combined County Authority">
         </div>
       </div>
     </section>
