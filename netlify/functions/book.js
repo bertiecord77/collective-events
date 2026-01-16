@@ -180,46 +180,36 @@ export const handler = async (event, context) => {
     let appointmentId;
 
     try {
-      // Try the blocked event endpoint first
-      log('Trying /calendars/events/block-slots...');
+      // Create appointment via the appointments endpoint
+      log('Creating appointment via /calendars/events/appointments...');
+      const appointmentPayload = {
+        calendarId: calendarId,
+        locationId: LOCATION_ID,
+        contactId: contactId,
+        startTime: createISODateTime(body.eventDate, startTime),
+        endTime: createISODateTime(body.eventDate, endTime),
+        title: body.eventTitle,
+        appointmentStatus: 'confirmed',
+        address: body.eventVenue || body.eventLocation || '',
+        ignoreDateRange: true,
+        toNotify: false
+      };
+      log('Appointment payload: ' + JSON.stringify(appointmentPayload));
+
       appointmentResult = await ghlRequest(
-        '/calendars/events/block-slots',
+        '/calendars/events/appointments',
         'POST',
         token,
-        {
-          calendarId: calendarId,
-          locationId: LOCATION_ID,
-          startTime: createISODateTime(body.eventDate, startTime),
-          endTime: createISODateTime(body.eventDate, endTime),
-          title: body.eventTitle,
-          assignedUserId: contactId
-        }
+        appointmentPayload
       );
-      appointmentId = appointmentResult.id || appointmentResult.event?.id;
-    } catch (blockError) {
-      log('Block slot failed: ' + blockError.message);
-
-      // Try creating appointment with different params
-      try {
-        log('Trying /calendars/events with slot override...');
-        appointmentResult = await ghlRequest(
-          '/calendars/events',
-          'POST',
-          token,
-          {
-            ...eventPayload,
-            // Try forcing it as a manual/blocked event
-            appointmentStatus: 'confirmed',
-            isRecurring: false
-          }
-        );
-        appointmentId = appointmentResult.id || appointmentResult.event?.id;
-      } catch (eventError) {
-        log('Calendar event failed: ' + eventError.message);
-        // Calendar booking failed but contact was created - that's OK
-        // The contact has the event tags so they can be tracked
-        log('Continuing without calendar entry - contact created with tags');
-      }
+      appointmentId = appointmentResult.id || appointmentResult.appointment?.id;
+      log('Appointment created: ' + appointmentId);
+    } catch (appointmentError) {
+      log('Appointment creation failed: ' + appointmentError.message);
+      log('Error details: ' + JSON.stringify(appointmentError.data || {}));
+      // Calendar booking failed but contact was created - that's OK
+      // The contact has the event tags so they can be tracked
+      log('Continuing without calendar entry - contact created with tags');
     }
 
     // Step 3: Add tags based on opt-in preference
