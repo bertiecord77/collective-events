@@ -411,9 +411,11 @@
     let currentFilter = 'all';
 
     async function init() {
-      // Load events
-      const data = await fetchEvents({ limit: 200 });
-      allEvents = (data.events || []).filter(e => !isUpcoming(e.date));
+      try {
+        // Load past events specifically using status=past
+        const response = await fetch('https://api.notluck.co.uk/collective/events?status=past&limit=200');
+        const data = await response.json();
+        allEvents = data.events || [];
 
       // Sort by date descending (most recent first)
       allEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -514,6 +516,15 @@
       });
 
       container.innerHTML = html;
+      } catch (error) {
+        console.error('Error loading past events:', error);
+        document.getElementById('timeline').innerHTML = `
+          <div class="empty-state">
+            <h3>Unable to load events</h3>
+            <p>Please try again later.</p>
+          </div>
+        `;
+      }
     }
 
     // Initialize

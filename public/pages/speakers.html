@@ -282,12 +282,21 @@
 
   <script src="/assets/js/api.js"></script>
   <script>
-    const { fetchEvents, DEFAULT_IMAGE } = window.CollectiveAPI;
-
     async function loadSpeakers() {
-      // Load all events and extract speakers from them
-      const eventsData = await fetchEvents({ limit: 200 });
-      const events = eventsData.events || [];
+      const grid = document.getElementById('speakers-grid');
+
+      try {
+        // Get API utilities
+        const API = window.CollectiveAPI;
+        if (!API) {
+          throw new Error('API not loaded');
+        }
+
+        const DEFAULT_IMAGE = API.DEFAULT_IMAGE || 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png';
+
+        // Load all events and extract speakers from them
+        const eventsData = await API.fetchEvents({ limit: 200 });
+        const events = eventsData.events || [];
 
       // Extract unique speakers from events
       const speakersMap = new Map();
@@ -338,12 +347,6 @@
       document.getElementById('stat-events').textContent = events.length;
 
       // Render speakers
-      renderSpeakers(speakers, speakerEventCounts);
-    }
-
-    function renderSpeakers(speakers, eventCounts) {
-      const grid = document.getElementById('speakers-grid');
-
       if (speakers.length === 0) {
         grid.innerHTML = `
           <div class="empty-state" style="grid-column: 1 / -1;">
@@ -356,13 +359,13 @@
 
       // Sort speakers by event count (most active first)
       speakers.sort((a, b) => {
-        const countA = eventCounts[a.name] || 0;
-        const countB = eventCounts[b.name] || 0;
+        const countA = speakerEventCounts[a.name] || 0;
+        const countB = speakerEventCounts[b.name] || 0;
         return countB - countA;
       });
 
       grid.innerHTML = speakers.map(speaker => {
-        const eventCount = eventCounts[speaker.name] || 0;
+        const eventCount = speakerEventCounts[speaker.name] || 0;
 
         return `
           <div class="speaker-card">
@@ -382,6 +385,16 @@
           </div>
         `;
       }).join('');
+
+      } catch (error) {
+        console.error('Error loading speakers:', error);
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <h3>Unable to load speakers</h3>
+            <p>Please try again later.</p>
+          </div>
+        `;
+      }
     }
 
     // Initialize
