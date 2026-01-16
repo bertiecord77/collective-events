@@ -1,5 +1,5 @@
 /**
- * COLLECTIVE. Event Booking Function
+ * COLLECTIVE. Event Booking Function v2
  * 1. Creates contact via API
  * 2. Triggers webhook to create appointment (with slot override)
  * 3. Polls API to confirm appointment was created
