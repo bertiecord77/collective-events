@@ -105,8 +105,8 @@ async function findContactByEmail(email, token) {
   return null;
 }
 
-// Create a new contact
-async function createContact(contactData, token) {
+// Create or update contact using upsert endpoint
+async function upsertContact(contactData, token) {
   const payload = {
     locationId: LOCATION_ID,
     firstName: contactData.firstName,
@@ -121,12 +121,30 @@ async function createContact(contactData, token) {
   // Remove undefined values
   Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
 
-  console.log('Creating contact with payload:', JSON.stringify(payload));
+  console.log('Upserting contact with payload:', JSON.stringify(payload));
 
-  return ghlRequest('/contacts/', token, {
-    method: 'POST',
-    body: payload
-  });
+  // Try upsert endpoint first (creates if not exists, updates if exists)
+  try {
+    const result = await ghlRequest('/contacts/upsert', token, {
+      method: 'POST',
+      body: payload
+    });
+    console.log('Upsert result:', JSON.stringify(result));
+    return result;
+  } catch (upsertError) {
+    console.log('Upsert failed:', upsertError.message);
+
+    // Fall back to regular create
+    return ghlRequest('/contacts/', token, {
+      method: 'POST',
+      body: payload
+    });
+  }
+}
+
+// Create a new contact (kept for compatibility)
+async function createContact(contactData, token) {
+  return upsertContact(contactData, token);
 }
 
 // Update an existing contact
@@ -228,74 +246,39 @@ export const handler = async (event, context) => {
       };
     }
 
-    // Step 1: Find or create contact
-    console.log('Step 1: Looking up contact:', body.email);
-    let contact = await findContactByEmail(body.email, token);
+    // Step 1: Create or update contact using upsert
+    console.log('Step 1: Upserting contact:', body.email);
+    let contact = null;
 
-    if (contact) {
-      console.log('Found existing contact:', contact.id);
-      try {
-        await updateContact(contact.id, body, token);
-        console.log('Updated contact');
-      } catch (e) {
-        console.log('Could not update contact:', e.message);
-      }
-    } else {
-      console.log('No existing contact found, creating new contact...');
-      try {
-        const result = await createContact(body, token);
-        contact = result.contact;
-        console.log('Created contact:', contact?.id);
-      } catch (createError) {
-        // Handle duplicate contact error
-        const errMsg = createError.message.toLowerCase();
-        console.log('Create contact error:', errMsg);
-        console.log('Error data:', JSON.stringify(createError.data || {}));
+    try {
+      const result = await upsertContact(body, token);
+      // Upsert returns contact in different places depending on create vs update
+      contact = result.contact || result;
+      console.log('Upsert successful, contact ID:', contact?.id);
+    } catch (upsertError) {
+      console.log('Upsert error:', upsertError.message);
+      console.log('Upsert error data:', JSON.stringify(upsertError.data || {}));
 
-        if (errMsg.includes('duplicate') || errMsg.includes('already exists') || errMsg.includes('does not allow')) {
-          console.log('Duplicate contact detected, checking error response for ID...');
+      // If upsert fails, try to find the existing contact
+      const errorData = upsertError.data || {};
 
-          // Some APIs return the existing contact ID in the error response
-          const errorData = createError.data || {};
-          if (errorData.contactId || errorData.id || errorData.contact?.id) {
-            const existingId = errorData.contactId || errorData.id || errorData.contact?.id;
-            console.log('Found contact ID in error response:', existingId);
-            contact = { id: existingId };
-          } else {
-            // Try to search again
-            console.log('No ID in error, retrying search...');
-            await new Promise(r => setTimeout(r, 500));
-            contact = await findContactByEmail(body.email, token);
-
-            if (!contact) {
-              // Last resort: list all contacts
-              console.log('Still not found, listing contacts...');
-              try {
-                const listResult = await ghlRequest(
-                  `/contacts/?locationId=${LOCATION_ID}&limit=100`,
-                  token
-                );
-                console.log('Listed', listResult.contacts?.length || 0, 'contacts');
-                contact = listResult.contacts?.find(c =>
-                  c.email?.toLowerCase() === body.email.toLowerCase()
-                );
-                if (contact) {
-                  console.log('Found contact in list:', contact.id);
-                }
-              } catch (listError) {
-                console.log('List contacts failed:', listError.message);
-              }
-            }
-          }
-        } else {
-          throw createError;
-        }
+      // Check if error response contains contact ID
+      if (errorData.contactId || errorData.id || errorData.contact?.id) {
+        const existingId = errorData.contactId || errorData.id || errorData.contact?.id;
+        console.log('Found contact ID in error:', existingId);
+        contact = { id: existingId };
+      } else {
+        // Try to search for existing contact
+        console.log('Searching for existing contact...');
+        contact = await findContactByEmail(body.email, token);
       }
     }
 
     if (!contact?.id) {
-      throw new Error('Failed to create or find contact');
+      throw new Error('Failed to create or find contact - please check Netlify logs for details');
     }
+
+    console.log('Using contact ID:', contact.id);
 
     // Step 2: Create calendar appointment
     console.log('Step 2: Creating appointment for calendar:', body.calendarId);
