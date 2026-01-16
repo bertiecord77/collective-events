@@ -31,10 +31,20 @@ async function fetchEvents(options = {}) {
   }
 }
 
-// Fetch single event by slug
-async function fetchEvent(slug) {
-  const data = await fetchEvents({ slug, limit: 1 });
-  return data.events?.[0] || null;
+// Fetch single event by slug or ID
+async function fetchEvent(slugOrId) {
+  // First try to get all events and find by slug
+  const data = await fetchEvents({ limit: 200 });
+  const events = data.events || [];
+
+  // Find event by slug or ID
+  const event = events.find(e =>
+    e.slug === slugOrId ||
+    e.id === slugOrId ||
+    e.slug?.toLowerCase() === slugOrId?.toLowerCase()
+  );
+
+  return event || null;
 }
 
 // Fetch speakers from API
