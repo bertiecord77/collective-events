@@ -186,15 +186,46 @@ async function createAppointment(contactId, bookingData, token) {
     endTime: endTime.toISOString(),
     appointmentStatus: 'confirmed',
     address: bookingData.eventVenue || bookingData.eventLocation || '',
-    notes: `Event: ${bookingData.eventTitle}\nBooked via: COLLECTIVE Events Website\nBusiness: ${bookingData.businessName}\nOpt-in: ${bookingData.optIn ? 'Yes' : 'No'}`
+    notes: `Event: ${bookingData.eventTitle}\nBooked via: COLLECTIVE Events Website\nBusiness: ${bookingData.businessName}\nOpt-in: ${bookingData.optIn ? 'Yes' : 'No'}`,
+    // Try to allow overbooking for group events
+    ignoreDateRange: true,
+    toNotify: false
   };
 
   console.log('Creating appointment with payload:', JSON.stringify(payload));
 
-  return ghlRequest('/calendars/events/appointments', token, {
-    method: 'POST',
-    body: payload
-  });
+  // Try the appointments endpoint first
+  try {
+    return await ghlRequest('/calendars/events/appointments', token, {
+      method: 'POST',
+      body: payload
+    });
+  } catch (apptError) {
+    console.log('Appointments endpoint failed:', apptError.message);
+
+    // Try alternative: create a calendar event directly (not appointment)
+    console.log('Trying calendar events endpoint...');
+    const eventPayload = {
+      calendarId: bookingData.calendarId,
+      locationId: LOCATION_ID,
+      contactId: contactId,
+      title: `${bookingData.eventTitle} - ${bookingData.firstName} ${bookingData.lastName}`,
+      startTime: startTime.toISOString(),
+      endTime: endTime.toISOString(),
+      appointmentStatus: 'confirmed'
+    };
+
+    try {
+      return await ghlRequest('/calendars/events', token, {
+        method: 'POST',
+        body: eventPayload
+      });
+    } catch (eventError) {
+      console.log('Calendar events endpoint also failed:', eventError.message);
+      // Re-throw the original error
+      throw apptError;
+    }
+  }
 }
 
 export const handler = async (event, context) => {
