@@ -40,46 +40,64 @@ async function ghlRequest(endpoint, token, options = {}) {
   return data;
 }
 
-// Search for existing contact by email using lookup endpoint
+// Search for existing contact by email
 async function findContactByEmail(email, token) {
-  // Method 1: Direct lookup by email (most reliable)
-  try {
-    console.log('Trying lookup endpoint for:', email);
-    const result = await ghlRequest(
-      `/contacts/lookup?locationId=${LOCATION_ID}&email=${encodeURIComponent(email.toLowerCase())}`,
-      token
-    );
-    console.log('Lookup result:', JSON.stringify(result));
+  const emailLower = email.toLowerCase();
+  console.log('Searching for contact with email:', emailLower);
 
-    // Lookup returns contact directly or in contacts array
-    const contact = result.contact || result.contacts?.[0] || result;
+  // Method 1: Simple query search (most widely supported)
+  try {
+    console.log('Method 1: Query search');
+    const url = `/contacts/?locationId=${LOCATION_ID}&query=${encodeURIComponent(emailLower)}&limit=50`;
+    const result = await ghlRequest(url, token);
+
+    if (result.contacts && result.contacts.length > 0) {
+      console.log(`Found ${result.contacts.length} contacts, checking emails...`);
+      for (const c of result.contacts) {
+        console.log(`  - ${c.email} (id: ${c.id})`);
+        if (c.email?.toLowerCase() === emailLower) {
+          console.log('Exact email match found!');
+          return c;
+        }
+      }
+    }
+  } catch (error) {
+    console.log('Method 1 failed:', error.message);
+  }
+
+  // Method 2: Lookup endpoint
+  try {
+    console.log('Method 2: Lookup endpoint');
+    const url = `/contacts/lookup?locationId=${LOCATION_ID}&email=${encodeURIComponent(emailLower)}`;
+    const result = await ghlRequest(url, token);
+
+    const contact = result.contact || result.contacts?.[0];
     if (contact?.id) {
+      console.log('Found via lookup:', contact.id);
       return contact;
     }
   } catch (error) {
-    console.log('Lookup failed:', error.message);
+    console.log('Method 2 failed:', error.message);
   }
 
-  // Method 2: Query-based search as fallback
+  // Method 3: List recent contacts and search
   try {
-    console.log('Trying query search for:', email);
-    const result = await ghlRequest(
-      `/contacts/?locationId=${LOCATION_ID}&query=${encodeURIComponent(email)}&limit=20`,
-      token
-    );
-    console.log('Query search result:', JSON.stringify(result));
+    console.log('Method 3: List all and search');
+    const url = `/contacts/?locationId=${LOCATION_ID}&limit=100`;
+    const result = await ghlRequest(url, token);
 
-    const contact = result.contacts?.find(c =>
-      c.email?.toLowerCase() === email.toLowerCase()
-    );
-    if (contact) {
-      return contact;
+    if (result.contacts) {
+      const contact = result.contacts.find(c => c.email?.toLowerCase() === emailLower);
+      if (contact) {
+        console.log('Found in list:', contact.id);
+        return contact;
+      }
     }
   } catch (error) {
-    console.log('Query search failed:', error.message);
+    console.log('Method 3 failed:', error.message);
   }
 
-  console.log('No contact found for:', email);
+  console.log('No contact found for:', emailLower);
   return null;
 }
 
