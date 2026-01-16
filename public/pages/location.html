@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Location | COLLECTIVE.</title>
+  <meta name="description" content="COLLECTIVE. events in your area">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <style>
+    /* Location Page Specific Styles */
+    .location-hero {
+      position: relative;
+      min-height: 50vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: var(--space-8) var(--space-4);
+      overflow: hidden;
+    }
+
+    .location-hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .location-hero-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .location-hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%);
+    }
+
+    .location-hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+    }
+
+    .location-hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 700;
+      margin-bottom: var(--space-4);
+    }
+
+    .location-hero p {
+      font-size: var(--text-xl);
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .location-stats {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-6);
+      margin-top: var(--space-6);
+      flex-wrap: wrap;
+    }
+
+    .location-stat {
+      text-align: center;
+    }
+
+    .location-stat-value {
+      font-size: var(--text-3xl);
+      font-weight: 700;
+    }
+
+    .location-stat-label {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Events Section */
+    .location-events {
+      padding: var(--space-8) var(--space-4);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: var(--space-6);
+    }
+
+    .section-header h2 {
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-2);
+    }
+
+    .section-header p {
+      color: var(--text-muted);
+    }
+
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: var(--space-5);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* About Location Section */
+    .location-about {
+      padding: var(--space-8) var(--space-4);
+      background: var(--surface);
+    }
+
+    .about-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .about-content h2 {
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-4);
+    }
+
+    .about-content p {
+      font-size: var(--text-lg);
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: var(--space-4);
+    }
+
+    /* Other Locations */
+    .other-locations {
+      padding: var(--space-8) var(--space-4);
+    }
+
+    .locations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-5);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .location-card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      aspect-ratio: 16/9;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .location-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform var(--transition-base);
+    }
+
+    .location-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .location-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+      display: flex;
+      align-items: flex-end;
+      padding: var(--space-4);
+    }
+
+    .location-card h3 {
+      font-size: var(--text-xl);
+      font-weight: 600;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: var(--space-8);
+      color: var(--text-muted);
+    }
+
+    .empty-state h3 {
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-2);
+      color: var(--text-primary);
+    }
+
+    /* Loading */
+    .loading-spinner {
+      display: flex;
+      justify-content: center;
+      padding: var(--space-8);
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--lime);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." height="40">
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Events</a>
+        <a href="/speakers" class="nav-link">Speakers</a>
+        <a href="/about" class="nav-link">About</a>
+        <a href="/nottingham" class="nav-link" data-location="nottingham">Nottingham</a>
+        <a href="/mansfield" class="nav-link" data-location="mansfield">Mansfield</a>
+        <a href="/chesterfield" class="nav-link" data-location="chesterfield">Chesterfield</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="location-hero">
+      <div class="location-hero-bg">
+        <img id="hero-image" src="" alt="">
+      </div>
+      <div class="location-hero-content">
+        <span id="hero-badge" class="badge badge-lime">COLLECTIVE.</span>
+        <h1 id="location-title"></h1>
+        <p id="location-description"></p>
+        <div class="location-stats">
+          <div class="location-stat">
+            <div id="stat-events" class="location-stat-value">-</div>
+            <div class="location-stat-label">Events</div>
+          </div>
+          <div class="location-stat">
+            <div id="stat-upcoming" class="location-stat-value">-</div>
+            <div class="location-stat-label">Upcoming</div>
+          </div>
+          <div class="location-stat">
+            <div id="stat-speakers" class="location-stat-value">-</div>
+            <div class="location-stat-label">Speakers</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Upcoming Events -->
+    <section class="location-events">
+      <div class="section-header">
+        <h2>Upcoming Events</h2>
+        <p>Don't miss out on what's happening next</p>
+      </div>
+      <div id="upcoming-events" class="events-grid">
+        <div class="loading-spinner"><div class="spinner"></div></div>
+      </div>
+    </section>
+
+    <!-- Past Events -->
+    <section id="past-section" class="location-events" style="background: var(--surface); display: none;">
+      <div class="section-header">
+        <h2>Past Events</h2>
+        <p>A look back at what we've done together</p>
+      </div>
+      <div id="past-events" class="events-grid"></div>
+      <div style="text-align: center; margin-top: var(--space-6);">
+        <a href="/past" class="btn btn-secondary">View All Past Events</a>
+      </div>
+    </section>
+
+    <!-- About Location -->
+    <section class="location-about">
+      <div class="about-content">
+        <h2 id="about-title">About COLLECTIVE. in <span class="location-name"></span></h2>
+        <p id="about-text"></p>
+      </div>
+    </section>
+
+    <!-- Other Locations -->
+    <section class="other-locations">
+      <div class="section-header">
+        <h2>Explore Other Locations</h2>
+        <p>COLLECTIVE. is growing across the East Midlands</p>
+      </div>
+      <div id="other-locations" class="locations-grid"></div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." height="32">
+        <p>Building connections across the East Midlands creative, digital and tech community.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>Locations</h4>
+          <a href="/nottingham">Nottingham</a>
+          <a href="/mansfield">Mansfield</a>
+          <a href="/chesterfield">Chesterfield</a>
+        </div>
+        <div class="footer-column">
+          <h4>Explore</h4>
+          <a href="/">Events</a>
+          <a href="/speakers">Speakers</a>
+          <a href="/past">Past Events</a>
+        </div>
+        <div class="footer-column">
+          <h4>About</h4>
+          <a href="/about">About Us</a>
+          <a href="https://cdicollective.co.uk" target="_blank">Main Website</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 COLLECTIVE. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/assets/js/api.js"></script>
+  <script>
+    const { fetchEvents, getEventImage, formatDate, getLocationColor, isUpcoming, LOCATION_IMAGES } = window.CollectiveAPI;
+
+    // Location data
+    const LOCATIONS = {
+      nottingham: {
+        name: 'Nottingham',
+        description: 'Join COLLECTIVE. in Nottingham for inspiring events, workshops and networking in the heart of the creative quarter.',
+        about: 'Nottingham is the beating heart of the East Midlands creative scene. Our events here bring together digital innovators, tech entrepreneurs, and creative professionals in some of the city\'s most inspiring venues. From intimate workshops to larger networking events, COLLECTIVE. Nottingham is where ideas come to life.',
+        image: LOCATION_IMAGES.nottingham,
+        color: 'lime'
+      },
+      mansfield: {
+        name: 'Mansfield',
+        description: 'Join COLLECTIVE. in Mansfield for inspiring events connecting North Nottinghamshire\'s creative community.',
+        about: 'Mansfield is emerging as a vibrant hub for digital and creative talent. Our events here focus on building connections between local businesses, freelancers, and aspiring entrepreneurs. COLLECTIVE. Mansfield is committed to nurturing the region\'s growing tech ecosystem.',
+        image: LOCATION_IMAGES.mansfield,
+        color: 'lilac'
+      },
+      chesterfield: {
+        name: 'Chesterfield',
+        description: 'Join COLLECTIVE. in Chesterfield for inspiring events connecting Derbyshire\'s digital and creative professionals.',
+        about: 'Chesterfield bridges the gap between the East Midlands and South Yorkshire creative communities. Our events here create opportunities for cross-regional collaboration, bringing fresh perspectives and new connections to Derbyshire\'s growing digital sector.',
+        image: LOCATION_IMAGES.chesterfield,
+        color: 'grey'
+      }
+    };
+
+    let currentLocation = null;
+
+    function getLocationFromPath() {
+      const path = window.location.pathname.toLowerCase().replace(/^\/|\/$/g, '');
+      return LOCATIONS[path] ? path : null;
+    }
+
+    async function init() {
+      const locationKey = getLocationFromPath();
+
+      if (!locationKey) {
+        window.location.href = '/';
+        return;
+      }
+
+      currentLocation = LOCATIONS[locationKey];
+
+      // Set active nav link
+      document.querySelectorAll('.nav-link[data-location]').forEach(link => {
+        if (link.dataset.location === locationKey) {
+          link.classList.add('active');
+        }
+      });
+
+      // Render hero
+      renderHero(locationKey);
+
+      // Load events
+      await loadEvents(locationKey);
+
+      // Render other locations
+      renderOtherLocations(locationKey);
+    }
+
+    function renderHero(locationKey) {
+      const loc = LOCATIONS[locationKey];
+
+      document.getElementById('hero-image').src = loc.image;
+      document.getElementById('hero-image').alt = loc.name;
+      document.getElementById('hero-badge').className = `badge badge-${loc.color}`;
+      document.getElementById('location-title').textContent = loc.name;
+      document.getElementById('location-description').textContent = loc.description;
+
+      // About section
+      document.querySelector('.location-name').textContent = loc.name;
+      document.getElementById('about-text').textContent = loc.about;
+
+      // Update page title
+      document.title = `COLLECTIVE. ${loc.name} | Creative & Tech Events`;
+    }
+
+    async function loadEvents(locationKey) {
+      // Fetch all events for this location
+      const data = await fetchEvents({ location: locationKey });
+      const events = data.events || [];
+
+      const upcoming = events.filter(e => isUpcoming(e.date));
+      const past = events.filter(e => !isUpcoming(e.date)).slice(0, 6);
+
+      // Update stats
+      document.getElementById('stat-events').textContent = events.length;
+      document.getElementById('stat-upcoming').textContent = upcoming.length;
+
+      // Count unique speakers
+      const speakers = new Set();
+      events.forEach(e => {
+        if (e.speakers) {
+          e.speakers.forEach(s => speakers.add(s.id || s.name));
+        }
+      });
+      document.getElementById('stat-speakers').textContent = speakers.size;
+
+      // Render upcoming events
+      renderEvents('upcoming-events', upcoming, true);
+
+      // Render past events
+      if (past.length > 0) {
+        document.getElementById('past-section').style.display = 'block';
+        renderEvents('past-events', past, false);
+      }
+    }
+
+    function renderEvents(containerId, events, isUpcomingSection) {
+      const container = document.getElementById(containerId);
+
+      if (events.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <h3>${isUpcomingSection ? 'No upcoming events' : 'No past events'}</h3>
+            <p>${isUpcomingSection ? 'Check back soon for new events in this area!' : ''}</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = events.map(event => `
+        <a href="/event/${event.slug || event.id}" class="card card-hover">
+          <div class="card-image">
+            <img src="${getEventImage(event)}" alt="${event.title}" loading="lazy">
+            ${isUpcomingSection ? `
+              <span class="badge badge-lime" style="position: absolute; top: 12px; left: 12px;">
+                Upcoming
+              </span>
+            ` : ''}
+          </div>
+          <div class="card-content">
+            <div class="card-meta">${formatDate(event.date)}</div>
+            <h3 class="card-title">${event.title}</h3>
+            <p class="card-description">${event.shortDescription || ''}</p>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    function renderOtherLocations(currentKey) {
+      const container = document.getElementById('other-locations');
+      const otherKeys = Object.keys(LOCATIONS).filter(k => k !== currentKey);
+
+      container.innerHTML = otherKeys.map(key => {
+        const loc = LOCATIONS[key];
+        return `
+          <a href="/${key}" class="location-card">
+            <img src="${loc.image}" alt="${loc.name}" loading="lazy">
+            <div class="location-card-overlay">
+              <h3>${loc.name}</h3>
+            </div>
+          </a>
+        `;
+      }).join('');
+    }
+
+    // Initialize
+    init();
+  </script>
+</body>
+</html>

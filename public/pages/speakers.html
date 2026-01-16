@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speakers | COLLECTIVE.</title>
+  <meta name="description" content="Meet the inspiring speakers who have shared their knowledge and experience at COLLECTIVE. events.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <style>
+    /* Speakers Page Specific Styles */
+    .speakers-hero {
+      padding: calc(80px + var(--space-8)) var(--space-4) var(--space-8);
+      text-align: center;
+      background: linear-gradient(to bottom, var(--surface), var(--black));
+    }
+
+    .speakers-hero h1 {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 700;
+      margin-bottom: var(--space-4);
+    }
+
+    .speakers-hero p {
+      font-size: var(--text-xl);
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Speakers Grid */
+    .speakers-section {
+      padding: var(--space-8) var(--space-4);
+    }
+
+    .speakers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-5);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .speaker-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      transition: all var(--transition-base);
+    }
+
+    .speaker-card:hover {
+      border-color: var(--lime);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .speaker-card-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto var(--space-4);
+      border: 3px solid var(--border);
+      transition: border-color var(--transition-base);
+    }
+
+    .speaker-card:hover .speaker-card-avatar {
+      border-color: var(--lime);
+    }
+
+    .speaker-card h3 {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      margin-bottom: var(--space-1);
+    }
+
+    .speaker-card-title {
+      font-size: var(--text-sm);
+      color: var(--lime);
+      margin-bottom: var(--space-1);
+    }
+
+    .speaker-card-company {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      margin-bottom: var(--space-3);
+    }
+
+    .speaker-card-events {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      padding-top: var(--space-3);
+      border-top: 1px solid var(--border);
+    }
+
+    /* Stats Banner */
+    .stats-banner {
+      background: var(--surface);
+      padding: var(--space-6) var(--space-4);
+      margin-bottom: var(--space-8);
+    }
+
+    .stats-banner-content {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-8);
+      flex-wrap: wrap;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: var(--text-4xl);
+      font-weight: 700;
+      color: var(--lime);
+    }
+
+    .stat-label {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Loading */
+    .speakers-loading {
+      display: flex;
+      justify-content: center;
+      padding: var(--space-8);
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--border);
+      border-top-color: var(--lime);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: var(--space-8);
+      color: var(--text-muted);
+    }
+
+    .empty-state h3 {
+      font-size: var(--text-xl);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    /* CTA Section */
+    .cta-section {
+      padding: var(--space-8) var(--space-4);
+      background: var(--surface);
+      text-align: center;
+    }
+
+    .cta-section h2 {
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-3);
+    }
+
+    .cta-section p {
+      color: var(--text-muted);
+      margin-bottom: var(--space-5);
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." height="40">
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Events</a>
+        <a href="/speakers" class="nav-link active">Speakers</a>
+        <a href="/about" class="nav-link">About</a>
+        <a href="/nottingham" class="nav-link">Nottingham</a>
+        <a href="/mansfield" class="nav-link">Mansfield</a>
+        <a href="/chesterfield" class="nav-link">Chesterfield</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Hero -->
+    <section class="speakers-hero">
+      <span class="badge badge-lime">COLLECTIVE. Community</span>
+      <h1>Our Speakers</h1>
+      <p>Meet the inspiring individuals who have shared their knowledge, experience, and passion at COLLECTIVE. events.</p>
+    </section>
+
+    <!-- Stats Banner -->
+    <div class="stats-banner">
+      <div class="stats-banner-content">
+        <div class="stat-item">
+          <div id="stat-speakers" class="stat-value">-</div>
+          <div class="stat-label">Speakers</div>
+        </div>
+        <div class="stat-item">
+          <div id="stat-events" class="stat-value">-</div>
+          <div class="stat-label">Events</div>
+        </div>
+        <div class="stat-item">
+          <div id="stat-locations" class="stat-value">3</div>
+          <div class="stat-label">Locations</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Speakers Grid -->
+    <section class="speakers-section">
+      <div id="speakers-grid" class="speakers-grid">
+        <div class="speakers-loading" style="grid-column: 1 / -1;">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <h2>Want to Speak at COLLECTIVE.?</h2>
+      <p>We're always looking for passionate speakers to share their stories with our community.</p>
+      <a href="mailto:hello@cdicollective.co.uk" class="btn btn-primary">Get in Touch</a>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." height="32">
+        <p>Building connections across the East Midlands creative, digital and tech community.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>Locations</h4>
+          <a href="/nottingham">Nottingham</a>
+          <a href="/mansfield">Mansfield</a>
+          <a href="/chesterfield">Chesterfield</a>
+        </div>
+        <div class="footer-column">
+          <h4>Explore</h4>
+          <a href="/">Events</a>
+          <a href="/speakers">Speakers</a>
+          <a href="/past">Past Events</a>
+        </div>
+        <div class="footer-column">
+          <h4>About</h4>
+          <a href="/about">About Us</a>
+          <a href="https://cdicollective.co.uk" target="_blank">Main Website</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 COLLECTIVE. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/assets/js/api.js"></script>
+  <script>
+    const { fetchSpeakers, fetchEvents, fetchStats, DEFAULT_IMAGE } = window.CollectiveAPI;
+
+    async function loadSpeakers() {
+      // Load speakers and events in parallel
+      const [speakersData, eventsData, stats] = await Promise.all([
+        fetchSpeakers({ limit: 100 }),
+        fetchEvents({ limit: 100 }),
+        fetchStats()
+      ]);
+
+      const speakers = speakersData.speakers || [];
+      const events = eventsData.events || [];
+
+      // Update stats
+      document.getElementById('stat-speakers').textContent = speakers.length;
+      document.getElementById('stat-events').textContent = events.length || stats.events || 0;
+
+      // Count events per speaker
+      const speakerEventCounts = {};
+      events.forEach(event => {
+        if (event.speakers) {
+          event.speakers.forEach(s => {
+            const key = s.id || s.slug || s.name;
+            speakerEventCounts[key] = (speakerEventCounts[key] || 0) + 1;
+          });
+        }
+      });
+
+      // Render speakers
+      renderSpeakers(speakers, speakerEventCounts);
+    }
+
+    function renderSpeakers(speakers, eventCounts) {
+      const grid = document.getElementById('speakers-grid');
+
+      if (speakers.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <h3>No speakers yet</h3>
+            <p>Check back soon to meet our amazing speakers!</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Sort speakers by event count (most active first)
+      speakers.sort((a, b) => {
+        const countA = eventCounts[a.id] || eventCounts[a.slug] || 0;
+        const countB = eventCounts[b.id] || eventCounts[b.slug] || 0;
+        return countB - countA;
+      });
+
+      grid.innerHTML = speakers.map(speaker => {
+        const eventCount = eventCounts[speaker.id] || eventCounts[speaker.slug] || 0;
+
+        return `
+          <a href="/speaker/${speaker.slug || speaker.id}" class="speaker-card">
+            <img
+              src="${speaker.image || DEFAULT_IMAGE}"
+              alt="${speaker.name}"
+              class="speaker-card-avatar"
+              loading="lazy"
+            >
+            <h3>${speaker.name}</h3>
+            ${speaker.title ? `<p class="speaker-card-title">${speaker.title}</p>` : ''}
+            ${speaker.company ? `<p class="speaker-card-company">${speaker.company}</p>` : ''}
+            <p class="speaker-card-events">
+              ${eventCount > 0 ? `${eventCount} event${eventCount !== 1 ? 's' : ''}` : 'Upcoming speaker'}
+            </p>
+          </a>
+        `;
+      }).join('');
+    }
+
+    // Initialize
+    loadSpeakers();
+  </script>
+</body>
+</html>

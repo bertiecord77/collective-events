@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Speaker | COLLECTIVE.</title>
+  <meta name="description" content="COLLECTIVE. Speaker">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <style>
+    /* Speaker Page Specific Styles */
+    .speaker-hero {
+      padding: calc(80px + var(--space-8)) var(--space-4) var(--space-8);
+      background: var(--surface);
+    }
+
+    .speaker-hero-content {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+      align-items: center;
+    }
+
+    @media (min-width: 768px) {
+      .speaker-hero-content {
+        grid-template-columns: 250px 1fr;
+      }
+    }
+
+    .speaker-avatar-wrapper {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 768px) {
+      .speaker-avatar-wrapper {
+        width: 250px;
+        height: 250px;
+      }
+    }
+
+    .speaker-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--lime);
+    }
+
+    .speaker-info {
+      text-align: center;
+    }
+
+    @media (min-width: 768px) {
+      .speaker-info {
+        text-align: left;
+      }
+    }
+
+    .speaker-info h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      margin-bottom: var(--space-2);
+    }
+
+    .speaker-title {
+      font-size: var(--text-xl);
+      color: var(--lime);
+      margin-bottom: var(--space-2);
+    }
+
+    .speaker-company {
+      font-size: var(--text-lg);
+      color: var(--text-muted);
+      margin-bottom: var(--space-4);
+    }
+
+    .speaker-socials {
+      display: flex;
+      gap: var(--space-3);
+      justify-content: center;
+    }
+
+    @media (min-width: 768px) {
+      .speaker-socials {
+        justify-content: flex-start;
+      }
+    }
+
+    .speaker-social-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      transition: all var(--transition-base);
+    }
+
+    .speaker-social-link:hover {
+      background: var(--lime);
+      color: var(--black);
+      border-color: var(--lime);
+    }
+
+    .speaker-social-link svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Bio Section */
+    .speaker-bio {
+      padding: var(--space-8) var(--space-4);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .speaker-bio h2 {
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-4);
+    }
+
+    .speaker-bio-content {
+      font-size: var(--text-lg);
+      line-height: 1.8;
+      color: var(--text-muted);
+    }
+
+    .speaker-bio-content p {
+      margin-bottom: var(--space-4);
+    }
+
+    /* Events Section */
+    .speaker-events {
+      padding: var(--space-8) var(--space-4);
+      background: var(--surface);
+    }
+
+    .speaker-events h2 {
+      text-align: center;
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-6);
+    }
+
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: var(--space-5);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* Loading & Error States */
+    .speaker-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      gap: var(--space-4);
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--border);
+      border-top-color: var(--lime);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .speaker-error {
+      text-align: center;
+      padding: var(--space-8);
+    }
+
+    .speaker-error h1 {
+      font-size: var(--text-4xl);
+      margin-bottom: var(--space-4);
+    }
+
+    .speaker-error p {
+      color: var(--text-muted);
+      margin-bottom: var(--space-6);
+    }
+
+    /* Tags */
+    .speaker-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      justify-content: center;
+      margin-top: var(--space-4);
+    }
+
+    @media (min-width: 768px) {
+      .speaker-tags {
+        justify-content: flex-start;
+      }
+    }
+
+    .speaker-tag {
+      padding: var(--space-1) var(--space-3);
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." height="40">
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Events</a>
+        <a href="/speakers" class="nav-link">Speakers</a>
+        <a href="/about" class="nav-link">About</a>
+        <a href="/nottingham" class="nav-link">Nottingham</a>
+        <a href="/mansfield" class="nav-link">Mansfield</a>
+        <a href="/chesterfield" class="nav-link">Chesterfield</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Loading State -->
+  <div id="loading" class="speaker-loading">
+    <div class="spinner"></div>
+    <p>Loading speaker...</p>
+  </div>
+
+  <!-- Error State -->
+  <div id="error" class="speaker-error" style="display: none;">
+    <h1>Speaker Not Found</h1>
+    <p>Sorry, we couldn't find the speaker you're looking for.</p>
+    <a href="/speakers" class="btn btn-primary">View All Speakers</a>
+  </div>
+
+  <!-- Speaker Content -->
+  <main id="speaker-content" style="display: none;">
+    <!-- Hero -->
+    <section class="speaker-hero">
+      <div class="speaker-hero-content">
+        <div class="speaker-avatar-wrapper">
+          <img id="speaker-avatar" class="speaker-avatar" src="" alt="">
+        </div>
+        <div class="speaker-info">
+          <h1 id="speaker-name"></h1>
+          <p id="speaker-title" class="speaker-title"></p>
+          <p id="speaker-company" class="speaker-company"></p>
+          <div id="speaker-socials" class="speaker-socials"></div>
+          <div id="speaker-tags" class="speaker-tags"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bio -->
+    <section id="bio-section" class="speaker-bio" style="display: none;">
+      <h2>About</h2>
+      <div id="speaker-bio" class="speaker-bio-content"></div>
+    </section>
+
+    <!-- Events -->
+    <section id="events-section" class="speaker-events" style="display: none;">
+      <h2>Events</h2>
+      <div id="speaker-events-grid" class="events-grid"></div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." height="32">
+        <p>Building connections across the East Midlands creative, digital and tech community.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>Locations</h4>
+          <a href="/nottingham">Nottingham</a>
+          <a href="/mansfield">Mansfield</a>
+          <a href="/chesterfield">Chesterfield</a>
+        </div>
+        <div class="footer-column">
+          <h4>Explore</h4>
+          <a href="/">Events</a>
+          <a href="/speakers">Speakers</a>
+          <a href="/past">Past Events</a>
+        </div>
+        <div class="footer-column">
+          <h4>About</h4>
+          <a href="/about">About Us</a>
+          <a href="https://cdicollective.co.uk" target="_blank">Main Website</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 COLLECTIVE. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/assets/js/api.js"></script>
+  <script>
+    const { fetchSpeaker, fetchEvents, getEventImage, formatDate, getLocationColor, DEFAULT_IMAGE } = window.CollectiveAPI;
+
+    async function loadSpeaker() {
+      const slug = window.location.pathname.replace('/speaker/', '').replace(/^\/|\/$/g, '');
+
+      if (!slug) {
+        showError();
+        return;
+      }
+
+      const speaker = await fetchSpeaker(slug);
+
+      if (!speaker) {
+        showError();
+        return;
+      }
+
+      renderSpeaker(speaker);
+      loadSpeakerEvents(speaker);
+    }
+
+    function renderSpeaker(speaker) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('speaker-content').style.display = 'block';
+
+      // Avatar
+      const avatar = document.getElementById('speaker-avatar');
+      avatar.src = speaker.image || DEFAULT_IMAGE;
+      avatar.alt = speaker.name;
+
+      // Basic info
+      document.getElementById('speaker-name').textContent = speaker.name;
+      document.getElementById('speaker-title').textContent = speaker.title || '';
+      document.getElementById('speaker-company').textContent = speaker.company || '';
+
+      // Hide title/company if not present
+      if (!speaker.title) document.getElementById('speaker-title').style.display = 'none';
+      if (!speaker.company) document.getElementById('speaker-company').style.display = 'none';
+
+      // Social links
+      const socialsContainer = document.getElementById('speaker-socials');
+      const socials = [];
+
+      if (speaker.linkedin) {
+        socials.push(`
+          <a href="${speaker.linkedin}" target="_blank" class="speaker-social-link" title="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+          </a>
+        `);
+      }
+
+      if (speaker.twitter) {
+        socials.push(`
+          <a href="${speaker.twitter}" target="_blank" class="speaker-social-link" title="X (Twitter)">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+          </a>
+        `);
+      }
+
+      if (speaker.website) {
+        socials.push(`
+          <a href="${speaker.website}" target="_blank" class="speaker-social-link" title="Website">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+          </a>
+        `);
+      }
+
+      socialsContainer.innerHTML = socials.join('');
+
+      // Tags / Topics
+      if (speaker.topics && speaker.topics.length > 0) {
+        const tagsContainer = document.getElementById('speaker-tags');
+        tagsContainer.innerHTML = speaker.topics.map(topic =>
+          `<span class="speaker-tag">${topic}</span>`
+        ).join('');
+      }
+
+      // Bio
+      if (speaker.bio) {
+        document.getElementById('bio-section').style.display = 'block';
+        const bioEl = document.getElementById('speaker-bio');
+        bioEl.innerHTML = speaker.bio.split('\n').map(p => `<p>${p}</p>`).join('');
+      }
+
+      // Update page title
+      document.title = `${speaker.name} | COLLECTIVE. Speaker`;
+    }
+
+    async function loadSpeakerEvents(speaker) {
+      // Fetch all events and filter by speaker
+      const data = await fetchEvents({ limit: 100 });
+      const speakerEvents = data.events.filter(event => {
+        if (!event.speakers) return false;
+        return event.speakers.some(s =>
+          s.id === speaker.id || s.slug === speaker.slug || s.name === speaker.name
+        );
+      });
+
+      if (speakerEvents.length > 0) {
+        document.getElementById('events-section').style.display = 'block';
+        const grid = document.getElementById('speaker-events-grid');
+
+        grid.innerHTML = speakerEvents.map(event => `
+          <a href="/event/${event.slug || event.id}" class="card card-hover">
+            <div class="card-image">
+              <img src="${getEventImage(event)}" alt="${event.title}" loading="lazy">
+              <span class="badge badge-${getLocationColor(event.locationTag)}" style="position: absolute; top: 12px; left: 12px;">
+                ${event.locationTag || 'Event'}
+              </span>
+            </div>
+            <div class="card-content">
+              <div class="card-meta">${formatDate(event.date)}</div>
+              <h3 class="card-title">${event.title}</h3>
+            </div>
+          </a>
+        `).join('');
+      }
+    }
+
+    function showError() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
+    }
+
+    // Initialize
+    loadSpeaker();
+  </script>
+</body>
+</html>

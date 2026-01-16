@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About COLLECTIVE. | Creative Digital Innovation</title>
+  <meta name="description" content="COLLECTIVE. builds connections across the East Midlands creative, digital and tech community. Real conversations, real connections.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <style>
+    /* About Page Specific Styles */
+    .about-hero {
+      padding: calc(80px + var(--space-8)) var(--space-4) var(--space-8);
+      text-align: center;
+      background: linear-gradient(to bottom, var(--surface), var(--black));
+      min-height: 50vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .about-hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700;
+      margin-bottom: var(--space-4);
+      max-width: 900px;
+    }
+
+    .about-hero h1 .highlight {
+      color: var(--lime);
+    }
+
+    .about-hero p {
+      font-size: var(--text-xl);
+      color: var(--text-muted);
+      max-width: 700px;
+      line-height: 1.7;
+    }
+
+    /* Mission Section */
+    .mission-section {
+      padding: var(--space-8) var(--space-4);
+    }
+
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--space-5);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .mission-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      text-align: center;
+      transition: all var(--transition-base);
+    }
+
+    .mission-card:hover {
+      border-color: var(--lime);
+      transform: translateY(-4px);
+    }
+
+    .mission-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto var(--space-4);
+      background: linear-gradient(135deg, var(--lime), var(--lilac));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mission-icon svg {
+      width: 32px;
+      height: 32px;
+      color: var(--black);
+    }
+
+    .mission-card h3 {
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-3);
+    }
+
+    .mission-card p {
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* Story Section */
+    .story-section {
+      padding: var(--space-8) var(--space-4);
+      background: var(--surface);
+    }
+
+    .story-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .story-content h2 {
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-6);
+      text-align: center;
+    }
+
+    .story-content p {
+      font-size: var(--text-lg);
+      line-height: 1.8;
+      color: var(--text-muted);
+      margin-bottom: var(--space-5);
+    }
+
+    .story-content p:first-of-type::first-letter {
+      font-size: 3.5rem;
+      font-weight: 700;
+      float: left;
+      line-height: 1;
+      margin-right: var(--space-2);
+      color: var(--lime);
+    }
+
+    /* Values Section */
+    .values-section {
+      padding: var(--space-8) var(--space-4);
+    }
+
+    .values-section h2 {
+      text-align: center;
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-6);
+    }
+
+    .values-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-4);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .value-item {
+      padding: var(--space-4);
+      border-left: 3px solid var(--lime);
+      background: var(--surface);
+    }
+
+    .value-item:nth-child(2) {
+      border-left-color: var(--lilac);
+    }
+
+    .value-item:nth-child(3) {
+      border-left-color: var(--grey);
+    }
+
+    .value-item:nth-child(4) {
+      border-left-color: var(--lime);
+    }
+
+    .value-item h3 {
+      font-size: var(--text-lg);
+      margin-bottom: var(--space-2);
+    }
+
+    .value-item p {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Locations Preview */
+    .locations-preview {
+      padding: var(--space-8) var(--space-4);
+      background: var(--surface);
+    }
+
+    .locations-preview h2 {
+      text-align: center;
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-2);
+    }
+
+    .locations-preview > p {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: var(--space-6);
+    }
+
+    .locations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-5);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .location-preview-card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      aspect-ratio: 16/10;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .location-preview-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform var(--transition-base);
+    }
+
+    .location-preview-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .location-preview-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+    }
+
+    .location-preview-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: var(--space-4);
+      z-index: 1;
+    }
+
+    .location-preview-content h3 {
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-1);
+    }
+
+    .location-preview-content p {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+    }
+
+    /* CTA Section */
+    .about-cta {
+      padding: var(--space-8) var(--space-4);
+      text-align: center;
+    }
+
+    .about-cta h2 {
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-3);
+    }
+
+    .about-cta p {
+      color: var(--text-muted);
+      font-size: var(--text-lg);
+      margin-bottom: var(--space-5);
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: var(--space-4);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." height="40">
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Events</a>
+        <a href="/speakers" class="nav-link">Speakers</a>
+        <a href="/about" class="nav-link active">About</a>
+        <a href="/nottingham" class="nav-link">Nottingham</a>
+        <a href="/mansfield" class="nav-link">Mansfield</a>
+        <a href="/chesterfield" class="nav-link">Chesterfield</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Hero -->
+    <section class="about-hero">
+      <span class="badge badge-lime">About Us</span>
+      <h1>Building <span class="highlight">Connections</span> Across the East Midlands</h1>
+      <p>COLLECTIVE. brings together creative, digital and tech professionals for meaningful conversations, authentic networking, and community growth.</p>
+    </section>
+
+    <!-- Mission Cards -->
+    <section class="mission-section">
+      <div class="mission-grid">
+        <div class="mission-card">
+          <div class="mission-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <h3>Community First</h3>
+          <p>We believe in the power of bringing people together. Every event is designed to foster genuine connections between creative professionals.</p>
+        </div>
+
+        <div class="mission-card">
+          <div class="mission-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <h3>Quality Content</h3>
+          <p>Our speakers share real experiences and insights. No sales pitches, no fluff - just authentic stories and practical knowledge.</p>
+        </div>
+
+        <div class="mission-card">
+          <div class="mission-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <h3>Always Free</h3>
+          <p>We believe access to community and learning shouldn't have a price tag. All our events are free to attend, always.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Story -->
+    <section class="story-section">
+      <div class="story-content">
+        <h2>Our Story</h2>
+        <p>COLLECTIVE. was born from a simple observation: the East Midlands has an incredible creative and tech community, but too often we work in silos. We wanted to change that.</p>
+        <p>Starting in Nottingham, we've grown to bring our unique brand of community events to Mansfield and Chesterfield. Each location has its own character, but the mission remains the same: create spaces where people can share ideas, learn from each other, and build meaningful professional relationships.</p>
+        <p>We're not just another networking event. We're building something different - a community where authenticity matters, where every voice is valued, and where the best conversations happen over a drink after the main event.</p>
+      </div>
+    </section>
+
+    <!-- Values -->
+    <section class="values-section">
+      <h2>What We Stand For</h2>
+      <div class="values-list">
+        <div class="value-item">
+          <h3>Authenticity</h3>
+          <p>Real stories, real people, real connections. We don't do corporate speak or polished presentations - we do honest conversations.</p>
+        </div>
+        <div class="value-item">
+          <h3>Inclusivity</h3>
+          <p>Whether you're a seasoned professional or just starting out, there's a place for you at COLLECTIVE. Every perspective enriches our community.</p>
+        </div>
+        <div class="value-item">
+          <h3>Local Focus</h3>
+          <p>We're proud to champion the East Midlands. Our events celebrate local talent and create opportunities within our region.</p>
+        </div>
+        <div class="value-item">
+          <h3>Growth Mindset</h3>
+          <p>We're constantly learning and evolving. Each event teaches us something new about what our community needs.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Locations -->
+    <section class="locations-preview">
+      <h2>Find Us</h2>
+      <p>COLLECTIVE. events happen across three East Midlands locations</p>
+      <div class="locations-grid">
+        <a href="/nottingham" class="location-preview-card">
+          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69454390106fdc3abdfa3264.png" alt="Nottingham" loading="lazy">
+          <div class="location-preview-content">
+            <h3>Nottingham</h3>
+            <p>Our flagship location</p>
+          </div>
+        </a>
+        <a href="/mansfield" class="location-preview-card">
+          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69413d35ca7298e25b32203a.png" alt="Mansfield" loading="lazy">
+          <div class="location-preview-content">
+            <h3>Mansfield</h3>
+            <p>North Nottinghamshire hub</p>
+          </div>
+        </a>
+        <a href="/chesterfield" class="location-preview-card">
+          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/6967cbfe02f1be4a61702e71.png" alt="Chesterfield" loading="lazy">
+          <div class="location-preview-content">
+            <h3>Chesterfield</h3>
+            <p>Derbyshire connection</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="about-cta">
+      <h2>Ready to Join?</h2>
+      <p>Become part of the COLLECTIVE. community. Attend an event, meet amazing people, and grow together.</p>
+      <div class="cta-buttons">
+        <a href="/" class="btn btn-primary">
+          View Upcoming Events
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+        <a href="mailto:hello@cdicollective.co.uk" class="btn btn-secondary">
+          Get in Touch
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." height="32">
+        <p>Building connections across the East Midlands creative, digital and tech community.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>Locations</h4>
+          <a href="/nottingham">Nottingham</a>
+          <a href="/mansfield">Mansfield</a>
+          <a href="/chesterfield">Chesterfield</a>
+        </div>
+        <div class="footer-column">
+          <h4>Explore</h4>
+          <a href="/">Events</a>
+          <a href="/speakers">Speakers</a>
+          <a href="/past">Past Events</a>
+        </div>
+        <div class="footer-column">
+          <h4>About</h4>
+          <a href="/about">About Us</a>
+          <a href="https://cdicollective.co.uk" target="_blank">Main Website</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 COLLECTIVE. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>
