@@ -1,249 +1,9 @@
 /**
  * COLLECTIVE. Event Booking Function
- * Creates a contact and calendar appointment in GHL
+ * Posts booking data to GHL webhook for automation processing
  */
 
-const GHL_API_BASE = 'https://services.leadconnectorhq.com';
-const API_VERSION = '2021-07-28';
-const LOCATION_ID = 'JcB0t2fZpGS0lMrqKDWQ';
-
-// Helper to make GHL API requests - returns both data and full response for error handling
-async function ghlRequest(endpoint, token, options = {}) {
-  const url = `${GHL_API_BASE}${endpoint}`;
-  console.log(`GHL Request: ${options.method || 'GET'} ${url}`);
-
-  const response = await fetch(url, {
-    method: options.method || 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Version': API_VERSION,
-      'Content-Type': 'application/json'
-    },
-    body: options.body ? JSON.stringify(options.body) : undefined
-  });
-
-  const text = await response.text();
-  console.log(`GHL Response: ${response.status} - ${text.substring(0, 800)}`);
-
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch (e) {
-    throw new Error(`Invalid JSON response: ${text.substring(0, 200)}`);
-  }
-
-  if (!response.ok) {
-    // Create error with full response data attached
-    const errorMsg = data.message || data.error || data.msg || `GHL API Error ${response.status}`;
-    const error = new Error(errorMsg);
-    error.data = data;
-    error.status = response.status;
-    throw error;
-  }
-
-  return data;
-}
-
-// Search for existing contact by email
-async function findContactByEmail(email, token) {
-  const emailLower = email.toLowerCase();
-  console.log('Searching for contact with email:', emailLower);
-
-  // Method 1: Simple query search (most widely supported)
-  try {
-    console.log('Method 1: Query search');
-    const url = `/contacts/?locationId=${LOCATION_ID}&query=${encodeURIComponent(emailLower)}&limit=50`;
-    const result = await ghlRequest(url, token);
-
-    if (result.contacts && result.contacts.length > 0) {
-      console.log(`Found ${result.contacts.length} contacts, checking emails...`);
-      for (const c of result.contacts) {
-        console.log(`  - ${c.email} (id: ${c.id})`);
-        if (c.email?.toLowerCase() === emailLower) {
-          console.log('Exact email match found!');
-          return c;
-        }
-      }
-    }
-  } catch (error) {
-    console.log('Method 1 failed:', error.message);
-  }
-
-  // Method 2: Lookup endpoint
-  try {
-    console.log('Method 2: Lookup endpoint');
-    const url = `/contacts/lookup?locationId=${LOCATION_ID}&email=${encodeURIComponent(emailLower)}`;
-    const result = await ghlRequest(url, token);
-
-    const contact = result.contact || result.contacts?.[0];
-    if (contact?.id) {
-      console.log('Found via lookup:', contact.id);
-      return contact;
-    }
-  } catch (error) {
-    console.log('Method 2 failed:', error.message);
-  }
-
-  // Method 3: List recent contacts and search
-  try {
-    console.log('Method 3: List all and search');
-    const url = `/contacts/?locationId=${LOCATION_ID}&limit=100`;
-    const result = await ghlRequest(url, token);
-
-    if (result.contacts) {
-      const contact = result.contacts.find(c => c.email?.toLowerCase() === emailLower);
-      if (contact) {
-        console.log('Found in list:', contact.id);
-        return contact;
-      }
-    }
-  } catch (error) {
-    console.log('Method 3 failed:', error.message);
-  }
-
-  console.log('No contact found for:', emailLower);
-  return null;
-}
-
-// Create or update contact using upsert endpoint
-// Includes event-specific tags and data for automation triggers
-async function upsertContact(contactData, token) {
-  // Build event-specific tag for the automation to pick up
-  const eventTag = `COLLECTIVE: ${contactData.eventTitle}`;
-
-  const payload = {
-    locationId: LOCATION_ID,
-    firstName: contactData.firstName,
-    lastName: contactData.lastName,
-    email: contactData.email,
-    phone: contactData.phone || undefined,
-    companyName: contactData.businessName,
-    tags: [
-      'COLLECTIVE Event Booking',
-      eventTag
-    ],
-    source: 'COLLECTIVE Events Website',
-    // Add custom fields for the event details (automation can use these)
-    customFields: [
-      { key: 'event_name', value: contactData.eventTitle || '' },
-      { key: 'event_date', value: contactData.eventDate || '' },
-      { key: 'event_location', value: contactData.eventLocation || '' },
-      { key: 'event_venue', value: contactData.eventVenue || '' },
-      { key: 'event_start_time', value: contactData.eventStartTime || '' },
-      { key: 'event_end_time', value: contactData.eventEndTime || '' },
-      { key: 'opt_in', value: contactData.optIn ? 'Yes' : 'No' }
-    ]
-  };
-
-  // Remove undefined values
-  Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
-
-  console.log('Upserting contact with payload:', JSON.stringify(payload));
-
-  // Try upsert endpoint first (creates if not exists, updates if exists)
-  try {
-    const result = await ghlRequest('/contacts/upsert', token, {
-      method: 'POST',
-      body: payload
-    });
-    console.log('Upsert result:', JSON.stringify(result));
-    return result;
-  } catch (upsertError) {
-    console.log('Upsert failed:', upsertError.message);
-
-    // Fall back to regular create
-    return ghlRequest('/contacts/', token, {
-      method: 'POST',
-      body: payload
-    });
-  }
-}
-
-// Create a new contact (kept for compatibility)
-async function createContact(contactData, token) {
-  return upsertContact(contactData, token);
-}
-
-// Update an existing contact
-async function updateContact(contactId, contactData, token) {
-  const payload = {
-    firstName: contactData.firstName,
-    lastName: contactData.lastName,
-    companyName: contactData.businessName
-  };
-
-  if (contactData.phone) {
-    payload.phone = contactData.phone;
-  }
-
-  return ghlRequest(`/contacts/${contactId}`, token, {
-    method: 'PUT',
-    body: payload
-  });
-}
-
-// Create calendar appointment
-async function createAppointment(contactId, bookingData, token) {
-  const eventDate = new Date(bookingData.eventDate);
-  const [startHour, startMin] = (bookingData.eventStartTime || '17:00').split(':');
-  const [endHour, endMin] = (bookingData.eventEndTime || '19:30').split(':');
-
-  const startTime = new Date(eventDate);
-  startTime.setHours(parseInt(startHour), parseInt(startMin), 0, 0);
-
-  const endTime = new Date(eventDate);
-  endTime.setHours(parseInt(endHour), parseInt(endMin), 0, 0);
-
-  const payload = {
-    calendarId: bookingData.calendarId,
-    locationId: LOCATION_ID,
-    contactId: contactId,
-    title: `${bookingData.eventTitle} - ${bookingData.firstName} ${bookingData.lastName}`,
-    startTime: startTime.toISOString(),
-    endTime: endTime.toISOString(),
-    appointmentStatus: 'confirmed',
-    address: bookingData.eventVenue || bookingData.eventLocation || '',
-    notes: `Event: ${bookingData.eventTitle}\nBooked via: COLLECTIVE Events Website\nBusiness: ${bookingData.businessName}\nOpt-in: ${bookingData.optIn ? 'Yes' : 'No'}`,
-    // Try to allow overbooking for group events
-    ignoreDateRange: true,
-    toNotify: false
-  };
-
-  console.log('Creating appointment with payload:', JSON.stringify(payload));
-
-  // Try the appointments endpoint first
-  try {
-    return await ghlRequest('/calendars/events/appointments', token, {
-      method: 'POST',
-      body: payload
-    });
-  } catch (apptError) {
-    console.log('Appointments endpoint failed:', apptError.message);
-
-    // Try alternative: create a calendar event directly (not appointment)
-    console.log('Trying calendar events endpoint...');
-    const eventPayload = {
-      calendarId: bookingData.calendarId,
-      locationId: LOCATION_ID,
-      contactId: contactId,
-      title: `${bookingData.eventTitle} - ${bookingData.firstName} ${bookingData.lastName}`,
-      startTime: startTime.toISOString(),
-      endTime: endTime.toISOString(),
-      appointmentStatus: 'confirmed'
-    };
-
-    try {
-      return await ghlRequest('/calendars/events', token, {
-        method: 'POST',
-        body: eventPayload
-      });
-    } catch (eventError) {
-      console.log('Calendar events endpoint also failed:', eventError.message);
-      // Re-throw the original error
-      throw apptError;
-    }
-  }
-}
+const GHL_WEBHOOK_URL = 'https://services.leadconnectorhq.com/hooks/JcB0t2fZpGS0lMrqKDWQ/webhook-trigger/eb256439-b6f6-48e1-8fcc-747fe78b7f4b';
 
 export const handler = async (event, context) => {
   const corsHeaders = {
@@ -253,6 +13,7 @@ export const handler = async (event, context) => {
     'Content-Type': 'application/json'
   };
 
+  // Handle CORS preflight
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: corsHeaders, body: '' };
   }
@@ -271,7 +32,7 @@ export const handler = async (event, context) => {
     console.log('Request body:', JSON.stringify(body));
 
     // Validate required fields
-    const required = ['firstName', 'lastName', 'email', 'businessName', 'eventTitle', 'eventDate', 'calendarId'];
+    const required = ['firstName', 'lastName', 'email', 'businessName', 'eventTitle', 'eventDate'];
     const missing = required.filter(field => !body[field]);
 
     if (missing.length > 0) {
@@ -282,56 +43,57 @@ export const handler = async (event, context) => {
       };
     }
 
-    // Get API token
-    const token = process.env.COLLECTIVE_API_TOKEN || process.env.GHL_API_TOKEN;
-    console.log('Token available:', !!token, 'Length:', token?.length || 0);
+    // Build webhook payload with all the data your automation needs
+    // Adjust these field names to match what your GHL automation expects
+    const webhookPayload = {
+      // Contact info
+      first_name: body.firstName,
+      last_name: body.lastName,
+      full_name: `${body.firstName} ${body.lastName}`,
+      email: body.email,
+      phone: body.phone || '',
+      company_name: body.businessName,
 
-    if (!token) {
-      return {
-        statusCode: 500,
-        headers: corsHeaders,
-        body: JSON.stringify({ error: 'Server configuration error - no API token' })
-      };
+      // Event details
+      event_title: body.eventTitle,
+      event_name: body.eventTitle,
+      event_date: body.eventDate,
+      event_start_time: body.eventStartTime || '17:00',
+      event_end_time: body.eventEndTime || '19:30',
+      event_location: body.eventLocation || '',
+      event_venue: body.eventVenue || '',
+      event_id: body.eventId || '',
+      calendar_id: body.calendarId || '',
+
+      // Preferences
+      opt_in: body.optIn ? 'Yes' : 'No',
+      marketing_consent: body.optIn ? 'true' : 'false',
+
+      // Metadata
+      source: 'COLLECTIVE Events Website',
+      booking_timestamp: new Date().toISOString(),
+
+      // Tags for automation
+      tags: `COLLECTIVE Event Booking,COLLECTIVE: ${body.eventTitle}`
+    };
+
+    console.log('Sending to webhook:', JSON.stringify(webhookPayload));
+
+    // POST to GHL webhook
+    const response = await fetch(GHL_WEBHOOK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(webhookPayload)
+    });
+
+    const responseText = await response.text();
+    console.log('Webhook response:', response.status, responseText);
+
+    if (!response.ok) {
+      throw new Error(`Webhook error: ${response.status} - ${responseText}`);
     }
-
-    // Step 1: Create or update contact using upsert
-    console.log('Step 1: Upserting contact:', body.email);
-    let contact = null;
-
-    try {
-      const result = await upsertContact(body, token);
-      // Upsert returns contact in different places depending on create vs update
-      contact = result.contact || result;
-      console.log('Upsert successful, contact ID:', contact?.id);
-    } catch (upsertError) {
-      console.log('Upsert error:', upsertError.message);
-      console.log('Upsert error data:', JSON.stringify(upsertError.data || {}));
-
-      // If upsert fails, try to find the existing contact
-      const errorData = upsertError.data || {};
-
-      // Check if error response contains contact ID
-      if (errorData.contactId || errorData.id || errorData.contact?.id) {
-        const existingId = errorData.contactId || errorData.id || errorData.contact?.id;
-        console.log('Found contact ID in error:', existingId);
-        contact = { id: existingId };
-      } else {
-        // Try to search for existing contact
-        console.log('Searching for existing contact...');
-        contact = await findContactByEmail(body.email, token);
-      }
-    }
-
-    if (!contact?.id) {
-      throw new Error('Failed to create or find contact - please check Netlify logs for details');
-    }
-
-    console.log('Using contact ID:', contact.id);
-
-    // Step 2: Calendar appointment is handled by GHL automation
-    // The automation triggers based on the event-specific tag we added
-    // No need to create appointment via API - automation handles it
-    console.log('Contact created/updated with event tag. Automation will handle calendar booking.');
 
     return {
       statusCode: 200,
@@ -339,7 +101,6 @@ export const handler = async (event, context) => {
       body: JSON.stringify({
         success: true,
         message: 'Booking confirmed',
-        contactId: contact.id,
         eventTitle: body.eventTitle
       })
     };
