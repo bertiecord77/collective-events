@@ -8,7 +8,7 @@ const LOCATION_IMAGES = {
   chesterfield: 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/6967cbfe02f1be4a61702e71.png'
 };
 
-const DEFAULT_IMAGE = 'https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/JcB0t2fZpGS0lMrqKDWQ/media/68efb5e54fd19d3e46a54d41.jpeg';
+const DEFAULT_IMAGE = 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png';
 
 // Fetch events from API
 async function fetchEvents(options = {}) {
