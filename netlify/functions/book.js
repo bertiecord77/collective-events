@@ -106,7 +106,11 @@ async function findContactByEmail(email, token) {
 }
 
 // Create or update contact using upsert endpoint
+// Includes event-specific tags and data for automation triggers
 async function upsertContact(contactData, token) {
+  // Build event-specific tag for the automation to pick up
+  const eventTag = `COLLECTIVE: ${contactData.eventTitle}`;
+
   const payload = {
     locationId: LOCATION_ID,
     firstName: contactData.firstName,
@@ -114,8 +118,21 @@ async function upsertContact(contactData, token) {
     email: contactData.email,
     phone: contactData.phone || undefined,
     companyName: contactData.businessName,
-    tags: ['COLLECTIVE Event Booking'],
-    source: 'COLLECTIVE Events Website'
+    tags: [
+      'COLLECTIVE Event Booking',
+      eventTag
+    ],
+    source: 'COLLECTIVE Events Website',
+    // Add custom fields for the event details (automation can use these)
+    customFields: [
+      { key: 'event_name', value: contactData.eventTitle || '' },
+      { key: 'event_date', value: contactData.eventDate || '' },
+      { key: 'event_location', value: contactData.eventLocation || '' },
+      { key: 'event_venue', value: contactData.eventVenue || '' },
+      { key: 'event_start_time', value: contactData.eventStartTime || '' },
+      { key: 'event_end_time', value: contactData.eventEndTime || '' },
+      { key: 'opt_in', value: contactData.optIn ? 'Yes' : 'No' }
+    ]
   };
 
   // Remove undefined values
@@ -311,10 +328,10 @@ export const handler = async (event, context) => {
 
     console.log('Using contact ID:', contact.id);
 
-    // Step 2: Create calendar appointment
-    console.log('Step 2: Creating appointment for calendar:', body.calendarId);
-    const appointment = await createAppointment(contact.id, body, token);
-    console.log('Created appointment:', appointment?.id || appointment?.event?.id);
+    // Step 2: Calendar appointment is handled by GHL automation
+    // The automation triggers based on the event-specific tag we added
+    // No need to create appointment via API - automation handles it
+    console.log('Contact created/updated with event tag. Automation will handle calendar booking.');
 
     return {
       statusCode: 200,
@@ -323,7 +340,7 @@ export const handler = async (event, context) => {
         success: true,
         message: 'Booking confirmed',
         contactId: contact.id,
-        appointmentId: appointment?.id || appointment?.event?.id
+        eventTitle: body.eventTitle
       })
     };
 
