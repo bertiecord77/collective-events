@@ -1,6 +1,9 @@
 /**
  * COLLECTIVE. Event Booking Function
- * Creates contact via API, triggers appointment via webhook
+ * 1. Creates contact via API
+ * 2. Triggers webhook to create appointment (with slot override)
+ * 3. Polls API to confirm appointment was created
+ * 4. Updates appointment with full event details
  */
 
 const GHL_API_BASE = 'https://services.leadconnectorhq.com';
@@ -52,7 +55,6 @@ function formatGHLDateTime(dateStr, timeStr) {
   const day = String(date.getDate()).padStart(2, '0');
   const year = date.getFullYear();
 
-  // Parse time (expects "HH:MM" in 24hr format)
   let hours = 17;
   let minutes = 0;
 
@@ -62,11 +64,104 @@ function formatGHLDateTime(dateStr, timeStr) {
     minutes = parseInt(timeParts[1], 10) || 0;
   }
 
-  // Convert to 12-hour format
   const ampm = hours >= 12 ? 'PM' : 'AM';
   const hour12 = hours % 12 || 12;
 
   return `${month}-${day}-${year} ${String(hour12).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${ampm}`;
+}
+
+// Sleep helper
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Poll for appointment created by webhook
+async function waitForAppointment(token, contactId, calendarId, eventDate, log, maxAttempts = 10) {
+  log(`Polling for appointment (contact: ${contactId}, calendar: ${calendarId})...`);
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    log(`Poll attempt ${attempt}/${maxAttempts}...`);
+
+    try {
+      // Get appointments for this contact
+      const response = await ghlRequest(
+        `/contacts/${contactId}/appointments`,
+        'GET',
+        token
+      );
+
+      const appointments = response.appointments || response.events || [];
+      log(`Found ${appointments.length} appointments for contact`);
+
+      // Look for an appointment on the target calendar and date
+      const targetDate = new Date(eventDate).toISOString().split('T')[0];
+
+      for (const apt of appointments) {
+        const aptDate = apt.startTime ? new Date(apt.startTime).toISOString().split('T')[0] : null;
+        const aptCalendar = apt.calendarId;
+
+        log(`Checking appointment: ${apt.id}, calendar: ${aptCalendar}, date: ${aptDate}`);
+
+        if (aptCalendar === calendarId && aptDate === targetDate) {
+          log(`Found matching appointment: ${apt.id}`);
+          return apt;
+        }
+      }
+    } catch (err) {
+      log(`Poll error: ${err.message}`);
+    }
+
+    // Wait before next attempt (increasing delay)
+    if (attempt < maxAttempts) {
+      const delay = Math.min(1000 * attempt, 3000); // 1s, 2s, 3s, 3s, 3s...
+      log(`Waiting ${delay}ms before next poll...`);
+      await sleep(delay);
+    }
+  }
+
+  log('Appointment not found after polling');
+  return null;
+}
+
+// Update appointment with full details
+async function updateAppointmentDetails(token, appointmentId, details, log) {
+  log(`Updating appointment ${appointmentId} with details...`);
+
+  try {
+    const updatePayload = {
+      title: details.eventTitle,
+      address: details.eventVenue || details.eventLocation || '',
+      notes: [
+        `Event: ${details.eventTitle}`,
+        `Date: ${details.eventDate}`,
+        `Time: ${details.startTime} - ${details.endTime}`,
+        `Location: ${details.eventLocation || 'TBC'}`,
+        `Venue: ${details.eventVenue || 'TBC'}`,
+        ``,
+        `Attendee: ${details.firstName} ${details.lastName}`,
+        `Email: ${details.email}`,
+        `Phone: ${details.phone || 'Not provided'}`,
+        `Business: ${details.businessName}`,
+        `Marketing opt-in: ${details.optIn ? 'Yes' : 'No'}`,
+        ``,
+        `Booked via: COLLECTIVE Events Website`,
+        `Booked at: ${new Date().toISOString()}`
+      ].join('\n')
+    };
+
+    await ghlRequest(
+      `/calendars/events/appointments/${appointmentId}`,
+      'PUT',
+      token,
+      updatePayload
+    );
+
+    log('Appointment updated successfully');
+    return true;
+  } catch (err) {
+    log(`Failed to update appointment: ${err.message}`);
+    return false;
+  }
 }
 
 export const handler = async (event, context) => {
@@ -77,19 +172,16 @@ export const handler = async (event, context) => {
     'Content-Type': 'application/json'
   };
 
-  // Debug log collector
   const debugLogs = [];
   const log = (msg) => {
     console.log(msg);
     debugLogs.push(msg);
   };
 
-  // Handle CORS preflight
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: corsHeaders, body: '' };
   }
 
-  // GET request returns debug info
   if (event.httpMethod === 'GET') {
     return {
       statusCode: 200,
@@ -132,8 +224,14 @@ export const handler = async (event, context) => {
       };
     }
 
-    // Step 1: Create or update contact using API (this gives us the contact ID)
-    log('Creating/updating contact via API...');
+    const startTime = body.eventStartTime || '17:00';
+    const endTime = body.eventEndTime || '19:30';
+    const calendarId = body.calendarId || 'Bv8FhvFB2lOEcWreAcOM';
+
+    // ========================================
+    // STEP 1: Create/update contact via API
+    // ========================================
+    log('Step 1: Creating/updating contact via API...');
     const contactPayload = {
       firstName: body.firstName,
       lastName: body.lastName,
@@ -156,19 +254,17 @@ export const handler = async (event, context) => {
     if (!contactId) {
       throw new Error('Failed to create contact - no ID returned');
     }
-    log('Contact ID: ' + contactId);
+    log('Contact created: ' + contactId);
 
-    // Step 2: Send webhook to trigger automation (which creates the appointment with override)
-    const startTime = body.eventStartTime || '17:00';
-    const endTime = body.eventEndTime || '19:30';
-    const calendarId = body.calendarId || 'Bv8FhvFB2lOEcWreAcOM';
+    // ========================================
+    // STEP 2: Trigger webhook to create appointment
+    // ========================================
+    log('Step 2: Triggering webhook to create appointment...');
 
-    // Format dates for GHL automation
     const eventStartDateTime = formatGHLDateTime(body.eventDate, startTime);
     const eventEndDateTime = formatGHLDateTime(body.eventDate, endTime);
 
     const webhookPayload = {
-      // Contact info
       contact_id: contactId,
       first_name: body.firstName,
       last_name: body.lastName,
@@ -176,8 +272,6 @@ export const handler = async (event, context) => {
       email: body.email,
       phone: body.phone || '',
       company_name: body.businessName,
-
-      // Event details - formatted for GHL automation
       event_title: body.eventTitle,
       event_name: body.eventTitle,
       event_date: body.eventDate,
@@ -189,18 +283,11 @@ export const handler = async (event, context) => {
       event_venue: body.eventVenue || '',
       event_id: body.eventId || '',
       calendar_id: calendarId,
-
-      // Preferences
       opt_in: body.optIn ? 'Yes' : 'No',
-      marketing_consent: body.optIn ? 'true' : 'false',
-
-      // Metadata
       source: 'COLLECTIVE Events Website',
-      booking_timestamp: new Date().toISOString(),
-      tags: `COLLECTIVE Event Booking,COLLECTIVE: ${body.eventTitle}`
+      booking_timestamp: new Date().toISOString()
     };
 
-    log('Sending webhook to trigger automation...');
     log('Webhook payload: ' + JSON.stringify(webhookPayload));
 
     const webhookResponse = await fetch(GHL_WEBHOOK_URL, {
@@ -213,10 +300,65 @@ export const handler = async (event, context) => {
     log('Webhook response: ' + webhookResponse.status + ' - ' + webhookText);
 
     if (!webhookResponse.ok) {
-      log('Webhook failed but contact was created');
+      throw new Error('Webhook failed to trigger automation');
     }
 
-    // Step 3: Add marketing tags if opted in
+    // ========================================
+    // STEP 3: Poll for appointment creation
+    // ========================================
+    log('Step 3: Waiting for appointment to be created...');
+
+    // Give webhook a moment to trigger
+    await sleep(2000);
+
+    const appointment = await waitForAppointment(
+      token,
+      contactId,
+      calendarId,
+      body.eventDate,
+      log,
+      8 // Max 8 attempts (~15 seconds total)
+    );
+
+    if (!appointment) {
+      // Appointment wasn't created - return error
+      return {
+        statusCode: 500,
+        headers: corsHeaders,
+        body: JSON.stringify({
+          success: false,
+          error: 'Booking could not be confirmed. Please try again or contact support.',
+          contactId: contactId,
+          debug: debugLogs
+        })
+      };
+    }
+
+    log('Appointment confirmed: ' + appointment.id);
+
+    // ========================================
+    // STEP 4: Update appointment with full details
+    // ========================================
+    log('Step 4: Updating appointment with full details...');
+
+    await updateAppointmentDetails(token, appointment.id, {
+      eventTitle: body.eventTitle,
+      eventDate: body.eventDate,
+      startTime,
+      endTime,
+      eventLocation: body.eventLocation,
+      eventVenue: body.eventVenue,
+      firstName: body.firstName,
+      lastName: body.lastName,
+      email: body.email,
+      phone: body.phone,
+      businessName: body.businessName,
+      optIn: body.optIn
+    }, log);
+
+    // ========================================
+    // STEP 5: Add marketing tags if opted in
+    // ========================================
     if (body.optIn) {
       try {
         await ghlRequest(
@@ -231,29 +373,19 @@ export const handler = async (event, context) => {
       }
     }
 
-    // Step 4: Add booking note to contact
-    try {
-      await ghlRequest(
-        `/contacts/${contactId}/notes`,
-        'POST',
-        token,
-        {
-          body: `Booked for: ${body.eventTitle}\nDate: ${body.eventDate}\nTime: ${startTime} - ${endTime}\nVenue: ${body.eventVenue || 'TBC'}\nLocation: ${body.eventLocation || 'TBC'}`
-        }
-      );
-      log('Added booking note to contact');
-    } catch (noteError) {
-      log('Failed to add note: ' + noteError.message);
-    }
-
+    // ========================================
+    // SUCCESS - Booking confirmed
+    // ========================================
     return {
       statusCode: 200,
       headers: corsHeaders,
       body: JSON.stringify({
         success: true,
+        confirmed: true,
         message: 'Booking confirmed',
         eventTitle: body.eventTitle,
         contactId: contactId,
+        appointmentId: appointment.id,
         debug: debugLogs
       })
     };
@@ -263,19 +395,13 @@ export const handler = async (event, context) => {
     debugLogs.push(`ERROR: ${error.message}`);
     debugLogs.push(`Error data: ${JSON.stringify(error.data || {})}`);
 
-    let userMessage = 'Failed to process booking. Please try again.';
-
-    if (error.message.includes('contact')) {
-      userMessage = 'Unable to create your booking. Please check your details and try again.';
-    } else if (error.message.includes('token') || error.message.includes('unauthorized')) {
-      userMessage = 'Booking system temporarily unavailable. Please try again later.';
-    }
-
     return {
       statusCode: 500,
       headers: corsHeaders,
       body: JSON.stringify({
-        error: userMessage,
+        success: false,
+        confirmed: false,
+        error: 'Failed to process booking. Please try again.',
         details: error.message,
         debug: debugLogs
       })
