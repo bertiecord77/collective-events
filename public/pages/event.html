@@ -504,22 +504,31 @@
 
     async function loadEvent() {
       const slug = window.location.pathname.replace('/event/', '').replace(/^\/|\/$/g, '');
+      console.log('Loading event with slug:', slug);
 
       if (!slug) {
+        console.error('No slug found in URL');
         showError();
         return;
       }
 
-      const event = await fetchEvent(slug);
+      try {
+        const event = await fetchEvent(slug);
+        console.log('Fetched event:', event);
 
-      if (!event) {
+        if (!event) {
+          console.error('Event not found for slug:', slug);
+          showError();
+          return;
+        }
+
+        currentEvent = event;
+        renderEvent(event);
+        loadRelatedEvents(event);
+      } catch (error) {
+        console.error('Error loading event:', error);
         showError();
-        return;
       }
-
-      currentEvent = event;
-      renderEvent(event);
-      loadRelatedEvents(event);
     }
 
     function renderEvent(event) {

@@ -33,17 +33,37 @@ async function fetchEvents(options = {}) {
 
 // Fetch single event by slug or ID
 async function fetchEvent(slugOrId) {
-  // First try to get all events and find by slug
-  const data = await fetchEvents({ limit: 200 });
-  const events = data.events || [];
+  console.log('fetchEvent called with:', slugOrId);
+
+  // Fetch all events (both live and past) to find by slug
+  const liveData = await fetchEvents({ limit: 200 });
+  const liveEvents = liveData.events || [];
+  console.log('Fetched live events:', liveEvents.length);
+
+  // Also fetch past events
+  let pastEvents = [];
+  try {
+    const pastResponse = await fetch(`${API_BASE}/events?status=past&limit=200`);
+    const pastData = await pastResponse.json();
+    pastEvents = pastData.events || [];
+    console.log('Fetched past events:', pastEvents.length);
+  } catch (e) {
+    console.log('Could not fetch past events:', e);
+  }
+
+  // Combine all events
+  const allEvents = [...liveEvents, ...pastEvents];
+  console.log('Total events to search:', allEvents.length);
+  console.log('Available slugs:', allEvents.map(e => e.slug));
 
   // Find event by slug or ID
-  const event = events.find(e =>
+  const event = allEvents.find(e =>
     e.slug === slugOrId ||
     e.id === slugOrId ||
     e.slug?.toLowerCase() === slugOrId?.toLowerCase()
   );
 
+  console.log('Found event:', event ? event.title : 'NOT FOUND');
   return event || null;
 }
 
