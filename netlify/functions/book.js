@@ -191,7 +191,10 @@ export const handler = async (event, context) => {
         title: body.eventTitle,
         appointmentStatus: 'confirmed',
         address: body.eventVenue || body.eventLocation || '',
+        // Override slot restrictions
         ignoreDateRange: true,
+        ignoreSlotAvailability: true,
+        skipAvailabilityCheck: true,
         toNotify: false
       };
       log('Appointment payload: ' + JSON.stringify(appointmentPayload));
