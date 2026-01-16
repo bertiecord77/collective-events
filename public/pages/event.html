@@ -496,8 +496,15 @@
     </div>
   </footer>
 
-  <script src="/assets/js/api.js"></script>
+  <script src="/assets/js/api.js?v=2"></script>
   <script>
+    // Check API loaded correctly
+    if (!window.CollectiveAPI) {
+      console.error('CollectiveAPI not loaded!');
+      document.getElementById('loading').innerHTML = '<p style="color: #E5F608;">Error: API library not loaded. Please refresh the page.</p>';
+      throw new Error('CollectiveAPI not loaded');
+    }
+
     const { fetchEvent, fetchEvents, getEventImage, formatDate, formatTime, getLocationColor, isUpcoming } = window.CollectiveAPI;
 
     let currentEvent = null;
