@@ -1,16 +1,6 @@
 /**
  * COLLECTIVE. Event Booking Function
  * Creates a contact and calendar appointment in GHL
- *
- * Environment Variables Required:
- * - COLLECTIVE_API_TOKEN: GHL API key with contacts.write and calendars/events.write scopes
- *
- * Request Body:
- * {
- *   firstName, lastName, phone, businessName, email, optIn,
- *   eventId, eventTitle, eventDate, eventStartTime, eventEndTime,
- *   eventLocation, eventVenue, calendarId
- * }
  */
 
 const GHL_API_BASE = 'https://services.leadconnectorhq.com';
@@ -19,22 +9,32 @@ const LOCATION_ID = 'JcB0t2fZpGS0lMrqKDWQ';
 
 // Helper to make GHL API requests
 async function ghlRequest(endpoint, token, options = {}) {
-  const response = await fetch(`${GHL_API_BASE}${endpoint}`, {
+  const url = `${GHL_API_BASE}${endpoint}`;
+  console.log(`GHL Request: ${options.method || 'GET'} ${url}`);
+
+  const response = await fetch(url, {
     method: options.method || 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
       'Version': API_VERSION,
-      'Content-Type': 'application/json',
-      ...options.headers
+      'Content-Type': 'application/json'
     },
     body: options.body ? JSON.stringify(options.body) : undefined
   });
 
-  const data = await response.json();
+  const text = await response.text();
+  console.log(`GHL Response: ${response.status} - ${text.substring(0, 500)}`);
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    throw new Error(`Invalid JSON response: ${text.substring(0, 200)}`);
+  }
 
   if (!response.ok) {
-    console.error('GHL API Error:', data);
-    throw new Error(data.message || `GHL API Error ${response.status}`);
+    const errorMsg = data.message || data.error || data.msg || `GHL API Error ${response.status}`;
+    throw new Error(errorMsg);
   }
 
   return data;
@@ -44,53 +44,63 @@ async function ghlRequest(endpoint, token, options = {}) {
 async function findContactByEmail(email, token) {
   try {
     const result = await ghlRequest(
-      `/contacts/?locationId=${LOCATION_ID}&query=${encodeURIComponent(email)}`,
+      `/contacts/?locationId=${LOCATION_ID}&query=${encodeURIComponent(email)}&limit=10`,
       token
     );
-    // Find exact email match
     const contact = result.contacts?.find(c =>
       c.email?.toLowerCase() === email.toLowerCase()
     );
     return contact || null;
   } catch (error) {
-    console.log('Contact search error (may not exist):', error.message);
+    console.log('Contact search failed:', error.message);
     return null;
   }
 }
 
 // Create a new contact
 async function createContact(contactData, token) {
+  const payload = {
+    locationId: LOCATION_ID,
+    firstName: contactData.firstName,
+    lastName: contactData.lastName,
+    email: contactData.email,
+    phone: contactData.phone || undefined,
+    companyName: contactData.businessName,
+    tags: ['COLLECTIVE Event Booking'],
+    source: 'COLLECTIVE Events Website'
+  };
+
+  // Remove undefined values
+  Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
+
+  console.log('Creating contact with payload:', JSON.stringify(payload));
+
   return ghlRequest('/contacts/', token, {
     method: 'POST',
-    body: {
-      locationId: LOCATION_ID,
-      firstName: contactData.firstName,
-      lastName: contactData.lastName,
-      email: contactData.email,
-      phone: contactData.phone || undefined,
-      companyName: contactData.businessName,
-      tags: ['COLLECTIVE Event Booking', 'Website Booking'],
-      source: 'COLLECTIVE Events Website'
-    }
+    body: payload
   });
 }
 
 // Update an existing contact
 async function updateContact(contactId, contactData, token) {
+  const payload = {
+    firstName: contactData.firstName,
+    lastName: contactData.lastName,
+    companyName: contactData.businessName
+  };
+
+  if (contactData.phone) {
+    payload.phone = contactData.phone;
+  }
+
   return ghlRequest(`/contacts/${contactId}`, token, {
     method: 'PUT',
-    body: {
-      firstName: contactData.firstName,
-      lastName: contactData.lastName,
-      phone: contactData.phone || undefined,
-      companyName: contactData.businessName
-    }
+    body: payload
   });
 }
 
 // Create calendar appointment
 async function createAppointment(contactId, bookingData, token) {
-  // Parse date and times
   const eventDate = new Date(bookingData.eventDate);
   const [startHour, startMin] = (bookingData.eventStartTime || '17:00').split(':');
   const [endHour, endMin] = (bookingData.eventEndTime || '19:30').split(':');
@@ -101,33 +111,27 @@ async function createAppointment(contactId, bookingData, token) {
   const endTime = new Date(eventDate);
   endTime.setHours(parseInt(endHour), parseInt(endMin), 0, 0);
 
-  // Build appointment title
-  const appointmentTitle = `${bookingData.eventTitle} - ${bookingData.firstName} ${bookingData.lastName}`;
+  const payload = {
+    calendarId: bookingData.calendarId,
+    locationId: LOCATION_ID,
+    contactId: contactId,
+    title: `${bookingData.eventTitle} - ${bookingData.firstName} ${bookingData.lastName}`,
+    startTime: startTime.toISOString(),
+    endTime: endTime.toISOString(),
+    appointmentStatus: 'confirmed',
+    address: bookingData.eventVenue || bookingData.eventLocation || '',
+    notes: `Event: ${bookingData.eventTitle}\nBooked via: COLLECTIVE Events Website\nBusiness: ${bookingData.businessName}\nOpt-in: ${bookingData.optIn ? 'Yes' : 'No'}`
+  };
 
-  // Build location string
-  let location = bookingData.eventLocation || '';
-  if (bookingData.eventVenue) {
-    location = bookingData.eventVenue + (location ? `, ${location}` : '');
-  }
+  console.log('Creating appointment with payload:', JSON.stringify(payload));
 
   return ghlRequest('/calendars/events/appointments', token, {
     method: 'POST',
-    body: {
-      calendarId: bookingData.calendarId,
-      locationId: LOCATION_ID,
-      contactId: contactId,
-      title: appointmentTitle,
-      startTime: startTime.toISOString(),
-      endTime: endTime.toISOString(),
-      appointmentStatus: 'confirmed',
-      address: location,
-      notes: `Event: ${bookingData.eventTitle}\nBooked via: COLLECTIVE Events Website\nBusiness: ${bookingData.businessName}\nOpt-in: ${bookingData.optIn ? 'Yes' : 'No'}`
-    }
+    body: payload
   });
 }
 
 export const handler = async (event, context) => {
-  // CORS headers
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -135,12 +139,10 @@ export const handler = async (event, context) => {
     'Content-Type': 'application/json'
   };
 
-  // Handle CORS preflight
   if (event.httpMethod === 'OPTIONS') {
     return { statusCode: 204, headers: corsHeaders, body: '' };
   }
 
-  // Only allow POST
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -150,8 +152,9 @@ export const handler = async (event, context) => {
   }
 
   try {
-    // Parse request body
+    console.log('Booking request received');
     const body = JSON.parse(event.body || '{}');
+    console.log('Request body:', JSON.stringify(body));
 
     // Validate required fields
     const required = ['firstName', 'lastName', 'email', 'businessName', 'eventTitle', 'eventDate', 'calendarId'];
@@ -161,51 +164,49 @@ export const handler = async (event, context) => {
       return {
         statusCode: 400,
         headers: corsHeaders,
-        body: JSON.stringify({
-          error: `Missing required fields: ${missing.join(', ')}`
-        })
+        body: JSON.stringify({ error: `Missing required fields: ${missing.join(', ')}` })
       };
     }
 
-    // Get API token - check multiple possible env var names
-    const token = process.env.COLLECTIVE_API_TOKEN || process.env.GHL_API_TOKEN || process.env.API_TOKEN;
-
-    // Debug: Log available env vars (names only, not values)
-    console.log('Available env vars:', Object.keys(process.env).filter(k =>
-      k.includes('TOKEN') || k.includes('API') || k.includes('GHL') || k.includes('COLLECTIVE')
-    ));
+    // Get API token
+    const token = process.env.COLLECTIVE_API_TOKEN || process.env.GHL_API_TOKEN;
+    console.log('Token available:', !!token, 'Length:', token?.length || 0);
 
     if (!token) {
-      console.error('No API token found. Checked: COLLECTIVE_API_TOKEN, GHL_API_TOKEN, API_TOKEN');
       return {
         statusCode: 500,
         headers: corsHeaders,
-        body: JSON.stringify({
-          error: 'Server configuration error',
-          hint: 'COLLECTIVE_API_TOKEN environment variable not set in Netlify'
-        })
+        body: JSON.stringify({ error: 'Server configuration error - no API token' })
       };
     }
 
     // Step 1: Find or create contact
-    console.log('Looking up contact:', body.email);
+    console.log('Step 1: Looking up contact:', body.email);
     let contact = await findContactByEmail(body.email, token);
 
     if (contact) {
       console.log('Found existing contact:', contact.id);
-      // Update with latest info
-      await updateContact(contact.id, body, token);
+      try {
+        await updateContact(contact.id, body, token);
+        console.log('Updated contact');
+      } catch (e) {
+        console.log('Could not update contact:', e.message);
+      }
     } else {
-      console.log('Creating new contact');
+      console.log('Creating new contact...');
       const result = await createContact(body, token);
       contact = result.contact;
-      console.log('Created contact:', contact.id);
+      console.log('Created contact:', contact?.id);
+    }
+
+    if (!contact?.id) {
+      throw new Error('Failed to create or find contact');
     }
 
     // Step 2: Create calendar appointment
-    console.log('Creating appointment for calendar:', body.calendarId);
+    console.log('Step 2: Creating appointment for calendar:', body.calendarId);
     const appointment = await createAppointment(contact.id, body, token);
-    console.log('Created appointment:', appointment.id || appointment.event?.id);
+    console.log('Created appointment:', appointment?.id || appointment?.event?.id);
 
     return {
       statusCode: 200,
@@ -214,12 +215,12 @@ export const handler = async (event, context) => {
         success: true,
         message: 'Booking confirmed',
         contactId: contact.id,
-        appointmentId: appointment.id || appointment.event?.id
+        appointmentId: appointment?.id || appointment?.event?.id
       })
     };
 
   } catch (error) {
-    console.error('Booking error:', error);
+    console.error('Booking error:', error.message, error.stack);
 
     return {
       statusCode: 500,
