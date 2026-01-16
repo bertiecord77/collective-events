@@ -43,17 +43,50 @@ async function ghlRequest(endpoint, token, options = {}) {
 // Search for existing contact by email
 async function findContactByEmail(email, token) {
   try {
+    // Use the email-specific search endpoint for better results
     const result = await ghlRequest(
-      `/contacts/?locationId=${LOCATION_ID}&query=${encodeURIComponent(email)}&limit=10`,
-      token
+      `/contacts/search?locationId=${LOCATION_ID}`,
+      token,
+      {
+        method: 'POST',
+        body: {
+          locationId: LOCATION_ID,
+          filters: [
+            {
+              field: 'email',
+              operator: 'eq',
+              value: email.toLowerCase()
+            }
+          ]
+        }
+      }
     );
-    const contact = result.contacts?.find(c =>
-      c.email?.toLowerCase() === email.toLowerCase()
-    );
+
+    console.log('Contact search result:', JSON.stringify(result));
+
+    // Search returns contacts array
+    const contact = result.contacts?.[0];
     return contact || null;
   } catch (error) {
-    console.log('Contact search failed:', error.message);
-    return null;
+    console.log('Contact search via POST failed:', error.message);
+
+    // Fallback to query-based search
+    try {
+      console.log('Trying fallback search...');
+      const result = await ghlRequest(
+        `/contacts/?locationId=${LOCATION_ID}&query=${encodeURIComponent(email)}&limit=10`,
+        token
+      );
+      console.log('Fallback search result:', JSON.stringify(result));
+
+      const contact = result.contacts?.find(c =>
+        c.email?.toLowerCase() === email.toLowerCase()
+      );
+      return contact || null;
+    } catch (fallbackError) {
+      console.log('Fallback search also failed:', fallbackError.message);
+      return null;
+    }
   }
 }
 
@@ -193,10 +226,35 @@ export const handler = async (event, context) => {
         console.log('Could not update contact:', e.message);
       }
     } else {
-      console.log('Creating new contact...');
-      const result = await createContact(body, token);
-      contact = result.contact;
-      console.log('Created contact:', contact?.id);
+      console.log('No existing contact found, creating new contact...');
+      try {
+        const result = await createContact(body, token);
+        contact = result.contact;
+        console.log('Created contact:', contact?.id);
+      } catch (createError) {
+        // Handle duplicate contact error - search again with lookup by email
+        if (createError.message.includes('duplicate') || createError.message.includes('Duplicate')) {
+          console.log('Duplicate contact detected, searching by email lookup...');
+          // Try direct lookup endpoint
+          try {
+            const lookupResult = await ghlRequest(
+              `/contacts/lookup?locationId=${LOCATION_ID}&email=${encodeURIComponent(body.email)}`,
+              token
+            );
+            contact = lookupResult.contact || lookupResult;
+            console.log('Found contact via lookup:', contact?.id);
+          } catch (lookupError) {
+            console.log('Lookup failed:', lookupError.message);
+            // Final fallback - search again
+            contact = await findContactByEmail(body.email, token);
+            if (contact) {
+              console.log('Found contact on retry:', contact.id);
+            }
+          }
+        } else {
+          throw createError;
+        }
+      }
     }
 
     if (!contact?.id) {
