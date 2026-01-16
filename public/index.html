@@ -711,6 +711,7 @@
     }
 
     .location-card {
+      display: block;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: var(--card-radius);
@@ -719,6 +720,9 @@
       transition: all 0.4s var(--transition-smooth);
       position: relative;
       overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
     }
 
     .location-card::before {
@@ -1035,10 +1039,12 @@
   <nav id="navbar">
     <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." class="logo-img">
     <ul class="nav-links">
-      <li><a href="#events">Events</a></li>
-      <li><a href="#locations">Locations</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="https://cdicollective.co.uk" target="_blank">Main Site</a></li>
+      <li><a href="/">Events</a></li>
+      <li><a href="/speakers">Speakers</a></li>
+      <li><a href="/about">About</a></li>
+      <li><a href="/nottingham">Nottingham</a></li>
+      <li><a href="/mansfield">Mansfield</a></li>
+      <li><a href="/chesterfield">Chesterfield</a></li>
     </ul>
   </nav>
 
@@ -1125,27 +1131,27 @@
       </div>
 
       <div class="locations-grid">
-        <div class="location-card nottingham">
+        <a href="/nottingham" class="location-card nottingham">
           <div class="location-image">
             <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69454390106fdc3abdfa3264.png" alt="Nottingham events">
           </div>
           <h3>Nottingham</h3>
           <p>Our flagship location in the heart of the creative quarter.</p>
-        </div>
-        <div class="location-card mansfield">
+        </a>
+        <a href="/mansfield" class="location-card mansfield">
           <div class="location-image">
             <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69413d35ca7298e25b32203a.png" alt="Mansfield events">
           </div>
           <h3>Mansfield</h3>
           <p>Expanding our reach to North Nottinghamshire's creative community.</p>
-        </div>
-        <div class="location-card chesterfield">
+        </a>
+        <a href="/chesterfield" class="location-card chesterfield">
           <div class="location-image">
             <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/6967cbfe02f1be4a61702e71.png" alt="Chesterfield events">
           </div>
           <h3>Chesterfield</h3>
           <p>Connecting Derbyshire's digital and creative professionals.</p>
-        </div>
+        </a>
       </div>
     </section>
 
@@ -1179,8 +1185,8 @@
       <div class="cta-card">
         <h2>Ready to Connect?</h2>
         <p>Join our growing community and never miss an event. Free to attend, always.</p>
-        <a href="https://cdicollective.co.uk" class="btn btn-primary" target="_blank">
-          Join the Community
+        <a href="/about" class="btn btn-primary">
+          Learn More About Us
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="5" y1="12" x2="19" y2="12"></line>
             <polyline points="12 5 19 12 12 19"></polyline>
@@ -1194,35 +1200,35 @@
   <footer>
     <div class="footer-content">
       <div class="footer-brand">
-        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68a869c41614bd2d4f9e6688.png" alt="COLLECTIVE." class="logo-img">
-        <p>Building connections across the East Midlands creative, digital and tech community since 2024.</p>
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." class="logo-img">
+        <p>Building connections across the East Midlands creative, digital and tech community.</p>
       </div>
       <div class="footer-links">
         <h4>Events</h4>
         <ul>
-          <li><a href="#events">Upcoming</a></li>
-          <li><a href="#past-events">Past Events</a></li>
-          <li><a href="https://cdicollective.co.uk" target="_blank">Book Now</a></li>
+          <li><a href="/">Upcoming</a></li>
+          <li><a href="/past">Past Events</a></li>
+          <li><a href="/speakers">Speakers</a></li>
         </ul>
       </div>
       <div class="footer-links">
         <h4>Locations</h4>
         <ul>
-          <li><a href="#locations">Nottingham</a></li>
-          <li><a href="#locations">Mansfield</a></li>
-          <li><a href="#locations">Chesterfield</a></li>
+          <li><a href="/nottingham">Nottingham</a></li>
+          <li><a href="/mansfield">Mansfield</a></li>
+          <li><a href="/chesterfield">Chesterfield</a></li>
         </ul>
       </div>
       <div class="footer-links">
         <h4>Connect</h4>
         <ul>
-          <li><a href="https://cdicollective.co.uk" target="_blank">Website</a></li>
+          <li><a href="/about">About Us</a></li>
           <li><a href="mailto:hello@cdicollective.co.uk">Contact</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>&copy; 2024 COLLECTIVE. All rights reserved.</span>
+      <span>&copy; 2025 COLLECTIVE. All rights reserved.</span>
       <div class="social-links">
         <a href="https://linkedin.com/company/cdicollective" target="_blank" aria-label="LinkedIn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
