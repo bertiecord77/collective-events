@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NotLuck | Proudly Supporting COLLECTIVE.</title>
+  <meta name="description" content="NotLuck is proud to sponsor and build the COLLECTIVE. website. Learn about our partnership and commitment to the East Midlands creative community.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <style>
+    /* NotLuck Page Specific Styles */
+    .notluck-hero {
+      padding: calc(80px + var(--space-8)) var(--space-4) var(--space-8);
+      text-align: center;
+      background: linear-gradient(135deg, var(--black) 0%, #0a0a0a 50%, var(--black) 100%);
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .notluck-hero::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--lime) 0%, transparent 70%);
+      opacity: 0.1;
+      filter: blur(100px);
+    }
+
+    .notluck-hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700;
+      margin-bottom: var(--space-4);
+      max-width: 900px;
+      position: relative;
+    }
+
+    .notluck-hero h1 .highlight {
+      color: var(--lime);
+    }
+
+    .notluck-hero .subtitle {
+      font-size: var(--text-xl);
+      color: var(--text-muted);
+      max-width: 700px;
+      line-height: 1.7;
+      position: relative;
+    }
+
+    .partnership-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-5);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-6);
+    }
+
+    .partnership-badge span {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .partnership-badge .heart {
+      color: var(--lime);
+      font-size: var(--text-lg);
+    }
+
+    /* Story Section */
+    .story-section {
+      padding: var(--space-8) var(--space-4);
+      background: var(--surface);
+    }
+
+    .story-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .story-content h2 {
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-6);
+      text-align: center;
+    }
+
+    .story-content p {
+      font-size: var(--text-lg);
+      line-height: 1.8;
+      color: var(--text-muted);
+      margin-bottom: var(--space-5);
+    }
+
+    .story-content p:first-of-type::first-letter {
+      font-size: 3.5rem;
+      font-weight: 700;
+      float: left;
+      line-height: 1;
+      margin-right: var(--space-2);
+      color: var(--lime);
+    }
+
+    /* Quote Section */
+    .quotes-section {
+      padding: var(--space-8) var(--space-4);
+    }
+
+    .quotes-section h2 {
+      text-align: center;
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-6);
+    }
+
+    .quotes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: var(--space-5);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .quote-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      position: relative;
+    }
+
+    .quote-card::before {
+      content: '"';
+      position: absolute;
+      top: var(--space-4);
+      left: var(--space-5);
+      font-size: 4rem;
+      font-weight: 700;
+      color: var(--lime);
+      opacity: 0.3;
+      line-height: 1;
+    }
+
+    .quote-text {
+      font-size: var(--text-lg);
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-5);
+      padding-top: var(--space-4);
+      font-style: italic;
+    }
+
+    .quote-author {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .quote-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--gradient-brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--black);
+    }
+
+    .quote-info h4 {
+      font-size: var(--text-base);
+      font-weight: 600;
+    }
+
+    .quote-info p {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+    }
+
+    /* What We Built Section */
+    .built-section {
+      padding: var(--space-8) var(--space-4);
+      background: var(--surface);
+    }
+
+    .built-section h2 {
+      text-align: center;
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-2);
+    }
+
+    .built-section > p {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: var(--space-6);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-4);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .feature-item {
+      padding: var(--space-5);
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      transition: all var(--transition-base);
+    }
+
+    .feature-item:hover {
+      border-color: var(--lime);
+      transform: translateY(-2px);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto var(--space-3);
+      background: var(--lime);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .feature-icon svg {
+      width: 24px;
+      height: 24px;
+      color: var(--black);
+    }
+
+    .feature-item h3 {
+      font-size: var(--text-base);
+      margin-bottom: var(--space-2);
+    }
+
+    .feature-item p {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+    }
+
+    /* About NotLuck Section */
+    .about-notluck {
+      padding: var(--space-8) var(--space-4);
+    }
+
+    .about-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .about-content h2 {
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-4);
+    }
+
+    .about-content p {
+      font-size: var(--text-lg);
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: var(--space-5);
+    }
+
+    .notluck-links {
+      display: flex;
+      gap: var(--space-4);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      padding: var(--space-8) var(--space-4);
+      background: var(--surface);
+      text-align: center;
+    }
+
+    .cta-section h2 {
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-3);
+    }
+
+    .cta-section p {
+      color: var(--text-muted);
+      margin-bottom: var(--space-5);
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." height="40">
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Events</a>
+        <a href="/speakers" class="nav-link">Speakers</a>
+        <a href="/about" class="nav-link">About</a>
+        <a href="/notluck" class="nav-link active">NotLuck</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Hero -->
+    <section class="notluck-hero">
+      <div class="partnership-badge">
+        <span>Official Partner</span>
+        <span class="heart">♥</span>
+        <span>Sponsor</span>
+      </div>
+      <h1>Proudly Built in <span class="highlight">Notts</span> by NotLuck</h1>
+      <p class="subtitle">We're not just building a website - we're investing in the future of the East Midlands creative community.</p>
+    </section>
+
+    <!-- Our Story -->
+    <section class="story-section">
+      <div class="story-content">
+        <h2>Why We Support COLLECTIVE.</h2>
+        <p>When we first met Tamsin and learned about what she was building with COLLECTIVE., we knew immediately that this was something special. Here was someone pouring their heart into creating genuine connections across the East Midlands creative, digital and tech community - not for profit, not for fame, but because she genuinely believed in the power of bringing people together.</p>
+        <p>At NotLuck, we've built our agency on the belief that the best things happen when talented people come together. COLLECTIVE. embodies that same philosophy. Every event creates ripples - new collaborations form, ideas spark, careers shift direction, and friendships begin.</p>
+        <p>So we decided to do more than just attend events. We wanted to help COLLECTIVE. reach more people, tell its story better, and give Tamsin the digital platform that matches her ambition for this community. This website is our contribution - built with the same care and attention we bring to all our work, but given freely because we believe in what COLLECTIVE. stands for.</p>
+      </div>
+    </section>
+
+    <!-- Quotes -->
+    <section class="quotes-section">
+      <h2>From the NotLuck Team</h2>
+      <div class="quotes-grid">
+        <div class="quote-card">
+          <p class="quote-text">COLLECTIVE. represents everything we love about the East Midlands creative scene. It's authentic, it's inclusive, and it's making a real difference. Being able to support Tamily's vision with our skills feels like the most natural partnership in the world.</p>
+          <div class="quote-author">
+            <div class="quote-avatar">B</div>
+            <div class="quote-info">
+              <h4>Bertie</h4>
+              <p>Co-founder, NotLuck</p>
+            </div>
+          </div>
+        </div>
+        <div class="quote-card">
+          <p class="quote-text">What Tamsin has built goes beyond networking events. She's created a community where everyone - from seasoned professionals to complete newcomers - feels welcome. That's rare and worth protecting. We're honoured to help tell that story.</p>
+          <div class="quote-author">
+            <div class="quote-avatar">LA</div>
+            <div class="quote-info">
+              <h4>Lee-ann</h4>
+              <p>Co-founder, NotLuck</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What We Built -->
+    <section class="built-section">
+      <h2>What We've Built Together</h2>
+      <p>A platform designed to showcase COLLECTIVE.'s events and community</p>
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <h3>Dynamic Events</h3>
+          <p>Live event listings pulled directly from the database</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <h3>Speaker Profiles</h3>
+          <p>Celebrating the voices that make COLLECTIVE. special</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="10" r="3"/>
+              <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/>
+            </svg>
+          </div>
+          <h3>Location Pages</h3>
+          <p>Dedicated pages for each East Midlands venue</p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 20h9"/>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+          </div>
+          <h3>Brand Design</h3>
+          <p>Faithful to COLLECTIVE.'s distinctive visual identity</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- About NotLuck -->
+    <section class="about-notluck">
+      <div class="about-content">
+        <h2>About NotLuck</h2>
+        <p>NotLuck is a Nottingham-based digital agency specialising in web development, automation, and creative technology solutions. We help businesses and organisations build digital experiences that actually work - no fluff, no jargon, just results.</p>
+        <p>But beyond client work, we believe in giving back to the community that's given us so much. Sponsoring COLLECTIVE. is one of the ways we do that.</p>
+        <div class="notluck-links">
+          <a href="https://notluck.co.uk" target="_blank" class="btn btn-primary">
+            Visit NotLuck
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+          </a>
+          <a href="mailto:hello@notluck.co.uk" class="btn btn-secondary">
+            Get in Touch
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+      <h2>Want to Support COLLECTIVE.?</h2>
+      <p>There are many ways to contribute to this amazing community - from speaking at events to sponsoring like us.</p>
+      <a href="mailto:hello@cdicollective.co.uk" class="btn btn-primary">
+        Contact COLLECTIVE.
+      </a>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." height="32">
+        <p>Building connections across the East Midlands creative, digital and tech community.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>Locations</h4>
+          <a href="/nottingham">Nottingham</a>
+          <a href="/mansfield">Mansfield</a>
+          <a href="/chesterfield">Chesterfield</a>
+        </div>
+        <div class="footer-column">
+          <h4>Explore</h4>
+          <a href="/">Events</a>
+          <a href="/speakers">Speakers</a>
+          <a href="/past">Past Events</a>
+        </div>
+        <div class="footer-column">
+          <h4>About</h4>
+          <a href="/about">About Us</a>
+          <a href="/notluck">NotLuck</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="built-by">
+        Proudly built in Notts by <a href="/notluck">NotLuck</a>
+      </div>
+      <p>&copy; 2025 COLLECTIVE. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

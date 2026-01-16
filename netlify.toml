@@ -14,92 +14,76 @@
   [context.deploy-preview.environment]
     NODE_ENV = "preview"
 
-# Edge function for SEO meta injection
-[[edge_functions]]
-  path = "/"
-  function = "seo-inject"
-
-[[edge_functions]]
-  path = "/event/*"
-  function = "seo-inject"
-
-[[edge_functions]]
-  path = "/speaker/*"
-  function = "seo-inject"
-
-[[edge_functions]]
-  path = "/nottingham"
-  function = "seo-inject"
-
-[[edge_functions]]
-  path = "/mansfield"
-  function = "seo-inject"
-
-[[edge_functions]]
-  path = "/chesterfield"
-  function = "seo-inject"
-
-[[edge_functions]]
-  path = "/past"
-  function = "seo-inject"
-
-[[edge_functions]]
-  path = "/about"
-  function = "seo-inject"
-
-[[edge_functions]]
-  path = "/speakers"
-  function = "seo-inject"
-
-# Static pages - serve directly
+# Static pages - serve directly (force = true ensures these take priority)
 [[redirects]]
   from = "/about"
   to = "/pages/about.html"
   status = 200
+  force = true
+
+[[redirects]]
+  from = "/notluck"
+  to = "/pages/notluck.html"
+  status = 200
+  force = true
 
 # Dynamic pages - serve app shell
 [[redirects]]
   from = "/event/*"
   to = "/pages/event.html"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/speaker/*"
   to = "/pages/speaker.html"
   status = 200
+  force = true
 
 # Location pages
 [[redirects]]
   from = "/nottingham"
   to = "/pages/location.html"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/mansfield"
   to = "/pages/location.html"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/chesterfield"
   to = "/pages/location.html"
   status = 200
+  force = true
+
+[[redirects]]
+  from = "/derby"
+  to = "/pages/location.html"
+  status = 200
+  force = true
 
 # Other pages
 [[redirects]]
   from = "/past"
   to = "/pages/past.html"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/speakers"
   to = "/pages/speakers.html"
   status = 200
+  force = true
 
-# Fallback SPA routing
+# Homepage
 [[redirects]]
-  from = "/*"
+  from = "/"
   to = "/index.html"
   status = 200
+  force = true
 
 # Security headers
 [[headers]]
