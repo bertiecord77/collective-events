@@ -289,7 +289,7 @@
   <nav class="nav">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." height="40">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." height="40">
       </a>
       <div class="nav-links">
         <a href="/" class="nav-link">Events</a>
@@ -309,7 +309,7 @@
   <div id="error" class="event-error" style="display: none;">
     <h1>Event Not Found</h1>
     <p>Sorry, we couldn't find the event you're looking for.</p>
-    <a href="/" class="btn btn-primary">Back to Events</a>
+    <a href="/" class="btn btn--primary">Back to Events</a>
   </div>
 
   <!-- Event Content (hidden until loaded) -->
@@ -464,7 +464,7 @@
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-brand">
-        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." height="32">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." height="32">
         <p>Building connections across the East Midlands creative, digital and tech community.</p>
       </div>
       <div class="footer-links">
@@ -605,16 +605,21 @@
         }
       }
 
-      // CTA Button - use bookingUrl (from API) or registrationUrl
-      const bookingUrl = event.bookingUrl || event.registrationUrl;
+      // CTA Button - check multiple possible field names for booking URL
+      const bookingUrl = event.bookingUrl || event.registrationUrl || event.ticketUrl || event.eventUrl || event.link || event.url;
       const ctaContainer = document.getElementById('cta-container');
+
+      // Log event data for debugging
+      console.log('Event data:', event);
+      console.log('Booking URL:', bookingUrl);
+      console.log('Is upcoming:', isUpcoming(event.date));
 
       if (isUpcoming(event.date)) {
         let ctaHtml = '';
 
         if (bookingUrl) {
           ctaHtml += `
-            <a href="${bookingUrl}" target="_blank" class="btn btn--primary" style="width: 100%; margin-bottom: var(--space-2);">
+            <a href="${bookingUrl}" target="_blank" rel="noopener noreferrer" class="btn btn--primary" style="width: 100%; margin-bottom: var(--space-2); display: flex;">
               Book Your Place
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -625,7 +630,7 @@
 
         // Add to Calendar button
         ctaHtml += `
-          <button onclick="addToCalendar()" class="btn btn--secondary" style="width: 100%;">
+          <button onclick="addToCalendar()" class="btn btn--secondary" style="width: 100%; display: flex;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
               <line x1="16" y1="2" x2="16" y2="6"></line>

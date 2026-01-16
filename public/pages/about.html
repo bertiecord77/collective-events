@@ -273,6 +273,41 @@
       justify-content: center;
       flex-wrap: wrap;
     }
+
+    /* Video Section */
+    .video-section {
+      padding: var(--space-8) var(--space-4);
+      background: var(--black);
+    }
+
+    .video-section h2 {
+      text-align: center;
+      font-size: var(--text-3xl);
+      margin-bottom: var(--space-2);
+    }
+
+    .video-section > p {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: var(--space-6);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .video-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border);
+    }
+
+    .video-wrapper video {
+      width: 100%;
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -280,7 +315,7 @@
   <nav class="nav">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." height="40">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." height="40">
       </a>
       <div class="nav-links">
         <a href="/" class="nav-link">Events</a>
@@ -296,6 +331,18 @@
       <span class="badge badge-lime">About Us</span>
       <h1>Building <span class="highlight">Connections</span> Across the East Midlands</h1>
       <p>COLLECTIVE. brings together creative, digital and tech professionals for meaningful conversations, authentic networking, and community growth.</p>
+    </section>
+
+    <!-- Video Section -->
+    <section class="video-section">
+      <h2>See COLLECTIVE. in Action</h2>
+      <p>Experience the energy and connections that happen at our events.</p>
+      <div class="video-wrapper">
+        <video controls poster="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69454390106fdc3abdfa3264.png">
+          <source src="https://assets.cdn.filesafe.space/JcB0t2fZpGS0lMrqKDWQ/media/68bc52d30f0b0688f57c112a.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
     </section>
 
     <!-- Mission Cards -->
@@ -421,7 +468,7 @@
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-brand">
-        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png" alt="COLLECTIVE." height="32">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." height="32">
         <p>Building connections across the East Midlands creative, digital and tech community.</p>
       </div>
       <div class="footer-links">
