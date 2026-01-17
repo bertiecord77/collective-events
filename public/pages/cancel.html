@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cancel Booking | COLLECTIVE.</title>
+  <meta name="description" content="Cancel your COLLECTIVE. event booking">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <style>
+    .cancel-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cancel-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-8) var(--space-4);
+    }
+
+    .cancel-card {
+      max-width: 520px;
+      width: 100%;
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      padding: var(--space-8);
+      text-align: center;
+    }
+
+    .cancel-icon {
+      width: 80px;
+      height: 80px;
+      background: rgba(229, 246, 8, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-5);
+    }
+
+    .cancel-icon svg {
+      width: 40px;
+      height: 40px;
+      color: var(--lime);
+    }
+
+    .cancel-card h1 {
+      font-size: var(--text-2xl);
+      font-weight: 600;
+      margin-bottom: var(--space-3);
+    }
+
+    .cancel-card .subtitle {
+      font-size: var(--text-lg);
+      color: var(--text-muted);
+      margin-bottom: var(--space-6);
+      line-height: 1.6;
+    }
+
+    .friendly-message {
+      background: var(--background);
+      border-radius: var(--radius-lg);
+      padding: var(--space-5);
+      margin-bottom: var(--space-6);
+      text-align: left;
+    }
+
+    .friendly-message p {
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: var(--space-3);
+    }
+
+    .friendly-message p:last-child {
+      margin-bottom: 0;
+    }
+
+    .friendly-message strong {
+      color: var(--text-primary);
+    }
+
+    /* Event Details */
+    .event-details {
+      background: var(--background);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-6);
+      text-align: left;
+    }
+
+    .event-details-header {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--space-2);
+    }
+
+    .event-details-title {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      margin-bottom: var(--space-1);
+    }
+
+    .event-details-meta {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+    }
+
+    /* Cancellation Form */
+    .cancel-form {
+      text-align: left;
+    }
+
+    .form-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .form-label {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: 500;
+      margin-bottom: var(--space-2);
+      color: var(--text-secondary);
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: var(--space-3);
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: var(--text-base);
+      color: var(--text-primary);
+      transition: border-color var(--transition-fast);
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--lime);
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-hint {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-top: var(--space-1);
+    }
+
+    /* Reason Options */
+    .reason-options {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+    }
+
+    .reason-option {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .reason-option:hover {
+      border-color: var(--lime);
+    }
+
+    .reason-option input {
+      display: none;
+    }
+
+    .reason-option input:checked + .reason-radio {
+      border-color: var(--lime);
+      background: var(--lime);
+    }
+
+    .reason-option input:checked + .reason-radio::after {
+      opacity: 1;
+    }
+
+    .reason-radio {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      flex-shrink: 0;
+      position: relative;
+      transition: all var(--transition-fast);
+    }
+
+    .reason-radio::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 8px;
+      height: 8px;
+      background: var(--background);
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+    }
+
+    .reason-text {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+
+    /* Buttons */
+    .cancel-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin-top: var(--space-6);
+    }
+
+    .btn-cancel {
+      background: transparent;
+      border: 1px solid #ff6b6b;
+      color: #ff6b6b;
+      padding: var(--space-3) var(--space-5);
+      border-radius: var(--radius-md);
+      font-size: var(--text-base);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-cancel:hover {
+      background: #ff6b6b;
+      color: white;
+    }
+
+    .btn-cancel:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-keep {
+      background: var(--lime);
+      border: none;
+      color: var(--background);
+      padding: var(--space-3) var(--space-5);
+      border-radius: var(--radius-md);
+      font-size: var(--text-base);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      text-decoration: none;
+      display: block;
+      text-align: center;
+    }
+
+    .btn-keep:hover {
+      opacity: 0.9;
+    }
+
+    .divider-text {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Success State */
+    .cancel-success {
+      display: none;
+    }
+
+    .cancel-success.active {
+      display: block;
+    }
+
+    .cancel-form-view.hidden {
+      display: none;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: rgba(229, 246, 8, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-5);
+    }
+
+    .success-icon svg {
+      width: 40px;
+      height: 40px;
+      color: var(--lime);
+    }
+
+    /* Loading State */
+    .btn-cancel.loading {
+      position: relative;
+      color: transparent;
+    }
+
+    .btn-cancel.loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ff6b6b;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* Error State */
+    .form-error {
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid #ff6b6b;
+      color: #ff6b6b;
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      margin-bottom: var(--space-4);
+      display: none;
+    }
+
+    .form-error.visible {
+      display: block;
+    }
+
+    /* No Booking State */
+    .no-booking {
+      text-align: center;
+    }
+
+    .no-booking h2 {
+      font-size: var(--text-xl);
+      margin-bottom: var(--space-3);
+    }
+
+    .no-booking p {
+      color: var(--text-muted);
+      margin-bottom: var(--space-5);
+    }
+
+    /* Loading */
+    .loading-state {
+      text-align: center;
+      padding: var(--space-8);
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--lime);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto var(--space-4);
+    }
+  </style>
+</head>
+<body class="cancel-page">
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." height="40">
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Events</a>
+        <a href="/speakers" class="nav-link">Speakers</a>
+        <a href="/about" class="nav-link">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="cancel-content">
+    <div class="cancel-card">
+      <!-- Loading State -->
+      <div id="loading-state" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading your booking...</p>
+      </div>
+
+      <!-- Form View -->
+      <div id="cancel-form-view" class="cancel-form-view hidden">
+        <div class="cancel-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 8v4"/>
+            <path d="M12 16h.01"/>
+          </svg>
+        </div>
+
+        <h1>Need to Cancel?</h1>
+        <p class="subtitle">No worries - life happens!</p>
+
+        <div class="friendly-message">
+          <p>We get it. Sometimes things come up - whether it's a work deadline, family stuff, or you just need a night on the sofa. <strong>We've all been there.</strong></p>
+          <p>If you can't make it, no hard feelings. Just let us know so we can offer your spot to someone on the waitlist.</p>
+        </div>
+
+        <!-- Event Details (populated by JS) -->
+        <div id="event-details" class="event-details">
+          <div class="event-details-header">Your Booking</div>
+          <div id="event-title" class="event-details-title">Loading...</div>
+          <div id="event-meta" class="event-details-meta">Loading...</div>
+        </div>
+
+        <form id="cancel-form" class="cancel-form" onsubmit="submitCancellation(event)">
+          <div id="form-error" class="form-error"></div>
+
+          <div class="form-group">
+            <label class="form-label">Quick question - what's up?</label>
+            <div class="reason-options">
+              <label class="reason-option">
+                <input type="radio" name="reason" value="schedule_conflict">
+                <span class="reason-radio"></span>
+                <span class="reason-text">Something came up with work/family</span>
+              </label>
+              <label class="reason-option">
+                <input type="radio" name="reason" value="illness">
+                <span class="reason-radio"></span>
+                <span class="reason-text">Not feeling well</span>
+              </label>
+              <label class="reason-option">
+                <input type="radio" name="reason" value="transport">
+                <span class="reason-radio"></span>
+                <span class="reason-text">Can't get there (transport issues)</span>
+              </label>
+              <label class="reason-option">
+                <input type="radio" name="reason" value="other" checked>
+                <span class="reason-radio"></span>
+                <span class="reason-text">Something else / prefer not to say</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="comments">Anything else you want to tell us? (Optional)</label>
+            <textarea id="comments" name="comments" class="form-textarea" placeholder="No pressure - just if there's anything we could do better..."></textarea>
+            <p class="form-hint">This helps us improve future events</p>
+          </div>
+
+          <div class="cancel-actions">
+            <button type="submit" id="cancel-btn" class="btn-cancel">
+              Yes, Cancel My Booking
+            </button>
+            <span class="divider-text">or</span>
+            <a href="/" class="btn-keep">Actually, I'll Keep My Place</a>
+          </div>
+        </form>
+      </div>
+
+      <!-- Success State -->
+      <div id="cancel-success" class="cancel-success">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+
+        <h1>All Sorted</h1>
+        <p class="subtitle">Your booking has been cancelled. We've sent a confirmation to your email.</p>
+
+        <div class="friendly-message">
+          <p>Thanks for letting us know. Your spot will go to someone on the waitlist, so no ticket goes to waste.</p>
+          <p><strong>Hope to see you at a future event!</strong> We're always adding new ones across Nottingham, Mansfield, and Chesterfield.</p>
+        </div>
+
+        <div class="cancel-actions">
+          <a href="/" class="btn-keep">Browse Upcoming Events</a>
+        </div>
+      </div>
+
+      <!-- No Booking State -->
+      <div id="no-booking" class="no-booking hidden">
+        <div class="cancel-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 12h8"/>
+          </svg>
+        </div>
+        <h2>No Booking Found</h2>
+        <p>We couldn't find a booking with that link. It may have already been cancelled, or the link might be incorrect.</p>
+        <a href="/" class="btn-keep">Browse Events</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." height="32">
+        <p>Building connections across the East Midlands creative, digital and tech community.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>Locations</h4>
+          <a href="/nottingham">Nottingham</a>
+          <a href="/mansfield">Mansfield</a>
+          <a href="/chesterfield">Chesterfield</a>
+          <a href="/derby">Derby</a>
+        </div>
+        <div class="footer-column">
+          <h4>Explore</h4>
+          <a href="/">Events</a>
+          <a href="/speakers">Speakers</a>
+          <a href="/past">Past Events</a>
+        </div>
+        <div class="footer-column">
+          <h4>About</h4>
+          <a href="/about">About Us</a>
+          <a href="https://cdicollective.co.uk" target="_blank">Main Website</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="built-by">
+        Proudly built in Notts by <a href="/notluck">NotLuck</a>
+      </div>
+      <p>&copy; 2025 COLLECTIVE. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Parse URL parameters
+    function getUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        appointmentId: params.get('appointment_id') || params.get('appointmentId'),
+        contactId: params.get('contact_id') || params.get('contactId'),
+        eventTitle: params.get('event') || params.get('title'),
+        eventDate: params.get('date')
+      };
+    }
+
+    // Format date
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-GB', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
+
+    // Show state
+    function showState(state) {
+      document.getElementById('loading-state').style.display = state === 'loading' ? 'block' : 'none';
+      document.getElementById('cancel-form-view').classList.toggle('hidden', state !== 'form');
+      document.getElementById('cancel-success').classList.toggle('active', state === 'success');
+      document.getElementById('no-booking').classList.toggle('hidden', state !== 'no-booking');
+    }
+
+    // Initialize
+    async function init() {
+      const params = getUrlParams();
+
+      // Check if we have required params
+      if (!params.appointmentId && !params.contactId) {
+        // No booking info - show form anyway for manual entry or redirect from email
+        // In production, you might want to show no-booking state instead
+        showState('form');
+        document.getElementById('event-details').style.display = 'none';
+        return;
+      }
+
+      // Show event details if available
+      if (params.eventTitle) {
+        document.getElementById('event-title').textContent = decodeURIComponent(params.eventTitle);
+      }
+      if (params.eventDate) {
+        document.getElementById('event-meta').textContent = formatDate(params.eventDate);
+      }
+
+      // If we have booking info, show the form
+      showState('form');
+    }
+
+    // Submit cancellation
+    async function submitCancellation(e) {
+      e.preventDefault();
+
+      const params = getUrlParams();
+      const cancelBtn = document.getElementById('cancel-btn');
+      const errorDiv = document.getElementById('form-error');
+
+      // Get form data
+      const formData = {
+        appointmentId: params.appointmentId,
+        contactId: params.contactId,
+        reason: document.querySelector('input[name="reason"]:checked')?.value || 'other',
+        comments: document.getElementById('comments').value.trim()
+      };
+
+      // Show loading
+      cancelBtn.classList.add('loading');
+      cancelBtn.disabled = true;
+      errorDiv.classList.remove('visible');
+
+      try {
+        // Call cancellation API
+        const response = await fetch('/.netlify/functions/cancel', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.error || 'Failed to cancel booking');
+        }
+
+        // Show success state
+        showState('success');
+
+      } catch (error) {
+        console.error('Cancellation error:', error);
+        errorDiv.textContent = error.message || 'Something went wrong. Please try again or contact us directly.';
+        errorDiv.classList.add('visible');
+      } finally {
+        cancelBtn.classList.remove('loading');
+        cancelBtn.disabled = false;
+      }
+    }
+
+    // Start
+    init();
+  </script>
+</body>
+</html>

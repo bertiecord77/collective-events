@@ -73,6 +73,13 @@
   status = 200
   force = true
 
+# Cancellation page
+[[redirects]]
+  from = "/cancel"
+  to = "/pages/cancel.html"
+  status = 200
+  force = true
+
 # Other pages
 [[redirects]]
   from = "/past"
