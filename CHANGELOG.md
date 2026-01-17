@@ -154,11 +154,21 @@ notluck-api/
 
 ## Media API Notes
 
-**IMPORTANT**: The media API uses `folder=FolderName` with URL encoding for spaces (`%20`).
+**IMPORTANT**: The GHL Media API has a known issue - it doesn't return files from subfolders correctly.
 
-Working examples:
-- `GET /collective/media?folder=HomePage%20Images` - Returns 7 images
-- `GET /collective/media?folder=Trusted%20Partner%20Logos` - Returns 0 images (folder empty!)
+**Working examples:**
+- `GET /collective/media?folder=HomePage%20Images` - Returns 7 images (folder at root level)
 
-The folder exists (`folderId: 68becd57cbed3f563d1ec48c`) but has no images uploaded to it.
-Gallery images work because "HomePage Images" folder has content.
+**NOT working:**
+- `GET /collective/media?folder=Trusted%20Partner%20Logos` - Returns 0 images even though folder has 7 files!
+
+The folder exists (`folderId: 68becd57cbed3f563d1ec48c`) and contains files (verified in GHL UI), but the API returns empty array.
+
+**Workaround**: Use direct GHL storage URLs for partner logos. Example format:
+```
+https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/{fileId}.svg
+```
+
+Example working URL: `68caab16f411f37250c3fc87.svg` (EMCCA logo)
+
+To get direct URLs: In GHL Media Library, right-click each logo → "Copy image address"
