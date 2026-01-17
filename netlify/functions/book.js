@@ -178,16 +178,20 @@ async function updateAppointmentDetails(token, appointmentId, details, log) {
   log(`Updating appointment ${appointmentId} with details...`);
 
   try {
-    // Use venue address for meeting location, fall back to venue name + location tag
+    // Build full venue address
     const venueAddress = details.eventVenueAddress ||
                          [details.eventVenue, details.eventLocation].filter(Boolean).join(', ') ||
                          'TBC';
+
+    // Build a comprehensive notes field that includes ALL info needed for emails
+    // Since custom objects don't work in email templates, we put everything here
+    const fullNotes = buildAppointmentNotes(details);
 
     const updatePayload = {
       title: details.eventTitle,
       address: venueAddress,
       meetingLocation: venueAddress,  // For {{appointment.meeting_location}} in emails
-      notes: buildAppointmentNotes(details)
+      notes: fullNotes
     };
 
     await ghlRequest(
@@ -198,10 +202,80 @@ async function updateAppointmentDetails(token, appointmentId, details, log) {
     );
 
     log('Appointment updated successfully');
+
+    // Also update contact custom fields with event/venue data for email templates
+    // This allows {{contact.custom_field_name}} in emails
+    await updateContactEventFields(token, details, log);
+
     return true;
   } catch (err) {
     log(`Failed to update appointment: ${err.message}`);
     return false;
+  }
+}
+
+// Update contact with event/venue fields for email templates
+// Since custom objects don't work in emails, we store event data on the contact
+async function updateContactEventFields(token, details, log) {
+  if (!details.contactId) {
+    log('No contactId provided, skipping contact field update');
+    return;
+  }
+
+  try {
+    // These custom fields need to exist on the Contact in GHL:
+    // - event_location (for "Mansfield", "Nottingham", etc.)
+    // - event_venue_name
+    // - event_venue_address
+    // - event_speaker_name
+    // - event_speaker_title
+    // - event_speaker_photo
+    // - event_parking_info
+    // - event_transport_info
+    // - event_accessibility_info
+
+    const customFieldUpdates = [];
+
+    if (details.eventLocation) {
+      customFieldUpdates.push({ key: 'event_location', value: details.eventLocation });
+    }
+    if (details.eventVenue) {
+      customFieldUpdates.push({ key: 'event_venue_name', value: details.eventVenue });
+    }
+    if (details.eventVenueAddress) {
+      customFieldUpdates.push({ key: 'event_venue_address', value: details.eventVenueAddress });
+    }
+    if (details.speakerName) {
+      customFieldUpdates.push({ key: 'event_speaker_name', value: details.speakerName });
+    }
+    if (details.speakerTitle) {
+      customFieldUpdates.push({ key: 'event_speaker_title', value: details.speakerTitle });
+    }
+    if (details.speakerPhoto) {
+      customFieldUpdates.push({ key: 'event_speaker_photo', value: details.speakerPhoto });
+    }
+    if (details.eventVenueParking) {
+      customFieldUpdates.push({ key: 'event_parking_info', value: details.eventVenueParking });
+    }
+    if (details.eventVenueTransport) {
+      customFieldUpdates.push({ key: 'event_transport_info', value: details.eventVenueTransport });
+    }
+    if (details.eventVenueAccessibility) {
+      customFieldUpdates.push({ key: 'event_accessibility_info', value: details.eventVenueAccessibility });
+    }
+
+    if (customFieldUpdates.length > 0) {
+      await ghlRequest(
+        `/contacts/${details.contactId}`,
+        'PUT',
+        token,
+        { customFields: customFieldUpdates }
+      );
+      log(`Updated ${customFieldUpdates.length} contact custom fields for email templates`);
+    }
+  } catch (err) {
+    // Don't fail the booking if contact update fails
+    log(`Warning: Failed to update contact fields: ${err.message}`);
   }
 }
 
@@ -385,17 +459,28 @@ export const handler = async (event, context) => {
     log('Step 4: Updating appointment with full details...');
 
     await updateAppointmentDetails(token, appointment.id, {
+      // Contact ID for updating contact custom fields
+      contactId: contactId,
+      // Event details
       eventTitle: body.eventTitle,
       eventDate: body.eventDate,
       startTime,
       endTime,
       eventLocation: body.eventLocation,
+      // Venue details
       eventVenue: body.eventVenue,
       eventVenueAddress: body.eventVenueAddress,
       eventVenueWhat3Words: body.eventVenueWhat3Words,
       eventVenueAccessibility: body.eventVenueAccessibility,
       eventVenueParking: body.eventVenueParking,
+      eventVenueTransport: body.eventVenueTransport,
       eventVenueNotes: body.eventVenueNotes,
+      // Speaker details (for email templates)
+      speakerName: body.speakerName,
+      speakerTitle: body.speakerTitle,
+      speakerPhoto: body.speakerPhoto,
+      speakerBio: body.speakerBio,
+      // Contact details
       firstName: body.firstName,
       lastName: body.lastName,
       email: body.email,
