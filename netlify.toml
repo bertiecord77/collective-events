@@ -100,6 +100,19 @@
   status = 200
   force = true
 
+# Legal pages
+[[redirects]]
+  from = "/privacy"
+  to = "/pages/privacy.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/terms"
+  to = "/pages/terms.html"
+  status = 200
+  force = true
+
 # Homepage
 [[redirects]]
   from = "/"
