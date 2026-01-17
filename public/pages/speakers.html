@@ -191,7 +191,7 @@
   <nav class="nav">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." height="40">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68a869c41614bd2d4f9e6688.png" alt="COLLECTIVE." height="40">
       </a>
       <div class="nav-links">
         <a href="/" class="nav-link">Events</a>
@@ -248,7 +248,7 @@
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-brand">
-        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." height="32">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68a869c41614bd2d4f9e6688.png" alt="COLLECTIVE." height="32">
         <p>Building connections across the East Midlands creative, digital and tech community.</p>
       </div>
       <div class="footer-links">
@@ -268,15 +268,14 @@
         <div class="footer-column">
           <h4>About</h4>
           <a href="/about">About Us</a>
-          <a href="https://cdicollective.co.uk" target="_blank">Main Website</a>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
       <div class="built-by">
-        Proudly built in Notts by <a href="/notluck">NotLuck</a>
+        Proudly built in Notts by <a href="https://notluck.co.uk" target="_blank">NotLuck</a>
       </div>
-      <p>&copy; 2025 COLLECTIVE. All rights reserved.</p>
+      <p>&copy; 2026 COLLECTIVE. All rights reserved.</p>
     </div>
   </footer>
 
@@ -292,7 +291,8 @@
           throw new Error('API not loaded');
         }
 
-        const DEFAULT_IMAGE = API.DEFAULT_IMAGE || 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png';
+        // Use the proper avatar placeholder for speakers without photos
+        const DEFAULT_AVATAR = API.DEFAULT_AVATAR;
 
         // Load all events and extract speakers from them
         const eventsData = await API.fetchEvents({ limit: 200 });
@@ -370,11 +370,11 @@
         return `
           <div class="speaker-card">
             <img
-              src="${speaker.image || DEFAULT_IMAGE}"
+              src="${speaker.image || DEFAULT_AVATAR}"
               alt="${speaker.name}"
               class="speaker-card-avatar"
               loading="lazy"
-              onerror="this.src='${DEFAULT_IMAGE}'"
+              onerror="this.src='${DEFAULT_AVATAR}'"
             >
             <h3>${speaker.name}</h3>
             ${speaker.title ? `<p class="speaker-card-title">${speaker.title}</p>` : ''}

@@ -870,8 +870,11 @@
       gap: 3rem;
     }
 
-    .footer-brand .logo-img {
-      height: 28px;
+    .footer-brand .logo-img,
+    .footer-brand .footer-logo {
+      height: 32px;
+      width: auto;
+      object-fit: contain;
       margin-bottom: 1rem;
     }
 
@@ -1058,12 +1061,13 @@
       width: auto;
       max-width: 180px;
       object-fit: contain;
-      filter: brightness(0);
-      opacity: 0.8;
-      transition: opacity 0.3s ease;
+      filter: grayscale(100%) contrast(0.8) brightness(0.3);
+      opacity: 0.7;
+      transition: filter 0.3s ease, opacity 0.3s ease;
     }
 
     .partner-item:hover img {
+      filter: grayscale(0%) brightness(1);
       opacity: 1;
     }
 
@@ -1104,26 +1108,35 @@
       margin: 0 auto;
     }
 
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-      padding: 0 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
+    .gallery-carousel {
+      display: flex;
+      gap: 1.25rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding: 1rem 2rem 2rem;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .gallery-carousel::-webkit-scrollbar {
+      display: none;
     }
 
     .gallery-item {
+      flex: 0 0 280px;
       aspect-ratio: 4/5;
       border-radius: 20px;
       overflow: hidden;
       position: relative;
       cursor: pointer;
+      scroll-snap-align: start;
       transition: transform 0.4s var(--transition-smooth), box-shadow 0.4s var(--transition-smooth);
     }
 
     .gallery-item:hover {
-      transform: translateY(-8px);
+      transform: translateY(-8px) scale(1.02);
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
       z-index: 2;
     }
@@ -1143,7 +1156,7 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);
+      background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%);
       opacity: 0;
       transition: opacity 0.3s ease;
     }
@@ -1152,10 +1165,45 @@
       opacity: 1;
     }
 
-    @media (max-width: 900px) {
-      .gallery-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1.25rem;
+    .gallery-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .gallery-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .gallery-btn:hover {
+      background: var(--lime);
+      border-color: var(--lime);
+      color: var(--black);
+    }
+
+    .gallery-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .gallery-item {
+        flex: 0 0 240px;
+      }
+
+      .gallery-carousel {
+        padding: 1rem 1.5rem 1.5rem;
       }
     }
 
@@ -1164,16 +1212,14 @@
         padding: 4rem 0;
       }
 
-      .gallery-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-        padding: 0 1.5rem;
-        max-width: 400px;
+      .gallery-item {
+        flex: 0 0 200px;
+        border-radius: 16px;
       }
 
-      .gallery-item {
-        border-radius: 16px;
-        aspect-ratio: 4/5;
+      .gallery-carousel {
+        padding: 1rem 1rem 1.5rem;
+        gap: 1rem;
       }
     }
 
@@ -1292,7 +1338,7 @@
 
   <!-- Navigation -->
   <nav id="navbar">
-    <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." class="logo-img">
+    <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68a869c41614bd2d4f9e6688.png" alt="COLLECTIVE." class="logo-img">
     <ul class="nav-links">
       <li><a href="/">Events</a></li>
       <li><a href="/speakers">Speakers</a></li>
@@ -1382,8 +1428,20 @@
         <h2>Our Community</h2>
         <p>Snapshots from events across the East Midlands</p>
       </div>
-      <div class="gallery-grid" id="gallery-grid">
+      <div class="gallery-carousel" id="gallery-carousel">
         <!-- Populated by JavaScript -->
+      </div>
+      <div class="gallery-controls">
+        <button class="gallery-btn" id="gallery-prev" aria-label="Previous">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button class="gallery-btn" id="gallery-next" aria-label="Next">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
       </div>
     </section>
 
@@ -1539,7 +1597,7 @@
   <footer>
     <div class="footer-content">
       <div class="footer-brand">
-        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." class="logo-img">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68a869c41614bd2d4f9e6688.png" alt="COLLECTIVE." class="footer-logo">
         <p>Building connections across the East Midlands creative, digital and tech community.</p>
       </div>
       <div class="footer-links">
@@ -1569,8 +1627,8 @@
     </div>
     <div class="footer-bottom">
       <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start;">
-        <span style="color: var(--text-secondary); font-size: 0.9rem;">Proudly built in Notts by <a href="/notluck" style="color: var(--lime); text-decoration: none;">NotLuck</a></span>
-        <span>&copy; 2025 COLLECTIVE. All rights reserved.</span>
+        <span style="color: var(--text-secondary); font-size: 0.9rem;">Proudly built in Notts by <a href="https://notluck.co.uk" target="_blank" style="color: var(--lime); text-decoration: none;">NotLuck</a></span>
+        <span>&copy; 2026 COLLECTIVE. All rights reserved.</span>
       </div>
       <div class="social-links">
         <a href="https://linkedin.com/company/cdicollective" target="_blank" aria-label="LinkedIn">
@@ -1958,12 +2016,14 @@
       });
     }
 
-    // Load gallery images from media API
+    // Load gallery images from media API with carousel
     async function loadGalleryImages() {
-      const grid = document.getElementById('gallery-grid');
+      const carousel = document.getElementById('gallery-carousel');
+      const prevBtn = document.getElementById('gallery-prev');
+      const nextBtn = document.getElementById('gallery-next');
 
       try {
-        const response = await fetch(`${MEDIA_API_URL}?folder=HomePage%20Images&limit=3`);
+        const response = await fetch(`${MEDIA_API_URL}?folder=HomePage%20Images&limit=12`);
         if (!response.ok) throw new Error('Failed to fetch gallery images');
 
         const data = await response.json();
@@ -1975,11 +2035,20 @@
           return;
         }
 
-        grid.innerHTML = images.map((img, index) => `
-          <div class="gallery-item" style="animation-delay: ${index * 0.15}s">
+        carousel.innerHTML = images.map((img, index) => `
+          <div class="gallery-item" style="animation-delay: ${index * 0.1}s">
             <img src="${img.url}" alt="${img.name || 'Community event'}" loading="lazy">
           </div>
         `).join('');
+
+        // Carousel navigation
+        const scrollAmount = 300;
+        prevBtn.addEventListener('click', () => {
+          carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        });
+        nextBtn.addEventListener('click', () => {
+          carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        });
 
       } catch (error) {
         console.error('Error loading gallery:', error);

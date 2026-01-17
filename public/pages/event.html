@@ -656,7 +656,7 @@
   <nav class="nav">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." height="40">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68a869c41614bd2d4f9e6688.png" alt="COLLECTIVE." height="40">
       </a>
       <div class="nav-links">
         <a href="/" class="nav-link">Events</a>
@@ -922,7 +922,7 @@
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-brand">
-        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." height="32">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68a869c41614bd2d4f9e6688.png" alt="COLLECTIVE." height="32">
         <p>Building connections across the East Midlands creative, digital and tech community.</p>
       </div>
       <div class="footer-links">
@@ -942,15 +942,14 @@
         <div class="footer-column">
           <h4>About</h4>
           <a href="/about">About Us</a>
-          <a href="https://cdicollective.co.uk" target="_blank">Main Website</a>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
       <div class="built-by">
-        Proudly built in Notts by <a href="/notluck">NotLuck</a>
+        Proudly built in Notts by <a href="https://notluck.co.uk" target="_blank">NotLuck</a>
       </div>
-      <p>&copy; 2025 COLLECTIVE. All rights reserved.</p>
+      <p>&copy; 2026 COLLECTIVE. All rights reserved.</p>
     </div>
   </footer>
 
@@ -963,7 +962,7 @@
       throw new Error('CollectiveAPI not loaded');
     }
 
-    const { fetchEvent, fetchEvents, getEventImage, formatDate, formatTime, getLocationColor, isUpcoming } = window.CollectiveAPI;
+    const { fetchEvent, fetchEvents, getEventImage, getEventPlaceholder, hasEventImage, formatDate, formatTime, getLocationColor, isUpcoming, DEFAULT_AVATAR } = window.CollectiveAPI;
 
     let currentEvent = null;
 
@@ -1001,9 +1000,9 @@
       document.getElementById('loading').style.display = 'none';
       document.getElementById('event-content').style.display = 'block';
 
-      // Hero image
+      // Hero image - use placeholder if no image
       const heroImg = document.getElementById('event-image');
-      heroImg.src = getEventImage(event);
+      heroImg.src = hasEventImage(event) ? getEventImage(event) : getEventPlaceholder(event);
       heroImg.alt = event.title;
 
       // Badge
@@ -1122,7 +1121,7 @@
         const speakersGrid = document.getElementById('speakers-grid');
         speakersGrid.innerHTML = speakers.map(speaker => `
           <div class="speaker-card">
-            <img src="${speaker.photo || speaker.image || 'https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/JcB0t2fZpGS0lMrqKDWQ/media/68efb5e54fd19d3e46a54d41.jpeg'}" alt="${speaker.name}" class="speaker-avatar" onerror="this.src='https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/JcB0t2fZpGS0lMrqKDWQ/media/68efb5e54fd19d3e46a54d41.jpeg'">
+            <img src="${speaker.photo || speaker.image || DEFAULT_AVATAR}" alt="${speaker.name}" class="speaker-avatar" onerror="this.src='${DEFAULT_AVATAR}'">
             <div class="speaker-info">
               <h3>${speaker.name}</h3>
               <p>${speaker.title || ''}</p>

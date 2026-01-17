@@ -234,13 +234,25 @@
     .timeline-event-meta {
       display: flex;
       align-items: center;
-      gap: var(--space-3);
+      gap: var(--space-2);
       margin-bottom: var(--space-2);
+      flex-wrap: wrap;
     }
 
     .timeline-event-date {
       font-size: var(--text-sm);
       color: var(--text-muted);
+    }
+
+    .badge-past {
+      background: var(--surface-elevated, #2a2a2a);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .timeline-event-title {
@@ -313,7 +325,7 @@
   <nav class="nav">
     <div class="nav-container">
       <a href="/" class="nav-logo">
-        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." height="40">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68a869c41614bd2d4f9e6688.png" alt="COLLECTIVE." height="40">
       </a>
       <div class="nav-links">
         <a href="/" class="nav-link">Events</a>
@@ -371,7 +383,7 @@
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-brand">
-        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." height="32">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68a869c41614bd2d4f9e6688.png" alt="COLLECTIVE." height="32">
         <p>Building connections across the East Midlands creative, digital and tech community.</p>
       </div>
       <div class="footer-links">
@@ -391,21 +403,20 @@
         <div class="footer-column">
           <h4>About</h4>
           <a href="/about">About Us</a>
-          <a href="https://cdicollective.co.uk" target="_blank">Main Website</a>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
       <div class="built-by">
-        Proudly built in Notts by <a href="/notluck">NotLuck</a>
+        Proudly built in Notts by <a href="https://notluck.co.uk" target="_blank">NotLuck</a>
       </div>
-      <p>&copy; 2025 COLLECTIVE. All rights reserved.</p>
+      <p>&copy; 2026 COLLECTIVE. All rights reserved.</p>
     </div>
   </footer>
 
   <script src="/assets/js/api.js"></script>
   <script>
-    const { fetchEvents, getEventImage, formatDate, getLocationColor, isUpcoming } = window.CollectiveAPI;
+    const { fetchEvents, getEventImage, getEventPlaceholder, hasEventImage, formatDate, getLocationColor, isUpcoming } = window.CollectiveAPI;
 
     let allEvents = [];
     let currentFilter = 'all';
@@ -465,15 +476,17 @@
 
         eventsByYear[year].forEach(event => {
           const colorClass = getLocationColor(event.locationTag);
+          const eventImage = hasEventImage(event) ? getEventImage(event) : getEventPlaceholder(event);
           html += `
             <div class="timeline-event" style="animation-delay: ${animationDelay}ms;">
               <a href="/event/${event.slug || event.id}" class="timeline-event-card">
                 <div class="timeline-event-image">
-                  <img src="${getEventImage(event)}" alt="${event.title}" loading="lazy">
+                  <img src="${eventImage}" alt="${event.title}" loading="lazy">
                 </div>
                 <div class="timeline-event-content">
                   <div class="timeline-event-meta">
                     <span class="badge badge-${colorClass}">${event.locationTag || 'Event'}</span>
+                    <span class="badge-past">Past Event</span>
                     <span class="timeline-event-date">${formatDate(event.date)}</span>
                   </div>
                   <h3 class="timeline-event-title">${event.title}</h3>

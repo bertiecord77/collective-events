@@ -5,12 +5,23 @@
 
   const API_BASE = 'https://api.notluck.co.uk/collective';
 
-  // Location-specific fallback images
+  // Location colors for fallback placeholders
+  const LOCATION_COLORS = {
+    nottingham: '#E5F608', // lime
+    mansfield: '#D8B4FE',  // lilac
+    chesterfield: '#9CA3AF', // grey
+    derby: '#E5F608' // lime
+  };
+
+  // Location-specific fallback images (kept for backward compatibility)
   const LOCATION_IMAGES = {
     nottingham: 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69454390106fdc3abdfa3264.png',
     mansfield: 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69413d35ca7298e25b32203a.png',
     chesterfield: 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/6967cbfe02f1be4a61702e71.png'
   };
+
+  // Default blank avatar for speakers (SVG data URL)
+  const DEFAULT_AVATAR = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none"><rect width="120" height="120" fill="#1a1a1a"/><circle cx="60" cy="45" r="20" stroke="#E5F608" stroke-width="2" fill="none"/><path d="M30 95c0-16.569 13.431-30 30-30s30 13.431 30 30" stroke="#E5F608" stroke-width="2" fill="none"/></svg>');
 
   const DEFAULT_IMAGE = 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68efb0a2629b057f6907b407.png';
 
@@ -140,11 +151,38 @@
     }
   }
 
-  // Get image for event (with location fallback)
+  // Check if event has a real featured image
+  function hasEventImage(event) {
+    return !!(event.featuredImage && event.featuredImage.trim());
+  }
+
+  // Get image for event (returns null if no image - use placeholder pattern instead)
   function getEventImage(event) {
     if (event.featuredImage) return event.featuredImage;
-    const locationKey = event.locationTag?.toLowerCase();
-    return LOCATION_IMAGES[locationKey] || DEFAULT_IMAGE;
+    return null; // Return null to trigger placeholder
+  }
+
+  // Get location color for placeholder
+  function getLocationPlaceholderColor(location) {
+    return LOCATION_COLORS[location?.toLowerCase()] || LOCATION_COLORS.nottingham;
+  }
+
+  // Generate SVG placeholder for event (solid color with event title)
+  function getEventPlaceholder(event) {
+    const color = getLocationPlaceholderColor(event.locationTag);
+    const title = event.title || 'Event';
+    // Truncate title if too long
+    const displayTitle = title.length > 30 ? title.substring(0, 27) + '...' : title;
+    const location = event.locationTag || 'COLLECTIVE.';
+
+    return 'data:image/svg+xml,' + encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+        <rect width="400" height="300" fill="#1a1a1a"/>
+        <rect x="0" y="0" width="400" height="6" fill="${color}"/>
+        <text x="200" y="130" text-anchor="middle" fill="${color}" font-family="sans-serif" font-size="16" font-weight="600">${location}</text>
+        <text x="200" y="170" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-size="14">${displayTitle}</text>
+      </svg>
+    `);
   }
 
   // Format date
@@ -200,13 +238,18 @@
     fetchVenue,
     fetchStats,
     getEventImage,
+    hasEventImage,
+    getEventPlaceholder,
+    getLocationPlaceholderColor,
     formatDate,
     formatTime,
     getLocationColor,
     isUpcoming,
     getSlugFromPath,
     LOCATION_IMAGES,
-    DEFAULT_IMAGE
+    LOCATION_COLORS,
+    DEFAULT_IMAGE,
+    DEFAULT_AVATAR
   };
 
 })();
