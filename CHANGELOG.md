@@ -134,6 +134,31 @@ notluck-api/
 
 ## Known Issues / TODO
 
+### High Priority (Launch Blockers)
+- [ ] **Partner logos** - "Trusted Partner Logos" folder in GHL is empty. Need to upload logos (NTU, Innovate UK, NotLuck, EMCCA) to folder, OR move existing logos from where they are to this folder. API returns 0 images: `GET /collective/media?folder=Trusted%20Partner%20Logos`
+- [ ] **Google Tag Manager** - GTM placeholder added but needs container ID (currently commented out in index.html)
+
+### Medium Priority
 - [ ] Header/footer duplicated across pages (components.js ready for integration)
+- [ ] Speaker data architecture - Consider linking speaker info to Contact records (bio, headshot) and event-specific info (talk title) separately
+- [ ] Speaker pages enhancement - Make speaker profiles more compelling with fuller bios
+
+### Completed
 - [x] Partner logos banner styling - Fixed CSS filter for better visibility
 - [x] Dynamic event gallery folder system - API created (`collective-event-gallery.js`)
+- [x] SEO essentials - robots.txt, sitemap.xml, OG tags, Twitter cards, favicon added
+- [x] Event hero images - Now uses location fallback images instead of SVG placeholder
+- [x] Navbar logo - Increased to 48px across all pages
+
+---
+
+## Media API Notes
+
+**IMPORTANT**: The media API uses `folder=FolderName` with URL encoding for spaces (`%20`).
+
+Working examples:
+- `GET /collective/media?folder=HomePage%20Images` - Returns 7 images
+- `GET /collective/media?folder=Trusted%20Partner%20Logos` - Returns 0 images (folder empty!)
+
+The folder exists (`folderId: 68becd57cbed3f563d1ec48c`) but has no images uploaded to it.
+Gallery images work because "HomePage Images" folder has content.
