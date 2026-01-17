@@ -1075,17 +1075,27 @@
       }
     }
 
-    /* Partner Banner */
+    /* Partner Banner - Dual row scrolling */
     .partners-section {
       background: var(--lime);
-      padding: 2rem 0;
+      padding: 1.5rem 0;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
     .partners-track {
       display: flex;
-      animation: scroll-partners 30s linear infinite;
       width: max-content;
+    }
+
+    .partners-track-1 {
+      animation: scroll-left 25s linear infinite;
+    }
+
+    .partners-track-2 {
+      animation: scroll-right 35s linear infinite;
     }
 
     .partners-track:hover {
@@ -1096,19 +1106,25 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 3rem;
-      height: 80px;
+      padding: 0 2.5rem;
+      height: 70px;
       flex-shrink: 0;
     }
 
     .partner-item img {
-      height: 60px;
+      height: 50px;
       width: auto;
-      max-width: 220px;
+      max-width: 200px;
       object-fit: contain;
       filter: grayscale(100%) contrast(0.8) brightness(0.3);
       opacity: 0.7;
       transition: filter 0.3s ease, opacity 0.3s ease;
+    }
+
+    /* NotLuck logo bigger */
+    .partner-item.notluck img {
+      height: 70px;
+      max-width: 240px;
     }
 
     .partner-item:hover img {
@@ -1116,12 +1132,21 @@
       opacity: 1;
     }
 
-    @keyframes scroll-partners {
+    @keyframes scroll-left {
       0% {
         transform: translateX(0);
       }
       100% {
         transform: translateX(-50%);
+      }
+    }
+
+    @keyframes scroll-right {
+      0% {
+        transform: translateX(-50%);
+      }
+      100% {
+        transform: translateX(0);
       }
     }
 
@@ -1514,53 +1539,62 @@
       </div>
     </section>
 
-    <!-- Partners Banner - logos from GHL "Trusted Partner Logos" folder -->
-    <!-- Logos load dynamically from API, with static fallback below -->
+    <!-- Partners Banner - dual row scrolling at different speeds -->
     <section class="partners-section" id="partners-section">
-      <div class="partners-track" id="partners-track">
-        <!-- First set of logos -->
+      <!-- Row 1: Scrolls left (faster) -->
+      <div class="partners-track partners-track-1" id="partners-track-1">
         <div class="partner-item">
           <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68caab16f411f37250c3fc87.svg" alt="East Midlands Combined County Authority">
         </div>
-        <div class="partner-item">
-          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68caaa2bbdd06626c383ca90.svg" alt="Innovate UK Immersive Tech Network">
-        </div>
-        <div class="partner-item">
+        <div class="partner-item notluck">
           <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68c051dd210e439a15fa6bc3.svg" alt="NotLuck">
         </div>
         <div class="partner-item">
           <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68bece9868e75a24dd43cea7.svg" alt="Nottingham Trent University">
         </div>
         <div class="partner-item">
-          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68bece98dd1b2c25b60adaa5.svg" alt="University of Derby">
-        </div>
-        <div class="partner-item">
           <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68bece98966de884fe445fcb.svg" alt="University of Lincoln">
         </div>
-        <div class="partner-item">
-          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68bece98ea60947697b8bdd0.svg" alt="Mansfield District Council">
-        </div>
-        <!-- Duplicate for seamless scroll loop -->
+        <!-- Duplicate for seamless loop -->
         <div class="partner-item">
           <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68caab16f411f37250c3fc87.svg" alt="East Midlands Combined County Authority">
         </div>
-        <div class="partner-item">
-          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68caaa2bbdd06626c383ca90.svg" alt="Innovate UK Immersive Tech Network">
-        </div>
-        <div class="partner-item">
+        <div class="partner-item notluck">
           <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68c051dd210e439a15fa6bc3.svg" alt="NotLuck">
         </div>
         <div class="partner-item">
           <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68bece9868e75a24dd43cea7.svg" alt="Nottingham Trent University">
         </div>
         <div class="partner-item">
+          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68bece98966de884fe445fcb.svg" alt="University of Lincoln">
+        </div>
+      </div>
+      <!-- Row 2: Scrolls right (slower) -->
+      <div class="partners-track partners-track-2" id="partners-track-2">
+        <div class="partner-item">
+          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68caaa2bbdd06626c383ca90.svg" alt="Innovate UK Immersive Tech Network">
+        </div>
+        <div class="partner-item">
           <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68bece98dd1b2c25b60adaa5.svg" alt="University of Derby">
         </div>
         <div class="partner-item">
-          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68bece98966de884fe445fcb.svg" alt="University of Lincoln">
+          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68bece98ea60947697b8bdd0.svg" alt="Mansfield District Council">
+        </div>
+        <div class="partner-item notluck">
+          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68c051dd210e439a15fa6bc3.svg" alt="NotLuck">
+        </div>
+        <!-- Duplicate for seamless loop -->
+        <div class="partner-item">
+          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68caaa2bbdd06626c383ca90.svg" alt="Innovate UK Immersive Tech Network">
+        </div>
+        <div class="partner-item">
+          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68bece98dd1b2c25b60adaa5.svg" alt="University of Derby">
         </div>
         <div class="partner-item">
           <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68bece98ea60947697b8bdd0.svg" alt="Mansfield District Council">
+        </div>
+        <div class="partner-item notluck">
+          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68c051dd210e439a15fa6bc3.svg" alt="NotLuck">
         </div>
       </div>
     </section>
