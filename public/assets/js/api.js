@@ -102,10 +102,54 @@
     }
   }
 
-  // Fetch single speaker by slug
+  // Fetch single speaker by slug (legacy - uses speakers endpoint)
   async function fetchSpeaker(slug) {
     const data = await fetchSpeakers({ slug, limit: 1 });
     return data.speakers?.[0] || null;
+  }
+
+  // Fetch speaker by contactId - extracts from events data
+  async function fetchSpeakerByContactId(contactId) {
+    if (!contactId) return null;
+
+    try {
+      // Fetch all events to find the speaker
+      const [liveData, pastData] = await Promise.all([
+        fetchEvents({ limit: 100 }),
+        fetch(`${API_BASE}/events?status=past&limit=100`).then(r => r.json()).catch(() => ({ events: [] }))
+      ]);
+
+      const allEvents = [...(liveData.events || []), ...(pastData.events || [])];
+
+      // Find events where this speaker is linked
+      const speakerEvents = allEvents.filter(e => e.speaker?.contactId === contactId);
+
+      if (speakerEvents.length === 0) return null;
+
+      // Get speaker data from the first event (should be consistent across events)
+      const speaker = speakerEvents[0].speaker;
+
+      return {
+        contactId: speaker.contactId,
+        name: speaker.name,
+        title: speaker.title,
+        bio: speaker.bio,
+        photo: speaker.photo,
+        socials: speaker.socials || {},
+        // Include all events this speaker is speaking at
+        events: speakerEvents.map(e => ({
+          id: e.id,
+          slug: e.slug,
+          title: e.title,
+          date: e.date,
+          locationTag: e.locationTag,
+          status: e.status
+        }))
+      };
+    } catch (error) {
+      console.error('Error fetching speaker by contactId:', error);
+      return null;
+    }
   }
 
   // Fetch venues from API
@@ -231,12 +275,73 @@
     return path.replace(prefix, '').replace(/^\/|\/$/g, '');
   }
 
+  // Generate URL-friendly slug from name
+  function generateSpeakerSlug(name) {
+    if (!name) return '';
+    return name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special chars
+      .replace(/\s+/g, '-')          // Spaces to hyphens
+      .replace(/-+/g, '-');          // Collapse multiple hyphens
+  }
+
+  // Fetch speaker by slug (derived from name)
+  async function fetchSpeakerBySlug(slug) {
+    if (!slug) return null;
+
+    try {
+      // Fetch all events to find the speaker
+      const [liveData, pastData] = await Promise.all([
+        fetchEvents({ limit: 100 }),
+        fetch(`${API_BASE}/events?status=past&limit=100`).then(r => r.json()).catch(() => ({ events: [] }))
+      ]);
+
+      const allEvents = [...(liveData.events || []), ...(pastData.events || [])];
+
+      // Find events where speaker name matches the slug
+      const speakerEvents = allEvents.filter(e => {
+        if (!e.speaker?.name || !e.speaker?.contactId) return false;
+        return generateSpeakerSlug(e.speaker.name) === slug;
+      });
+
+      if (speakerEvents.length === 0) return null;
+
+      // Get speaker data from the first event
+      const speaker = speakerEvents[0].speaker;
+
+      return {
+        contactId: speaker.contactId,
+        slug: generateSpeakerSlug(speaker.name),
+        name: speaker.name,
+        title: speaker.title,
+        bio: speaker.bio,
+        photo: speaker.photo,
+        socials: speaker.socials || {},
+        events: speakerEvents.map(e => ({
+          id: e.id,
+          slug: e.slug,
+          title: e.title,
+          date: e.date,
+          locationTag: e.locationTag,
+          status: e.status
+        }))
+      };
+    } catch (error) {
+      console.error('Error fetching speaker by slug:', error);
+      return null;
+    }
+  }
+
   // Export utilities to window.CollectiveAPI
   window.CollectiveAPI = {
     fetchEvents,
     fetchEvent,
     fetchSpeakers,
     fetchSpeaker,
+    fetchSpeakerByContactId,
+    fetchSpeakerBySlug,
+    generateSpeakerSlug,
     fetchVenues,
     fetchVenue,
     fetchStats,

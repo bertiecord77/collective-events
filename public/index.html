@@ -658,6 +658,22 @@
       color: var(--text-muted);
     }
 
+    .event-speaker-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: color 0.2s ease;
+    }
+
+    .event-speaker-link:hover .event-speaker-name {
+      color: var(--lime);
+    }
+
+    .event-speaker-link:hover .event-speaker-title {
+      color: var(--lime);
+      opacity: 0.8;
+    }
+
     .event-cta {
       display: flex;
       align-items: center;
@@ -1721,6 +1737,15 @@
       return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
     }
 
+    // Generate URL-friendly slug from speaker name
+    function getSpeakerSlug(name) {
+      if (!name) return '';
+      return name.toLowerCase().trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+    }
+
     // Get location badge class
     function getLocationClass(location) {
       if (!location) return '';
@@ -1793,8 +1818,15 @@
                 <div class="event-speaker">
                   <div class="event-speaker-avatar">${getInitials(event.speaker.name)}</div>
                   <div class="event-speaker-info">
-                    <div class="event-speaker-name">${event.speaker.name}</div>
-                    ${event.speaker.title ? `<div class="event-speaker-title">${event.speaker.title}</div>` : ''}
+                    ${event.speaker.contactId ? `
+                      <a href="/speaker/${getSpeakerSlug(event.speaker.name)}" class="event-speaker-link" onclick="event.stopPropagation()">
+                        <div class="event-speaker-name">${event.speaker.name}</div>
+                        ${event.speaker.title ? `<div class="event-speaker-title">${event.speaker.title}</div>` : ''}
+                      </a>
+                    ` : `
+                      <div class="event-speaker-name">${event.speaker.name}</div>
+                      ${event.speaker.title ? `<div class="event-speaker-title">${event.speaker.title}</div>` : ''}
+                    `}
                   </div>
                   <span class="event-cta">
                     View

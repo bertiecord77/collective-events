@@ -222,6 +222,14 @@
       transform: translateY(-2px);
     }
 
+    .speaker-card-link {
+      cursor: pointer;
+    }
+
+    .speaker-card-link:hover h3 {
+      color: var(--lime);
+    }
+
     .speaker-avatar {
       width: 60px;
       height: 60px;
@@ -1013,6 +1021,15 @@
       }
     }
 
+    // Generate URL-friendly slug from speaker name
+    function getSpeakerSlug(name) {
+      if (!name) return '';
+      return name.toLowerCase().trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+    }
+
     function renderEvent(event) {
       // Hide loading, show content
       document.getElementById('loading').style.display = 'none';
@@ -1137,15 +1154,19 @@
       if (speakers.length > 0) {
         document.getElementById('event-speakers').style.display = 'block';
         const speakersGrid = document.getElementById('speakers-grid');
-        speakersGrid.innerHTML = speakers.map(speaker => `
-          <div class="speaker-card">
+        speakersGrid.innerHTML = speakers.map(speaker => {
+          const hasProfile = !!speaker.contactId;
+          const cardContent = `
             <img src="${speaker.photo || speaker.image || DEFAULT_AVATAR}" alt="${speaker.name}" class="speaker-avatar" onerror="this.src='${DEFAULT_AVATAR}'">
             <div class="speaker-info">
               <h3>${speaker.name}</h3>
               <p>${speaker.title || ''}</p>
             </div>
-          </div>
-        `).join('');
+          `;
+          return hasProfile
+            ? `<a href="/speaker/${getSpeakerSlug(speaker.name)}" class="speaker-card speaker-card-link">${cardContent}</a>`
+            : `<div class="speaker-card">${cardContent}</div>`;
+        }).join('');
       }
 
       // Update page title
