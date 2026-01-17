@@ -96,6 +96,38 @@
     return data.speakers?.[0] || null;
   }
 
+  // Fetch venues from API
+  async function fetchVenues(options = {}) {
+    const params = new URLSearchParams();
+
+    if (options.limit) params.append('limit', options.limit);
+    if (options.city) params.append('city', options.city);
+
+    const url = `${API_BASE}/venues${params.toString() ? '?' + params.toString() : ''}`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch venues');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching venues:', error);
+      return { venues: [], total: 0 };
+    }
+  }
+
+  // Fetch single venue by slug
+  async function fetchVenue(slug) {
+    try {
+      const response = await fetch(`${API_BASE}/venues/${slug}`);
+      if (!response.ok) return null;
+      const data = await response.json();
+      return data.venue || null;
+    } catch (error) {
+      console.error('Error fetching venue:', error);
+      return null;
+    }
+  }
+
   // Fetch stats
   async function fetchStats() {
     try {
@@ -164,6 +196,8 @@
     fetchEvent,
     fetchSpeakers,
     fetchSpeaker,
+    fetchVenues,
+    fetchVenue,
     fetchStats,
     getEventImage,
     formatDate,

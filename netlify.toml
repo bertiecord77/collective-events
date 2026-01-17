@@ -66,6 +66,13 @@
   status = 200
   force = true
 
+# Venue pages (dynamic)
+[[redirects]]
+  from = "/venue/*"
+  to = "/pages/venue.html"
+  status = 200
+  force = true
+
 # Other pages
 [[redirects]]
   from = "/past"
