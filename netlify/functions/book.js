@@ -125,86 +125,50 @@ async function waitForAppointment(token, contactId, calendarId, eventDate, log, 
   return null;
 }
 
-// Build rich notes for the appointment
+// Build rich notes for the appointment (venue/directions only)
 function buildAppointmentNotes(details) {
   const lines = [];
 
-  // Event details header
-  lines.push('═══════════════════════════════════');
-  lines.push('EVENT DETAILS');
-  lines.push('═══════════════════════════════════');
-  lines.push(`📅 ${details.eventTitle}`);
-  lines.push(`📆 Date: ${details.eventDate}`);
-  lines.push(`🕐 Time: ${details.startTime} - ${details.endTime}`);
-  lines.push('');
-
-  // Venue information
-  lines.push('───────────────────────────────────');
-  lines.push('VENUE INFORMATION');
-  lines.push('───────────────────────────────────');
+  // Getting There header
+  lines.push('🚀 GETTING THERE');
+  lines.push('─────────────────────────────');
 
   if (details.eventVenue) {
-    lines.push(`🏢 Venue: ${details.eventVenue}`);
+    lines.push(`🏢 ${details.eventVenue}`);
   }
 
   if (details.eventVenueAddress) {
-    lines.push(`📍 Address: ${details.eventVenueAddress}`);
-    // Add Google Maps link
+    lines.push(`📍 ${details.eventVenueAddress}`);
     const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(details.eventVenueAddress)}`;
-    lines.push(`🗺️ Google Maps: ${mapsUrl}`);
+    lines.push(`🗺️ ${mapsUrl}`);
   }
 
   if (details.eventVenueWhat3Words) {
     const w3w = details.eventVenueWhat3Words.replace('///', '');
     lines.push('');
     lines.push(`📌 what3words: ///${w3w}`);
-    lines.push(`   └─ https://what3words.com/${w3w}`);
-    lines.push('   ℹ️ what3words pinpoints the exact entrance location.');
-    lines.push('      Download the free app or click the link above.');
+    lines.push(`   ${w3w.includes('.') ? `https://what3words.com/${w3w}` : `https://what3words.com/${w3w}`}`);
+    lines.push('');
+    lines.push('   what3words pinpoints the exact entrance.');
+    lines.push('   Download the free app or tap the link.');
   }
 
   // Accessibility & Parking
   if (details.eventVenueAccessibility || details.eventVenueParking) {
     lines.push('');
-    lines.push('───────────────────────────────────');
-    lines.push('ACCESS & PARKING');
-    lines.push('───────────────────────────────────');
-
     if (details.eventVenueAccessibility) {
-      lines.push(`♿ Accessibility: ${details.eventVenueAccessibility}`);
+      lines.push(`♿ ${details.eventVenueAccessibility}`);
     }
     if (details.eventVenueParking) {
-      lines.push(`🅿️ Parking: ${details.eventVenueParking}`);
+      lines.push(`🅿️ ${details.eventVenueParking}`);
     }
   }
 
   // Venue notes
   if (details.eventVenueNotes) {
     lines.push('');
-    lines.push('───────────────────────────────────');
-    lines.push('VENUE NOTES');
-    lines.push('───────────────────────────────────');
-    lines.push(details.eventVenueNotes);
+    lines.push('📝 ' + details.eventVenueNotes);
   }
-
-  // Attendee details
-  lines.push('');
-  lines.push('═══════════════════════════════════');
-  lines.push('ATTENDEE');
-  lines.push('═══════════════════════════════════');
-  lines.push(`👤 ${details.firstName} ${details.lastName}`);
-  lines.push(`📧 ${details.email}`);
-  if (details.phone) {
-    lines.push(`📱 ${details.phone}`);
-  }
-  lines.push(`🏢 ${details.businessName}`);
-  lines.push(`📬 Marketing opt-in: ${details.optIn ? 'Yes' : 'No'}`);
-
-  // Footer
-  lines.push('');
-  lines.push('───────────────────────────────────');
-  lines.push(`Booked via COLLECTIVE Events Website`);
-  lines.push(`${new Date().toLocaleString('en-GB', { dateStyle: 'full', timeStyle: 'short' })}`);
 
   return lines.join('\n');
 }
