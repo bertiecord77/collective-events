@@ -768,6 +768,50 @@ h6 { font-size: var(--font-size-base); }
   color: var(--lime);
 }
 
+/* Footer with ul/li structure (index.html style) */
+.footer-links h4 {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+  color: var(--text-primary);
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: var(--space-2);
+}
+
+.footer-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  transition: color var(--transition-fast);
+}
+
+.footer-links a:hover {
+  color: var(--lime);
+}
+
+/* Social links in footer */
+.social-links {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.social-links a {
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+}
+
+.social-links a:hover {
+  color: var(--lime);
+}
+
 .footer-bottom {
   max-width: 1200px;
   margin: var(--space-xl) auto 0;
