@@ -204,6 +204,261 @@
       margin-left: auto;
       margin-right: auto;
     }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 540px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-header {
+      padding: var(--space-5) var(--space-5) var(--space-4);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-header h2 {
+      font-size: var(--text-xl);
+      font-weight: 600;
+      margin-bottom: var(--space-2);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: var(--space-4);
+      right: var(--space-4);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: var(--space-2);
+      font-size: var(--text-xl);
+      line-height: 1;
+      transition: color var(--transition-base);
+    }
+
+    .modal-close:hover {
+      color: var(--text-primary);
+    }
+
+    .modal-body {
+      padding: var(--space-5);
+    }
+
+    /* Progress Steps */
+    .progress-steps {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-2);
+      margin-top: var(--space-2);
+    }
+
+    .progress-step {
+      width: 40px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      transition: background var(--transition-base);
+    }
+
+    .progress-step.active {
+      background: var(--lime);
+    }
+
+    .progress-step.completed {
+      background: var(--lime);
+      opacity: 0.6;
+    }
+
+    /* Form Styles */
+    .form-step {
+      display: none;
+    }
+
+    .form-step.active {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .form-group label {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: 500;
+      margin-bottom: var(--space-2);
+      color: var(--text-primary);
+    }
+
+    .form-group label .optional {
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: var(--space-3);
+      background: var(--black);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: var(--text-base);
+      font-family: inherit;
+      transition: border-color var(--transition-base);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--lime);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-group .char-count {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      text-align: right;
+      margin-top: var(--space-1);
+    }
+
+    .form-group .helper-text {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-top: var(--space-1);
+    }
+
+    .form-error {
+      color: #ef4444;
+      font-size: var(--text-sm);
+      margin-top: var(--space-1);
+    }
+
+    /* Privacy Notice */
+    .privacy-notice {
+      background: rgba(225, 255, 0, 0.1);
+      border: 1px solid rgba(225, 255, 0, 0.2);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .privacy-notice p {
+      font-size: var(--text-sm);
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .privacy-notice strong {
+      color: var(--lime);
+    }
+
+    /* Form Actions */
+    .form-actions {
+      display: flex;
+      gap: var(--space-3);
+      margin-top: var(--space-5);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--border);
+    }
+
+    .form-actions .btn {
+      flex: 1;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: var(--space-3) var(--space-5);
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-base);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Success State */
+    .form-success {
+      text-align: center;
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .form-success .success-icon {
+      width: 64px;
+      height: 64px;
+      background: rgba(225, 255, 0, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-4);
+    }
+
+    .form-success .success-icon svg {
+      width: 32px;
+      height: 32px;
+      color: var(--lime);
+    }
+
+    .form-success h3 {
+      font-size: var(--text-xl);
+      font-weight: 600;
+      margin-bottom: var(--space-3);
+    }
+
+    .form-success p {
+      color: var(--text-muted);
+      margin-bottom: var(--space-2);
+    }
+
+    .form-success .note {
+      font-size: var(--text-sm);
+      background: var(--black);
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      margin-top: var(--space-4);
+    }
   </style>
 </head>
 <body>
@@ -260,9 +515,148 @@
     <section class="cta-section">
       <h2>Want to Speak at COLLECTIVE.?</h2>
       <p>We're always looking for passionate speakers to share their stories with our community.</p>
-      <a href="mailto:hello@cdicollective.co.uk" class="btn btn-primary">Get in Touch</a>
+      <button type="button" class="btn btn-primary" id="apply-to-speak-btn">Apply to Speak</button>
     </section>
   </main>
+
+  <!-- Speaker Application Modal -->
+  <div class="modal-overlay" id="speaker-modal">
+    <div class="modal">
+      <button type="button" class="modal-close" id="modal-close">&times;</button>
+
+      <div class="modal-header">
+        <h2>Apply to Speak at COLLECTIVE.</h2>
+        <div class="progress-steps">
+          <div class="progress-step active" data-step="1"></div>
+          <div class="progress-step" data-step="2"></div>
+          <div class="progress-step" data-step="3"></div>
+          <div class="progress-step" data-step="4"></div>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <form id="speaker-form">
+          <!-- Step 1: Basic Info -->
+          <div class="form-step active" data-step="1">
+            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Let's start with the basics</h3>
+
+            <div class="form-group">
+              <label for="firstName">First Name</label>
+              <input type="text" id="firstName" name="firstName" required placeholder="Your first name">
+            </div>
+
+            <div class="form-group">
+              <label for="lastName">Last Name</label>
+              <input type="text" id="lastName" name="lastName" required placeholder="Your last name">
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" name="email" required placeholder="you@example.com">
+            </div>
+
+            <div class="form-group">
+              <label for="phone">Phone Number <span class="optional">(optional)</span></label>
+              <input type="tel" id="phone" name="phone" placeholder="Your phone number">
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-primary" data-next>Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 2: About You -->
+          <div class="form-step" data-step="2">
+            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Tell us about yourself</h3>
+
+            <div class="form-group">
+              <label for="tagline">Your Tagline</label>
+              <input type="text" id="tagline" name="tagline" placeholder="e.g. UX Designer & Accessibility Advocate" maxlength="100">
+              <p class="helper-text">A short description that captures what you do</p>
+            </div>
+
+            <div class="form-group">
+              <label for="bio">Your Bio</label>
+              <textarea id="bio" name="bio" required placeholder="Tell us about your background, experience, and what makes you passionate about your work..." maxlength="1000"></textarea>
+              <p class="char-count"><span id="bio-count">0</span>/1000</p>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" data-prev>Back</button>
+              <button type="button" class="btn btn-primary" data-next>Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 3: Social Links -->
+          <div class="form-step" data-step="3">
+            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">Your online presence</h3>
+
+            <div class="privacy-notice">
+              <p><strong>Public information:</strong> If selected, your name, bio, tagline, and social links will be displayed publicly on our website and event materials.</p>
+            </div>
+
+            <div class="form-group">
+              <label for="linkedin">LinkedIn <span class="optional">(optional)</span></label>
+              <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/yourprofile">
+            </div>
+
+            <div class="form-group">
+              <label for="instagram">Instagram <span class="optional">(optional)</span></label>
+              <input type="text" id="instagram" name="instagram" placeholder="@yourhandle or full URL">
+            </div>
+
+            <div class="form-group">
+              <label for="website">Website <span class="optional">(optional)</span></label>
+              <input type="url" id="website" name="website" placeholder="https://yourwebsite.com">
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" data-prev>Back</button>
+              <button type="button" class="btn btn-primary" data-next>Continue</button>
+            </div>
+          </div>
+
+          <!-- Step 4: Talk Proposal -->
+          <div class="form-step" data-step="4">
+            <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-4);">What would you like to talk about?</h3>
+
+            <div class="form-group">
+              <label for="talkProposal">Talk Ideas or Proposal <span class="optional">(optional but helpful)</span></label>
+              <textarea id="talkProposal" name="talkProposal" placeholder="Share any talk topics you have in mind, past presentations you've given, or areas of expertise you'd like to share with our community..." maxlength="2000"></textarea>
+              <p class="char-count"><span id="proposal-count">0</span>/2000</p>
+            </div>
+
+            <div class="privacy-notice" style="background: rgba(255,255,255,0.05); border-color: var(--border);">
+              <p style="color: var(--text-muted);"><strong style="color: var(--text-primary);">Please note:</strong> Submitting an application doesn't guarantee a speaking slot. We review all applications and will be in touch within a few days if we think you'd be a great fit for an upcoming event.</p>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" data-prev>Back</button>
+              <button type="submit" class="btn btn-primary" id="submit-btn">Submit Application</button>
+            </div>
+          </div>
+
+          <!-- Success State -->
+          <div class="form-step form-success" data-step="success">
+            <div class="success-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <h3>Application Submitted!</h3>
+            <p>Thank you for your interest in speaking at COLLECTIVE.</p>
+            <p>We've received your application and will review it shortly.</p>
+            <div class="note">
+              <strong>What's next?</strong> Our team will review your application and get back to you within a few days if we think you'd be a great fit for an upcoming event.
+            </div>
+            <div class="form-actions" style="justify-content: center; border: none; padding-top: var(--space-4);">
+              <button type="button" class="btn btn-primary" id="close-success">Done</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <!-- Footer -->
   <footer>
@@ -432,6 +826,217 @@
 
     // Initialize
     loadSpeakers();
+
+    // ========================================
+    // Speaker Application Modal
+    // ========================================
+    (function() {
+      const modal = document.getElementById('speaker-modal');
+      const form = document.getElementById('speaker-form');
+      const openBtn = document.getElementById('apply-to-speak-btn');
+      const closeBtn = document.getElementById('modal-close');
+      const closeSuccessBtn = document.getElementById('close-success');
+      const progressSteps = document.querySelectorAll('.progress-step');
+
+      let currentStep = 1;
+      const totalSteps = 4;
+
+      // API endpoint
+      const API_BASE = window.CollectiveAPI?.API_BASE || 'https://api.notluck.co.uk';
+
+      // Open modal
+      openBtn.addEventListener('click', () => {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+
+      // Close modal
+      function closeModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        // Reset form after a brief delay
+        setTimeout(() => {
+          form.reset();
+          goToStep(1);
+          // Restore progress steps visibility
+          document.querySelector('.progress-steps').style.display = '';
+          // Reset submit button
+          const submitBtn = document.getElementById('submit-btn');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Application';
+        }, 300);
+      }
+
+      closeBtn.addEventListener('click', closeModal);
+      closeSuccessBtn.addEventListener('click', closeModal);
+
+      // Close on overlay click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+
+      // Close on escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+          closeModal();
+        }
+      });
+
+      // Navigation
+      function goToStep(step) {
+        currentStep = step;
+
+        // Update form steps
+        document.querySelectorAll('.form-step').forEach(el => {
+          el.classList.remove('active');
+        });
+        const targetStep = document.querySelector(`.form-step[data-step="${step}"]`);
+        if (targetStep) {
+          targetStep.classList.add('active');
+        }
+
+        // Update progress indicators
+        progressSteps.forEach(el => {
+          const stepNum = parseInt(el.dataset.step);
+          el.classList.remove('active', 'completed');
+          if (stepNum < step) {
+            el.classList.add('completed');
+          } else if (stepNum === step) {
+            el.classList.add('active');
+          }
+        });
+      }
+
+      // Next/Previous buttons
+      form.addEventListener('click', (e) => {
+        if (e.target.matches('[data-next]')) {
+          e.preventDefault();
+          if (validateStep(currentStep)) {
+            goToStep(currentStep + 1);
+          }
+        }
+        if (e.target.matches('[data-prev]')) {
+          e.preventDefault();
+          goToStep(currentStep - 1);
+        }
+      });
+
+      // Validate current step
+      function validateStep(step) {
+        const stepEl = document.querySelector(`.form-step[data-step="${step}"]`);
+        const inputs = stepEl.querySelectorAll('input[required], textarea[required]');
+
+        let isValid = true;
+
+        inputs.forEach(input => {
+          // Remove existing error
+          const existingError = input.parentElement.querySelector('.form-error');
+          if (existingError) existingError.remove();
+
+          if (!input.value.trim()) {
+            isValid = false;
+            showError(input, 'This field is required');
+          } else if (input.type === 'email' && !isValidEmail(input.value)) {
+            isValid = false;
+            showError(input, 'Please enter a valid email address');
+          }
+        });
+
+        return isValid;
+      }
+
+      function showError(input, message) {
+        const error = document.createElement('p');
+        error.className = 'form-error';
+        error.textContent = message;
+        input.parentElement.appendChild(error);
+        input.style.borderColor = '#ef4444';
+        input.addEventListener('input', () => {
+          input.style.borderColor = '';
+          const err = input.parentElement.querySelector('.form-error');
+          if (err) err.remove();
+        }, { once: true });
+      }
+
+      function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+
+      // Character counters
+      const bioInput = document.getElementById('bio');
+      const bioCount = document.getElementById('bio-count');
+      const proposalInput = document.getElementById('talkProposal');
+      const proposalCount = document.getElementById('proposal-count');
+
+      if (bioInput && bioCount) {
+        bioInput.addEventListener('input', () => {
+          bioCount.textContent = bioInput.value.length;
+        });
+      }
+
+      if (proposalInput && proposalCount) {
+        proposalInput.addEventListener('input', () => {
+          proposalCount.textContent = proposalInput.value.length;
+        });
+      }
+
+      // Form submission
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!validateStep(currentStep)) {
+          return;
+        }
+
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        // Gather form data
+        const formData = {
+          firstName: document.getElementById('firstName').value.trim(),
+          lastName: document.getElementById('lastName').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          phone: document.getElementById('phone').value.trim() || undefined,
+          tagline: document.getElementById('tagline').value.trim() || undefined,
+          bio: document.getElementById('bio').value.trim(),
+          linkedin: document.getElementById('linkedin').value.trim() || undefined,
+          instagram: document.getElementById('instagram').value.trim() || undefined,
+          website: document.getElementById('website').value.trim() || undefined,
+          talkProposal: document.getElementById('talkProposal').value.trim() || undefined
+        };
+
+        try {
+          const response = await fetch(`${API_BASE}/collective/speaker-application`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            throw new Error(result.error || 'Failed to submit application');
+          }
+
+          // Show success state
+          goToStep('success');
+
+          // Hide progress steps on success
+          document.querySelector('.progress-steps').style.display = 'none';
+
+        } catch (error) {
+          console.error('Submission error:', error);
+          alert('There was an error submitting your application. Please try again.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Application';
+        }
+      });
+    })();
   </script>
 </body>
 </html>
