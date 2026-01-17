@@ -410,35 +410,6 @@
     let allEvents = [];
     let currentFilter = 'all';
 
-    async function init() {
-      try {
-        // Load past events specifically using status=past
-        const response = await fetch('https://api.notluck.co.uk/collective/events?status=past&limit=200');
-        const data = await response.json();
-        allEvents = data.events || [];
-
-      // Sort by date descending (most recent first)
-      allEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      // Update stats
-      document.getElementById('stat-events').textContent = allEvents.length;
-
-      // Count unique speakers
-      const speakers = new Set();
-      allEvents.forEach(e => {
-        if (e.speakers) {
-          e.speakers.forEach(s => speakers.add(s.id || s.name));
-        }
-      });
-      document.getElementById('stat-speakers').textContent = speakers.size;
-
-      // Render timeline
-      renderTimeline(allEvents);
-
-      // Set up filter buttons
-      setupFilters();
-    }
-
     function setupFilters() {
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -516,6 +487,36 @@
       });
 
       container.innerHTML = html;
+    }
+
+    async function init() {
+      try {
+        // Load past events specifically using status=past
+        const response = await fetch('https://api.notluck.co.uk/collective/events?status=past&limit=200');
+        const data = await response.json();
+        allEvents = data.events || [];
+
+        // Sort by date descending (most recent first)
+        allEvents.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Update stats
+        document.getElementById('stat-events').textContent = allEvents.length;
+
+        // Count unique speakers
+        const speakers = new Set();
+        allEvents.forEach(e => {
+          if (e.speakers) {
+            e.speakers.forEach(s => speakers.add(s.id || s.name));
+          }
+        });
+        document.getElementById('stat-speakers').textContent = speakers.size;
+
+        // Render timeline
+        renderTimeline(allEvents);
+
+        // Set up filter buttons
+        setupFilters();
+
       } catch (error) {
         console.error('Error loading past events:', error);
         document.getElementById('timeline').innerHTML = `
