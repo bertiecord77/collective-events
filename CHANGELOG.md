@@ -4,25 +4,64 @@ All notable changes to this project are documented here.
 
 ---
 
-## [2026-01-17] - Speaker-Contact Linking & Image Updates
+## [2026-01-17] - Speaker-Contact Linking & Partner Logos
 
 ### Added
 - **Speaker-Contact association** - Events can now link to a Contact record in GHL for speaker data
 - **Contact profile photo support** - Speaker photos now pull from linked Contact's `profilePhoto`
 - **Contact ID in speaker data** - API returns `contactId` for linking to speaker pages
+- **Speaker social links** - API returns socials object (instagram, linkedin, twitter, tiktok, website)
 - **Debug mode for events API** - Use `?debug=true` to see raw GHL records and contact data
+- **All 7 partner logos** - EMCCA, Innovate UK, NotLuck, NTU, Derby, Lincoln, Mansfield District Council
 
 ### Architecture
 - Speaker data priority: Event fields → Contact fields → null
 - Photo priority: Contact profilePhoto → Event speaker_photo → null
-- Bio requires "bio" or "speaker_bio" custom field on Contact record
+- Speaker custom fields use GHL field ID mapping (see `SPEAKER_FIELD_IDS` in collective-events.js)
+
+### Fixed
+- **GHL Media API folder filtering** - Must use BOTH `folderId` AND `parentId` parameters (see GHL API Quirks below)
+- **SVG file support** - Media API now includes `.svg` files in results
+
+---
+
+## GHL API Quirks & Gotchas
+
+**IMPORTANT: Reference this section when working with GHL APIs to avoid repeating mistakes.**
+
+### Media API - Folder Filtering
+The `/medias/files` endpoint requires **BOTH** `folderId` AND `parentId` parameters to filter by folder:
+```
+GET /medias/files?altId={locationId}&altType=location&folderId={folderId}&parentId={folderId}
+```
+Using only one parameter will return all files regardless of folder.
+
+### Contact Custom Fields
+GHL returns contact `customFields` as an array with `{id, value}` objects - NOT `{key, value}`.
+To look up a field by name, you need to:
+1. Get field definitions from `/locations/{locationId}/customFields`
+2. Map field keys to IDs
+3. Look up by ID in the contact's customFields array
+
+See `SPEAKER_FIELD_IDS` mapping in `collective-events.js` for example.
+
+### Custom Object Associations
+When an event has a linked Contact, the association appears in `record.relations[]`:
+```json
+{
+  "relations": [{
+    "objectKey": "contact",
+    "recordId": "CONTACT_ID_HERE"
+  }]
+}
+```
 
 ---
 
 ## [2026-01-17] - Gallery, Logo & Image Fallback Updates
 
 ### Fixed
-- **Media API folder filtering** - Changed from `folderId` to `parentId` parameter for GHL API compatibility
+- **Media API folder filtering** - Requires both `folderId` AND `parentId` parameters
 - **URL decoding** - Added `decodeURIComponent()` to properly handle `%20` encoding in folder names
 - **Homepage gallery** - Now correctly loads community photos from "HomePage Images" folder
 - **Partner logos visibility** - Fixed CSS filter that was making logos invisible (changed from `brightness(0)` to proper grayscale treatment)
