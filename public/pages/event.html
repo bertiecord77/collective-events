@@ -249,6 +249,80 @@
       color: var(--text-muted);
     }
 
+    /* Featured Speaker (single speaker with bio) */
+    .speaker-featured {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+    }
+
+    .speaker-featured-header {
+      display: flex;
+      gap: var(--space-5);
+      align-items: flex-start;
+      margin-bottom: var(--space-5);
+    }
+
+    .speaker-featured-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--surface-elevated);
+      flex-shrink: 0;
+    }
+
+    .speaker-featured-info h3 {
+      font-size: var(--text-xl);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .speaker-featured-info .speaker-title {
+      font-size: var(--text-base);
+      color: var(--text-muted);
+      margin-bottom: var(--space-3);
+    }
+
+    .speaker-name-link {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .speaker-name-link:hover h3 {
+      color: var(--lime);
+    }
+
+    .speaker-social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: var(--text-sm);
+      color: var(--lime);
+      text-decoration: none;
+    }
+
+    .speaker-social-link:hover {
+      text-decoration: underline;
+    }
+
+    .speaker-bio {
+      border-top: 1px solid var(--border);
+      padding-top: var(--space-5);
+    }
+
+    .speaker-bio p {
+      font-size: var(--text-base);
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-4);
+    }
+
+    .speaker-bio p:last-child {
+      margin-bottom: 0;
+    }
+
     /* Loading State */
     .event-loading {
       display: flex;
@@ -1072,10 +1146,10 @@
       // Title
       document.getElementById('event-title').textContent = event.title;
 
-      // Description
+      // Description - use fullDescription first, fall back to shortDescription
       const descEl = document.getElementById('event-description');
-      const description = event.description || event.shortDescription || '';
-      descEl.innerHTML = description.split('\n').map(p => `<p>${p}</p>`).join('');
+      const description = event.fullDescription || event.description || event.shortDescription || '';
+      descEl.innerHTML = description.split('\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('');
 
       // Date & Time
       document.getElementById('event-date').textContent = formatDate(event.date);
@@ -1167,19 +1241,45 @@
       if (speakers.length > 0) {
         document.getElementById('event-speakers').style.display = 'block';
         const speakersGrid = document.getElementById('speakers-grid');
-        speakersGrid.innerHTML = speakers.map(speaker => {
+
+        // For single speaker, use a different layout with bio
+        if (speakers.length === 1 && speakers[0].bio) {
+          const speaker = speakers[0];
           const hasProfile = !!speaker.contactId;
-          const cardContent = `
-            <img src="${speaker.photo || speaker.image || DEFAULT_AVATAR}" alt="${speaker.name}" class="speaker-avatar" onerror="this.src='${DEFAULT_AVATAR}'">
-            <div class="speaker-info">
-              <h3>${speaker.name}</h3>
-              <p>${speaker.title || ''}</p>
+          speakersGrid.innerHTML = `
+            <div class="speaker-featured">
+              <div class="speaker-featured-header">
+                <img src="${speaker.photo || speaker.image || DEFAULT_AVATAR}" alt="${speaker.name}" class="speaker-featured-avatar" onerror="this.src='${DEFAULT_AVATAR}'">
+                <div class="speaker-featured-info">
+                  ${hasProfile
+                    ? `<a href="/speaker/${getSpeakerSlug(speaker.name)}" class="speaker-name-link"><h3>${speaker.name}</h3></a>`
+                    : `<h3>${speaker.name}</h3>`
+                  }
+                  <p class="speaker-title">${speaker.title || ''}</p>
+                  ${speaker.socials?.linkedin ? `<a href="${speaker.socials.linkedin}" target="_blank" class="speaker-social-link">LinkedIn</a>` : ''}
+                </div>
+              </div>
+              <div class="speaker-bio">
+                ${speaker.bio.split('\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('')}
+              </div>
             </div>
           `;
-          return hasProfile
-            ? `<a href="/speaker/${getSpeakerSlug(speaker.name)}" class="speaker-card speaker-card-link">${cardContent}</a>`
-            : `<div class="speaker-card">${cardContent}</div>`;
-        }).join('');
+        } else {
+          // Multiple speakers or no bio - use grid
+          speakersGrid.innerHTML = speakers.map(speaker => {
+            const hasProfile = !!speaker.contactId;
+            const cardContent = `
+              <img src="${speaker.photo || speaker.image || DEFAULT_AVATAR}" alt="${speaker.name}" class="speaker-avatar" onerror="this.src='${DEFAULT_AVATAR}'">
+              <div class="speaker-info">
+                <h3>${speaker.name}</h3>
+                <p>${speaker.title || ''}</p>
+              </div>
+            `;
+            return hasProfile
+              ? `<a href="/speaker/${getSpeakerSlug(speaker.name)}" class="speaker-card speaker-card-link">${cardContent}</a>`
+              : `<div class="speaker-card">${cardContent}</div>`;
+          }).join('');
+        }
       }
 
       // Update page title
