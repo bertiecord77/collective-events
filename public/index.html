@@ -662,6 +662,7 @@
       text-decoration: none;
       color: inherit;
       display: block;
+      cursor: pointer;
       transition: color 0.2s ease;
     }
 
@@ -1819,10 +1820,10 @@
                   <div class="event-speaker-avatar">${getInitials(event.speaker.name)}</div>
                   <div class="event-speaker-info">
                     ${event.speaker.contactId ? `
-                      <a href="/speaker/${getSpeakerSlug(event.speaker.name)}" class="event-speaker-link" onclick="event.stopPropagation()">
+                      <span class="event-speaker-link" data-speaker-slug="${getSpeakerSlug(event.speaker.name)}">
                         <div class="event-speaker-name">${event.speaker.name}</div>
                         ${event.speaker.title ? `<div class="event-speaker-title">${event.speaker.title}</div>` : ''}
-                      </a>
+                      </span>
                     ` : `
                       <div class="event-speaker-name">${event.speaker.name}</div>
                       ${event.speaker.title ? `<div class="event-speaker-title">${event.speaker.title}</div>` : ''}
@@ -2153,6 +2154,21 @@
       }
     }
 
+    // Handle speaker link clicks (using event delegation to avoid nested <a> tags)
+    function setupSpeakerLinks() {
+      document.addEventListener('click', (e) => {
+        const speakerLink = e.target.closest('.event-speaker-link[data-speaker-slug]');
+        if (speakerLink) {
+          e.preventDefault();
+          e.stopPropagation();
+          const slug = speakerLink.dataset.speakerSlug;
+          if (slug) {
+            window.location.href = `/speaker/${slug}`;
+          }
+        }
+      });
+    }
+
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
       loadEvents();
@@ -2162,6 +2178,7 @@
       setupScrollAnimations();
       setupNavbar();
       setupFilters();
+      setupSpeakerLinks();
     });
   </script>
 </body>
