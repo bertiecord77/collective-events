@@ -15,6 +15,13 @@
   [context.deploy-preview.environment]
     NODE_ENV = "preview"
 
+# SEO - Dynamic sitemap
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/.netlify/functions/sitemap"
+  status = 200
+  force = true
+
 # Static pages - serve directly (force = true ensures these take priority)
 [[redirects]]
   from = "/about"

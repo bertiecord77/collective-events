@@ -20,6 +20,9 @@
   <meta name="twitter:description" content="Join us at this COLLECTIVE. event in the East Midlands.">
   <meta name="twitter:image" content="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/696bc2db5e05d4243b73f7d5.png">
 
+  <!-- JSON-LD Structured Data - Injected dynamically -->
+  <script id="event-jsonld" type="application/ld+json"></script>
+
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/696bc2db5e05d4243b73f7d5.png">
 
@@ -1388,6 +1391,99 @@
 
       // Update page title
       document.title = `${event.title} | COLLECTIVE.`;
+
+      // Inject JSON-LD structured data
+      injectEventJsonLd(event);
+    }
+
+    /**
+     * Inject Event schema JSON-LD for SEO
+     */
+    function injectEventJsonLd(event) {
+      const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        "name": event.title,
+        "description": event.shortDescription || event.fullDescription?.substring(0, 200) || '',
+        "startDate": event.date,
+        "endDate": event.date,
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "url": window.location.href,
+        "image": event.featuredImage || "https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/696bc2db5e05d4243b73f7d5.png",
+        "organizer": {
+          "@type": "Organization",
+          "name": "COLLECTIVE.",
+          "url": "https://collective-events.netlify.app"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": event.price === "Free" ? "0" : event.price || "0",
+          "priceCurrency": "GBP",
+          "availability": event.capacity?.status === "sold_out"
+            ? "https://schema.org/SoldOut"
+            : "https://schema.org/InStock",
+          "url": window.location.href
+        }
+      };
+
+      // Add location if venue exists
+      if (event.venue) {
+        jsonLd.location = {
+          "@type": "Place",
+          "name": event.venue.name || event.locationTag,
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": event.venue.address || '',
+            "addressLocality": event.venue.city || event.locationTag || '',
+            "postalCode": event.venue.postcode || '',
+            "addressCountry": "GB"
+          }
+        };
+      }
+
+      // Add performer if speaker exists
+      if (event.speaker?.name) {
+        jsonLd.performer = {
+          "@type": "Person",
+          "name": event.speaker.name
+        };
+        if (event.speaker.contactId) {
+          jsonLd.performer.url = `https://collective-events.netlify.app/speaker/${getSpeakerSlug(event.speaker.name)}`;
+        }
+      }
+
+      // Inject into page
+      const scriptEl = document.getElementById('event-jsonld');
+      if (scriptEl) {
+        scriptEl.textContent = JSON.stringify(jsonLd);
+      }
+
+      // Also update OG meta tags dynamically
+      updateMetaTags(event);
+    }
+
+    /**
+     * Update Open Graph meta tags dynamically
+     */
+    function updateMetaTags(event) {
+      const image = event.featuredImage || "https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/696bc2db5e05d4243b73f7d5.png";
+      const description = event.shortDescription || event.fullDescription?.substring(0, 160) || '';
+      const url = window.location.href;
+
+      // Update OG tags
+      document.querySelector('meta[property="og:title"]')?.setAttribute('content', event.title);
+      document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
+      document.querySelector('meta[property="og:image"]')?.setAttribute('content', image);
+      document.querySelector('meta[property="og:url"]')?.setAttribute('content', url);
+
+      // Update Twitter tags
+      document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', event.title);
+      document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', description);
+      document.querySelector('meta[name="twitter:image"]')?.setAttribute('content', image);
+
+      // Update page description
+      document.querySelector('meta[name="description"]')?.setAttribute('content', description);
     }
 
     async function loadRelatedEvents(currentEvent) {
