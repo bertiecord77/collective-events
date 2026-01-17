@@ -1076,54 +1076,55 @@
       }
     }
 
-    /* Community Gallery Section */
+    /* Community Gallery Section - Built in Notts inspired */
     .gallery-section {
       background: var(--bg-secondary);
       border-top: 1px solid var(--border-color);
-      padding: 5rem 0;
+      padding: 6rem 0;
       overflow: hidden;
     }
 
     .gallery-header {
       text-align: center;
       padding: 0 2rem;
-      margin-bottom: 3rem;
+      margin-bottom: 3.5rem;
     }
 
     .gallery-header h2 {
-      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-size: clamp(2rem, 5vw, 3rem);
       font-weight: 700;
       letter-spacing: -0.03em;
-      margin-bottom: 0.75rem;
+      margin-bottom: 1rem;
     }
 
     .gallery-header p {
       color: var(--text-secondary);
-      font-size: 1rem;
-      max-width: 500px;
+      font-size: 1.125rem;
+      max-width: 550px;
       margin: 0 auto;
     }
 
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 1rem;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
       padding: 0 2rem;
-      max-width: 1600px;
+      max-width: 1200px;
       margin: 0 auto;
     }
 
     .gallery-item {
-      aspect-ratio: 1;
-      border-radius: 16px;
+      aspect-ratio: 4/5;
+      border-radius: 20px;
       overflow: hidden;
       position: relative;
       cursor: pointer;
-      transition: transform 0.4s var(--transition-smooth);
+      transition: transform 0.4s var(--transition-smooth), box-shadow 0.4s var(--transition-smooth);
     }
 
     .gallery-item:hover {
-      transform: scale(1.05);
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
       z-index: 2;
     }
 
@@ -1135,14 +1136,14 @@
     }
 
     .gallery-item:hover img {
-      transform: scale(1.1);
+      transform: scale(1.08);
     }
 
     .gallery-item::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%);
+      background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);
       opacity: 0;
       transition: opacity 0.3s ease;
     }
@@ -1151,21 +1152,28 @@
       opacity: 1;
     }
 
-    @media (max-width: 1024px) {
+    @media (max-width: 900px) {
       .gallery-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
       }
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 540px) {
+      .gallery-section {
+        padding: 4rem 0;
+      }
+
       .gallery-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
-        padding: 0 1rem;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 0 1.5rem;
+        max-width: 400px;
       }
 
       .gallery-item {
-        border-radius: 12px;
+        border-radius: 16px;
+        aspect-ratio: 4/5;
       }
     }
 
@@ -1955,7 +1963,7 @@
       const grid = document.getElementById('gallery-grid');
 
       try {
-        const response = await fetch(`${MEDIA_API_URL}?folder=HomePage%20Images&limit=6`);
+        const response = await fetch(`${MEDIA_API_URL}?folder=HomePage%20Images&limit=3`);
         if (!response.ok) throw new Error('Failed to fetch gallery images');
 
         const data = await response.json();
@@ -1968,7 +1976,7 @@
         }
 
         grid.innerHTML = images.map((img, index) => `
-          <div class="gallery-item" style="animation-delay: ${index * 0.1}s">
+          <div class="gallery-item" style="animation-delay: ${index * 0.15}s">
             <img src="${img.url}" alt="${img.name || 'Community event'}" loading="lazy">
           </div>
         `).join('');
@@ -1980,11 +1988,41 @@
       }
     }
 
+    // Load partner logos from media API (with fallback to hardcoded)
+    async function loadPartnerLogos() {
+      try {
+        const response = await fetch(`${MEDIA_API_URL}?folder=Trusted%20Partner%20Logos&limit=12`);
+        if (!response.ok) return; // Keep hardcoded logos on error
+
+        const data = await response.json();
+        const logos = data.images || [];
+
+        // Only replace if we have actual logos
+        if (logos.length < 3) return;
+
+        const track = document.querySelector('.partners-track');
+        if (!track) return;
+
+        // Build logo HTML - duplicate for seamless scrolling
+        const logoItems = logos.map(logo => `
+          <div class="partner-item">
+            <img src="${logo.url}" alt="${logo.name || 'Partner'}" loading="lazy">
+          </div>
+        `).join('');
+
+        track.innerHTML = logoItems + logoItems;
+
+      } catch (error) {
+        console.log('Using default partner logos');
+      }
+    }
+
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
       loadEvents();
       loadPastEvents();
       loadGalleryImages();
+      loadPartnerLogos();
       setupScrollAnimations();
       setupNavbar();
       setupFilters();
