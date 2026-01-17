@@ -440,7 +440,11 @@
       // Count unique speakers
       const speakers = new Set();
       events.forEach(e => {
-        if (e.speakers) {
+        // Handle both e.speaker (object) and e.speakers (array) formats
+        if (e.speaker) {
+          speakers.add(e.speaker.id || e.speaker.name);
+        }
+        if (e.speakers && Array.isArray(e.speakers)) {
           e.speakers.forEach(s => speakers.add(s.id || s.name));
         }
       });
