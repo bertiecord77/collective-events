@@ -870,8 +870,11 @@
       gap: 3rem;
     }
 
-    .footer-brand .logo-img {
-      height: 28px;
+    .footer-brand .logo-img,
+    .footer-brand .footer-logo {
+      height: 32px;
+      width: auto;
+      object-fit: contain;
       margin-bottom: 1rem;
     }
 
@@ -1058,12 +1061,13 @@
       width: auto;
       max-width: 180px;
       object-fit: contain;
-      filter: brightness(0);
-      opacity: 0.8;
-      transition: opacity 0.3s ease;
+      filter: grayscale(100%) contrast(0.8) brightness(0.3);
+      opacity: 0.7;
+      transition: filter 0.3s ease, opacity 0.3s ease;
     }
 
     .partner-item:hover img {
+      filter: grayscale(0%) brightness(1);
       opacity: 1;
     }
 
@@ -1073,6 +1077,254 @@
       }
       100% {
         transform: translateX(-50%);
+      }
+    }
+
+    /* Community Gallery Section - Built in Notts inspired */
+    .gallery-section {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      padding: 6rem 0;
+      overflow: hidden;
+    }
+
+    .gallery-header {
+      text-align: center;
+      padding: 0 2rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .gallery-header h2 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+
+    .gallery-header p {
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+      max-width: 550px;
+      margin: 0 auto;
+    }
+
+    .gallery-carousel {
+      display: flex;
+      gap: 1.25rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding: 1rem 2rem 2rem;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .gallery-carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .gallery-item {
+      flex: 0 0 280px;
+      aspect-ratio: 4/5;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      scroll-snap-align: start;
+      transition: transform 0.4s var(--transition-smooth), box-shadow 0.4s var(--transition-smooth);
+    }
+
+    .gallery-item:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      z-index: 2;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s var(--transition-smooth);
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.08);
+    }
+
+    .gallery-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .gallery-item:hover::after {
+      opacity: 1;
+    }
+
+    .gallery-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .gallery-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .gallery-btn:hover {
+      background: var(--lime);
+      border-color: var(--lime);
+      color: var(--black);
+    }
+
+    .gallery-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .gallery-item {
+        flex: 0 0 240px;
+      }
+
+      .gallery-carousel {
+        padding: 1rem 1.5rem 1.5rem;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .gallery-section {
+        padding: 4rem 0;
+      }
+
+      .gallery-item {
+        flex: 0 0 200px;
+        border-radius: 16px;
+      }
+
+      .gallery-carousel {
+        padding: 1rem 1rem 1.5rem;
+        gap: 1rem;
+      }
+    }
+
+    /* Mission Callout Section */
+    .mission-section {
+      padding: 6rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mission-card {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 32px;
+      padding: 4rem;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+    }
+
+    .mission-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: var(--gradient-brand);
+    }
+
+    .mission-icon {
+      flex-shrink: 0;
+      width: 80px;
+      height: 80px;
+      background: var(--gradient-brand);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mission-icon svg {
+      width: 40px;
+      height: 40px;
+      color: var(--black);
+    }
+
+    .mission-content {
+      flex: 1;
+    }
+
+    .mission-content h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .mission-content p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .mission-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--lime);
+      font-weight: 600;
+      text-decoration: none;
+      transition: gap 0.3s ease;
+    }
+
+    .mission-link:hover {
+      gap: 0.75rem;
+    }
+
+    .mission-link svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .mission-card {
+        flex-direction: column;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        gap: 1.5rem;
+      }
+
+      .mission-card::before {
+        width: 100%;
+        height: 4px;
+        top: 0;
+        left: 0;
+      }
+
+      .mission-content h2 {
+        font-size: 1.5rem;
       }
     }
   </style>
@@ -1086,7 +1338,7 @@
 
   <!-- Navigation -->
   <nav id="navbar">
-    <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." class="logo-img">
+    <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68a869c41614bd2d4f9e6688.png" alt="COLLECTIVE." class="logo-img">
     <ul class="nav-links">
       <li><a href="/">Events</a></li>
       <li><a href="/speakers">Speakers</a></li>
@@ -1166,6 +1418,53 @@
         <div class="stat-item">
           <div class="stat-number lilac" id="stat-speakers">-</div>
           <div class="stat-label">Speakers</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Community Gallery Section -->
+    <section class="gallery-section" id="gallery">
+      <div class="gallery-header">
+        <h2>Our Community</h2>
+        <p>Snapshots from events across the East Midlands</p>
+      </div>
+      <div class="gallery-carousel" id="gallery-carousel">
+        <!-- Populated by JavaScript -->
+      </div>
+      <div class="gallery-controls">
+        <button class="gallery-btn" id="gallery-prev" aria-label="Previous">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button class="gallery-btn" id="gallery-next" aria-label="Next">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Mission Callout -->
+    <section class="mission-section">
+      <div class="mission-card">
+        <div class="mission-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 16v-4"></path>
+            <path d="M12 8h.01"></path>
+          </svg>
+        </div>
+        <div class="mission-content">
+          <h2>Why We Do What We Do</h2>
+          <p id="mission-text">We believe in the power of community to transform careers, businesses, and lives. COLLECTIVE. brings together creative minds to share knowledge, build connections, and shape the future of the East Midlands digital economy.</p>
+          <a href="/about" class="mission-link">
+            Learn about our mission
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
         </div>
       </div>
     </section>
@@ -1298,7 +1597,7 @@
   <footer>
     <div class="footer-content">
       <div class="footer-brand">
-        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68e88f864d2dff0a63480113.png" alt="COLLECTIVE." class="logo-img">
+        <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/68a869c41614bd2d4f9e6688.png" alt="COLLECTIVE." class="footer-logo">
         <p>Building connections across the East Midlands creative, digital and tech community.</p>
       </div>
       <div class="footer-links">
@@ -1328,8 +1627,8 @@
     </div>
     <div class="footer-bottom">
       <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start;">
-        <span style="color: var(--text-secondary); font-size: 0.9rem;">Proudly built in Notts by <a href="/notluck" style="color: var(--lime); text-decoration: none;">NotLuck</a></span>
-        <span>&copy; 2025 COLLECTIVE. All rights reserved.</span>
+        <span style="color: var(--text-secondary); font-size: 0.9rem;">Proudly built in Notts by <a href="https://notluck.co.uk" target="_blank" style="color: var(--lime); text-decoration: none;">NotLuck</a></span>
+        <span>&copy; 2026 COLLECTIVE. All rights reserved.</span>
       </div>
       <div class="social-links">
         <a href="https://linkedin.com/company/cdicollective" target="_blank" aria-label="LinkedIn">
@@ -1349,6 +1648,7 @@
   <script>
     // Configuration
     const API_URL = 'https://api.notluck.co.uk/collective/events';
+    const MEDIA_API_URL = 'https://api.notluck.co.uk/collective/media';
 
     // Location-specific images (fallback when no featured image)
     const LOCATION_IMAGES = {
@@ -1716,10 +2016,82 @@
       });
     }
 
+    // Load gallery images from media API with carousel
+    async function loadGalleryImages() {
+      const carousel = document.getElementById('gallery-carousel');
+      const prevBtn = document.getElementById('gallery-prev');
+      const nextBtn = document.getElementById('gallery-next');
+
+      try {
+        const response = await fetch(`${MEDIA_API_URL}?folder=HomePage%20Images&limit=12`);
+        if (!response.ok) throw new Error('Failed to fetch gallery images');
+
+        const data = await response.json();
+        const images = data.images || [];
+
+        if (images.length === 0) {
+          // Hide gallery section if no images
+          document.getElementById('gallery').style.display = 'none';
+          return;
+        }
+
+        carousel.innerHTML = images.map((img, index) => `
+          <div class="gallery-item" style="animation-delay: ${index * 0.1}s">
+            <img src="${img.url}" alt="${img.name || 'Community event'}" loading="lazy">
+          </div>
+        `).join('');
+
+        // Carousel navigation
+        const scrollAmount = 300;
+        prevBtn.addEventListener('click', () => {
+          carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        });
+        nextBtn.addEventListener('click', () => {
+          carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        });
+
+      } catch (error) {
+        console.error('Error loading gallery:', error);
+        // Hide section on error
+        document.getElementById('gallery').style.display = 'none';
+      }
+    }
+
+    // Load partner logos from media API (with fallback to hardcoded)
+    async function loadPartnerLogos() {
+      try {
+        const response = await fetch(`${MEDIA_API_URL}?folder=Trusted%20Partner%20Logos&limit=12`);
+        if (!response.ok) return; // Keep hardcoded logos on error
+
+        const data = await response.json();
+        const logos = data.images || [];
+
+        // Only replace if we have actual logos
+        if (logos.length < 3) return;
+
+        const track = document.querySelector('.partners-track');
+        if (!track) return;
+
+        // Build logo HTML - duplicate for seamless scrolling
+        const logoItems = logos.map(logo => `
+          <div class="partner-item">
+            <img src="${logo.url}" alt="${logo.name || 'Partner'}" loading="lazy">
+          </div>
+        `).join('');
+
+        track.innerHTML = logoItems + logoItems;
+
+      } catch (error) {
+        console.log('Using default partner logos');
+      }
+    }
+
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
       loadEvents();
       loadPastEvents();
+      loadGalleryImages();
+      loadPartnerLogos();
       setupScrollAnimations();
       setupNavbar();
       setupFilters();
