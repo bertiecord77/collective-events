@@ -4,6 +4,21 @@ All notable changes to this project are documented here.
 
 ---
 
+## [2026-01-17] - Speaker-Contact Linking & Image Updates
+
+### Added
+- **Speaker-Contact association** - Events can now link to a Contact record in GHL for speaker data
+- **Contact profile photo support** - Speaker photos now pull from linked Contact's `profilePhoto`
+- **Contact ID in speaker data** - API returns `contactId` for linking to speaker pages
+- **Debug mode for events API** - Use `?debug=true` to see raw GHL records and contact data
+
+### Architecture
+- Speaker data priority: Event fields → Contact fields → null
+- Photo priority: Contact profilePhoto → Event speaker_photo → null
+- Bio requires "bio" or "speaker_bio" custom field on Contact record
+
+---
+
 ## [2026-01-17] - Gallery, Logo & Image Fallback Updates
 
 ### Fixed
