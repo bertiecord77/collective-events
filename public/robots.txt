@@ -1,0 +1,11 @@
+# COLLECTIVE. Events - robots.txt
+# https://collective-events.netlify.app
+
+User-agent: *
+Allow: /
+
+# Disallow admin/function paths
+Disallow: /.netlify/
+
+# Sitemap location
+Sitemap: https://collective-events.netlify.app/sitemap.xml
