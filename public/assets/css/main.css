@@ -735,6 +735,12 @@ h6 { font-size: var(--font-size-base); }
   gap: var(--space-md);
 }
 
+.footer-brand .footer-logo,
+.footer-brand img {
+  height: 32px;
+  width: auto;
+}
+
 .footer-brand p {
   color: var(--text-muted);
   font-size: var(--text-sm);

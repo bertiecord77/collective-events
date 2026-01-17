@@ -186,21 +186,178 @@
       justify-content: center;
     }
 
-    /* Speakers Section */
-    .event-speakers {
-      margin-top: var(--space-6);
-      padding-top: var(--space-6);
+    /* Speaker Spotlight Section - Full width between hero and content */
+    .speaker-spotlight {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .speaker-spotlight-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .speaker-spotlight-label {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--lime);
+      margin-bottom: var(--space-4);
+    }
+
+    .speaker-spotlight-card {
+      display: flex;
+      align-items: center;
+      gap: var(--space-5);
+    }
+
+    .speaker-spotlight-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--surface-elevated);
+      flex-shrink: 0;
+      border: 2px solid var(--border);
+    }
+
+    .speaker-spotlight-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .speaker-spotlight-info h3 {
+      font-size: var(--text-xl);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .speaker-spotlight-info .speaker-title {
+      font-size: var(--text-base);
+      color: var(--text-muted);
+      margin-bottom: var(--space-2);
+    }
+
+    .speaker-spotlight-links {
+      display: flex;
+      gap: var(--space-4);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .speaker-spotlight-link {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color var(--transition-base);
+    }
+
+    .speaker-spotlight-link:hover {
+      color: var(--lime);
+    }
+
+    .speaker-spotlight-link svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Expandable bio */
+    .speaker-bio-toggle {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      transition: all var(--transition-base);
+    }
+
+    .speaker-bio-toggle:hover {
+      border-color: var(--lime);
+      color: var(--lime);
+    }
+
+    .speaker-bio-toggle svg {
+      width: 16px;
+      height: 16px;
+      transition: transform var(--transition-base);
+    }
+
+    .speaker-bio-toggle.expanded svg {
+      transform: rotate(180deg);
+    }
+
+    .speaker-bio-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+
+    .speaker-bio-content.expanded {
+      max-height: 1000px;
+    }
+
+    .speaker-bio-inner {
+      padding-top: var(--space-5);
+      margin-top: var(--space-5);
       border-top: 1px solid var(--border);
     }
 
-    .event-speakers h2 {
-      font-size: var(--text-2xl);
-      margin-bottom: var(--space-5);
+    .speaker-bio-inner p {
+      font-size: var(--text-base);
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-4);
+    }
+
+    .speaker-bio-inner p:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 600px) {
+      .speaker-spotlight-card {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .speaker-spotlight-links {
+        justify-content: center;
+      }
+    }
+
+    /* Multiple speakers grid (fallback) */
+    .speakers-section {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .speakers-section-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .speakers-section-label {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--lime);
+      margin-bottom: var(--space-4);
     }
 
     .speakers-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: var(--space-4);
     }
 
@@ -209,7 +366,7 @@
       align-items: center;
       gap: var(--space-4);
       padding: var(--space-4);
-      background: var(--surface);
+      background: var(--black);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       text-decoration: none;
@@ -219,108 +376,30 @@
 
     .speaker-card:hover {
       border-color: var(--lime);
-      transform: translateY(-2px);
     }
 
     .speaker-card-link {
       cursor: pointer;
     }
 
-    .speaker-card-link:hover h3 {
-      color: var(--lime);
-    }
-
     .speaker-avatar {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: var(--surface-elevated);
-    }
-
-    .speaker-info h3 {
-      font-size: var(--text-base);
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .speaker-info p {
-      font-size: var(--text-sm);
-      color: var(--text-muted);
-    }
-
-    /* Featured Speaker (single speaker with bio) */
-    .speaker-featured {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: var(--space-6);
-    }
-
-    .speaker-featured-header {
-      display: flex;
-      gap: var(--space-5);
-      align-items: flex-start;
-      margin-bottom: var(--space-5);
-    }
-
-    .speaker-featured-avatar {
-      width: 100px;
-      height: 100px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       object-fit: cover;
       background: var(--surface-elevated);
       flex-shrink: 0;
     }
 
-    .speaker-featured-info h3 {
-      font-size: var(--text-xl);
+    .speaker-info h3 {
+      font-size: var(--text-base);
       font-weight: 600;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
-    .speaker-featured-info .speaker-title {
-      font-size: var(--text-base);
-      color: var(--text-muted);
-      margin-bottom: var(--space-3);
-    }
-
-    .speaker-name-link {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .speaker-name-link:hover h3 {
-      color: var(--lime);
-    }
-
-    .speaker-social-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
+    .speaker-info p {
       font-size: var(--text-sm);
-      color: var(--lime);
-      text-decoration: none;
-    }
-
-    .speaker-social-link:hover {
-      text-decoration: underline;
-    }
-
-    .speaker-bio {
-      border-top: 1px solid var(--border);
-      padding-top: var(--space-5);
-    }
-
-    .speaker-bio p {
-      font-size: var(--text-base);
-      line-height: 1.7;
-      color: var(--text-secondary);
-      margin-bottom: var(--space-4);
-    }
-
-    .speaker-bio p:last-child {
-      margin-bottom: 0;
+      color: var(--text-muted);
     }
 
     /* Loading State */
@@ -795,17 +874,16 @@
       </div>
     </section>
 
+    <!-- Speaker Spotlight (shown between hero and content if speakers exist) -->
+    <section id="speaker-spotlight" class="speaker-spotlight" style="display: none;">
+      <div class="speaker-spotlight-inner" id="speaker-spotlight-content"></div>
+    </section>
+
     <!-- Event Details -->
     <section class="event-content">
       <div class="event-grid">
         <div class="event-main">
           <div id="event-description" class="event-description"></div>
-
-          <!-- Speakers (if any) -->
-          <div id="event-speakers" class="event-speakers" style="display: none;">
-            <h2>Speakers</h2>
-            <div id="speakers-grid" class="speakers-grid"></div>
-          </div>
         </div>
 
         <aside class="event-sidebar">
@@ -1236,49 +1314,75 @@
         ctaContainer.innerHTML = ctaHtml;
       }
 
-      // Speakers - handle both speakers array and single speaker object
+      // Speakers - render in spotlight section between hero and content
       const speakers = event.speakers || (event.speaker?.name ? [event.speaker] : []);
       if (speakers.length > 0) {
-        document.getElementById('event-speakers').style.display = 'block';
-        const speakersGrid = document.getElementById('speakers-grid');
+        document.getElementById('speaker-spotlight').style.display = 'block';
+        const spotlightContent = document.getElementById('speaker-spotlight-content');
 
-        // For single speaker, use a different layout with bio
-        if (speakers.length === 1 && speakers[0].bio) {
+        if (speakers.length === 1) {
+          // Single speaker - featured spotlight with expandable bio
           const speaker = speakers[0];
           const hasProfile = !!speaker.contactId;
-          speakersGrid.innerHTML = `
-            <div class="speaker-featured">
-              <div class="speaker-featured-header">
-                <img src="${speaker.photo || speaker.image || DEFAULT_AVATAR}" alt="${speaker.name}" class="speaker-featured-avatar" onerror="this.src='${DEFAULT_AVATAR}'">
-                <div class="speaker-featured-info">
-                  ${hasProfile
-                    ? `<a href="/speaker/${getSpeakerSlug(speaker.name)}" class="speaker-name-link"><h3>${speaker.name}</h3></a>`
-                    : `<h3>${speaker.name}</h3>`
-                  }
-                  <p class="speaker-title">${speaker.title || ''}</p>
-                  ${speaker.socials?.linkedin ? `<a href="${speaker.socials.linkedin}" target="_blank" class="speaker-social-link">LinkedIn</a>` : ''}
+          const hasBio = !!speaker.bio;
+
+          spotlightContent.innerHTML = `
+            <div class="speaker-spotlight-label">Featured Speaker</div>
+            <div class="speaker-spotlight-card">
+              <img src="${speaker.photo || speaker.image || DEFAULT_AVATAR}" alt="${speaker.name}" class="speaker-spotlight-avatar" onerror="this.src='${DEFAULT_AVATAR}'">
+              <div class="speaker-spotlight-info">
+                <h3>${hasProfile ? `<a href="/speaker/${getSpeakerSlug(speaker.name)}" style="color: inherit; text-decoration: none;">${speaker.name}</a>` : speaker.name}</h3>
+                ${speaker.title ? `<p class="speaker-title">${speaker.title}</p>` : ''}
+                <div class="speaker-spotlight-links">
+                  ${hasProfile ? `
+                    <a href="/speaker/${getSpeakerSlug(speaker.name)}" class="speaker-spotlight-link">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                      View Profile
+                    </a>
+                  ` : ''}
+                  ${speaker.socials?.linkedin ? `
+                    <a href="${speaker.socials.linkedin}" target="_blank" class="speaker-spotlight-link">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                      LinkedIn
+                    </a>
+                  ` : ''}
+                  ${hasBio ? `
+                    <button class="speaker-bio-toggle" onclick="toggleSpeakerBio(this)">
+                      About ${speaker.name.split(' ')[0]}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                  ` : ''}
                 </div>
               </div>
-              <div class="speaker-bio">
-                ${speaker.bio.split('\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('')}
-              </div>
             </div>
+            ${hasBio ? `
+              <div class="speaker-bio-content" id="speaker-bio">
+                <div class="speaker-bio-inner">
+                  ${speaker.bio.split('\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('')}
+                </div>
+              </div>
+            ` : ''}
           `;
         } else {
-          // Multiple speakers or no bio - use grid
-          speakersGrid.innerHTML = speakers.map(speaker => {
-            const hasProfile = !!speaker.contactId;
-            const cardContent = `
-              <img src="${speaker.photo || speaker.image || DEFAULT_AVATAR}" alt="${speaker.name}" class="speaker-avatar" onerror="this.src='${DEFAULT_AVATAR}'">
-              <div class="speaker-info">
-                <h3>${speaker.name}</h3>
-                <p>${speaker.title || ''}</p>
-              </div>
-            `;
-            return hasProfile
-              ? `<a href="/speaker/${getSpeakerSlug(speaker.name)}" class="speaker-card speaker-card-link">${cardContent}</a>`
-              : `<div class="speaker-card">${cardContent}</div>`;
-          }).join('');
+          // Multiple speakers - grid layout
+          spotlightContent.innerHTML = `
+            <div class="speakers-section-label">Speakers</div>
+            <div class="speakers-grid">
+              ${speakers.map(speaker => {
+                const hasProfile = !!speaker.contactId;
+                const cardContent = `
+                  <img src="${speaker.photo || speaker.image || DEFAULT_AVATAR}" alt="${speaker.name}" class="speaker-avatar" onerror="this.src='${DEFAULT_AVATAR}'">
+                  <div class="speaker-info">
+                    <h3>${speaker.name}</h3>
+                    <p>${speaker.title || ''}</p>
+                  </div>
+                `;
+                return hasProfile
+                  ? `<a href="/speaker/${getSpeakerSlug(speaker.name)}" class="speaker-card speaker-card-link">${cardContent}</a>`
+                  : `<div class="speaker-card">${cardContent}</div>`;
+              }).join('')}
+            </div>
+          `;
         }
       }
 
@@ -1313,6 +1417,15 @@
     function showError() {
       document.getElementById('loading').style.display = 'none';
       document.getElementById('error').style.display = 'block';
+    }
+
+    // Toggle speaker bio expansion
+    function toggleSpeakerBio(btn) {
+      const bioContent = document.getElementById('speaker-bio');
+      if (bioContent) {
+        bioContent.classList.toggle('expanded');
+        btn.classList.toggle('expanded');
+      }
     }
 
     // Share functions
