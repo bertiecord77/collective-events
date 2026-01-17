@@ -1361,17 +1361,11 @@
         eventEndTime: currentEvent.endTime || '19:30',
         eventLocation: currentEvent.locationTag || '',
         eventVenue: currentEvent.venue?.name || currentEvent.venueName || '',
-        eventVenueAddress: currentEvent.venue?.fullAddress || currentEvent.venue?.address || currentEvent.address || '',
+        eventVenueAddress: currentEvent.venue?.address || currentEvent.address || '',
         eventVenueWhat3Words: currentEvent.venue?.what3words || currentEvent.what3words || '',
         eventVenueAccessibility: currentEvent.venue?.accessibility || currentEvent.accessibility || '',
         eventVenueParking: currentEvent.venue?.parking || currentEvent.parking || '',
-        eventVenueTransport: currentEvent.venue?.transport || '',
         eventVenueNotes: currentEvent.venue?.notes || '',
-        // Speaker details for email templates
-        speakerName: currentEvent.speaker?.name || '',
-        speakerTitle: currentEvent.speaker?.title || currentEvent.speaker?.role || '',
-        speakerPhoto: currentEvent.speaker?.photo || currentEvent.speaker?.image || '',
-        speakerBio: currentEvent.speaker?.bio || '',
         calendarId: currentEvent.calendarId || CALENDAR_ID
       };
 
