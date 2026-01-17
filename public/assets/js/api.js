@@ -13,11 +13,12 @@
     derby: '#E5F608' // lime
   };
 
-  // Location-specific fallback images (kept for backward compatibility)
+  // Location-specific fallback images
   const LOCATION_IMAGES = {
     nottingham: 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69454390106fdc3abdfa3264.png',
     mansfield: 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69413d35ca7298e25b32203a.png',
-    chesterfield: 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/6967cbfe02f1be4a61702e71.png'
+    chesterfield: 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/6967cbfe02f1be4a61702e71.png',
+    derby: 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69454390106fdc3abdfa3264.png'
   };
 
   // Default blank avatar for speakers (SVG data URL)
@@ -156,10 +157,12 @@
     return !!(event.featuredImage && event.featuredImage.trim());
   }
 
-  // Get image for event (returns null if no image - use placeholder pattern instead)
+  // Get image for event - returns featuredImage or location fallback
   function getEventImage(event) {
     if (event.featuredImage) return event.featuredImage;
-    return null; // Return null to trigger placeholder
+    // Return location-specific fallback image
+    const location = event.locationTag?.toLowerCase();
+    return LOCATION_IMAGES[location] || LOCATION_IMAGES.nottingham || DEFAULT_IMAGE;
   }
 
   // Get location color for placeholder
