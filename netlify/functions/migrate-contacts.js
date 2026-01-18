@@ -235,7 +235,10 @@ export const handler = async (event, context) => {
             customFields: contact.customFields,
             // Show all top-level keys to find where type might be stored
             allKeys: Object.keys(contact)
-          } : null
+          } : null,
+          // Show full API response keys for pagination debugging
+          apiResponseKeys: Object.keys(testResult),
+          meta: testResult.meta || testResult.pagination || null
         }, null, 2)
       };
     }
