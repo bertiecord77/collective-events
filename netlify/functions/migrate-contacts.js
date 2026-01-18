@@ -60,11 +60,11 @@ async function ghlRequest(endpoint, method, token, body = null) {
   return data;
 }
 
-// Fetch contacts with pagination (with optional limit)
-async function fetchAllContacts(token, maxContacts = 500) {
+// Fetch contacts with pagination (with optional limit and skip)
+async function fetchAllContacts(token, maxContacts = 500, skipFirst = 0) {
   const contacts = [];
   let hasMore = true;
-  let startAfter = 0;
+  let startAfter = skipFirst; // Start from skip offset
   const batchSize = Math.min(100, maxContacts);
   let page = 0;
 
@@ -86,7 +86,7 @@ async function fetchAllContacts(token, maxContacts = 500) {
       contacts.push(...result.contacts);
       startAfter += result.contacts.length;
       page++;
-      console.log(`Fetched page ${page}, total contacts: ${contacts.length}`);
+      console.log(`Fetched page ${page}, total contacts: ${contacts.length} (started at offset ${skipFirst})`);
 
       // Rate limiting - small delay between pages
       await new Promise(resolve => setTimeout(resolve, 50));
@@ -203,6 +203,7 @@ export const handler = async (event, context) => {
   const params = event.queryStringParameters || {};
   const dryRun = params.run !== 'true';
   const limit = parseInt(params.limit) || 0; // 0 = no limit
+  const skip = parseInt(params.skip) || 0; // Skip first N contacts
   const diagnostic = params.diag === 'true';
 
   try {
@@ -238,10 +239,10 @@ export const handler = async (event, context) => {
       };
     }
 
-    console.log(`Starting migration... (dryRun: ${dryRun}, limit: ${limit || 'none'})`);
+    console.log(`Starting migration... (dryRun: ${dryRun}, limit: ${limit || 'none'}, skip: ${skip})`);
 
-    // Fetch contacts (with limit applied during fetch for efficiency)
-    let contacts = await fetchAllContacts(token, limit || 500);  // Default max 500 to avoid timeout
+    // Fetch contacts (with limit and skip applied during fetch for efficiency)
+    let contacts = await fetchAllContacts(token, limit || 500, skip);  // Default max 500 to avoid timeout
     console.log(`Fetched ${contacts.length} contacts`);
 
     const results = {
@@ -249,6 +250,8 @@ export const handler = async (event, context) => {
       processed: 0,
       updated: 0,
       errors: 0,
+      skipped: skip,
+      nextSkip: skip + contacts.length,
       byType: {
         [CONTACT_TYPES.PROSPECT]: 0,
         [CONTACT_TYPES.GUEST_BOOKED]: 0,
