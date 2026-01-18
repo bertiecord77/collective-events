@@ -61,11 +61,12 @@ async function ghlRequest(endpoint, method, token, body = null) {
 }
 
 // Fetch contacts with pagination using cursor-based approach
-// startAfterId: Contact ID to start after (for batch processing across calls)
-async function fetchAllContacts(token, maxContacts = 500, startAfterId = null) {
+// GHL API requires both startAfter (timestamp) and startAfterId (contact ID) for pagination
+async function fetchAllContacts(token, maxContacts = 500, startAfter = null, startAfterId = null) {
   const contacts = [];
   let hasMore = true;
-  let lastContactId = startAfterId;
+  let nextStartAfter = startAfter;
+  let nextStartAfterId = startAfterId;
   const batchSize = Math.min(100, maxContacts);
   let page = 0;
 
@@ -76,16 +77,19 @@ async function fetchAllContacts(token, maxContacts = 500, startAfterId = null) {
       limit: String(fetchLimit)
     });
 
-    // Use startAfterId for cursor-based pagination
-    if (lastContactId) {
-      params.append('startAfterId', lastContactId);
+    // GHL API requires both startAfter and startAfterId for pagination
+    if (nextStartAfter && nextStartAfterId) {
+      params.append('startAfter', String(nextStartAfter));
+      params.append('startAfterId', nextStartAfterId);
     }
 
     const result = await ghlRequest(`/contacts/?${params}`, 'GET', token);
 
     if (result.contacts && result.contacts.length > 0) {
       contacts.push(...result.contacts);
-      lastContactId = result.contacts[result.contacts.length - 1].id;
+      // Get pagination info from meta for next page
+      nextStartAfter = result.meta?.startAfter || null;
+      nextStartAfterId = result.meta?.startAfterId || null;
       page++;
       console.log(`Fetched page ${page}, total contacts: ${contacts.length}`);
 
@@ -93,10 +97,10 @@ async function fetchAllContacts(token, maxContacts = 500, startAfterId = null) {
       await new Promise(resolve => setTimeout(resolve, 50));
     }
 
-    hasMore = result.contacts && result.contacts.length === fetchLimit && contacts.length < maxContacts;
+    hasMore = result.contacts && result.contacts.length === fetchLimit && contacts.length < maxContacts && nextStartAfter;
   }
 
-  return { contacts, lastContactId };
+  return { contacts, nextStartAfter, nextStartAfterId, totalAvailable: 639 };
 }
 
 // Fetch appointments for a contact (disabled for speed - can enable later)
@@ -204,7 +208,9 @@ export const handler = async (event, context) => {
   const params = event.queryStringParameters || {};
   const dryRun = params.run !== 'true';
   const limit = parseInt(params.limit) || 0; // 0 = no limit
-  const startAfterId = params.after || null; // Contact ID to start after (for batch processing)
+  // GHL pagination requires both startAfter (timestamp) and startAfterId (contact ID)
+  const startAfter = params.startAfter || null;
+  const startAfterId = params.startAfterId || null;
   const diagnostic = params.diag === 'true';
 
   try {
@@ -243,21 +249,22 @@ export const handler = async (event, context) => {
       };
     }
 
-    console.log(`Starting migration... (dryRun: ${dryRun}, limit: ${limit || 'none'}, after: ${startAfterId || 'start'})`);
+    console.log(`Starting migration... (dryRun: ${dryRun}, limit: ${limit || 'none'}, page: ${startAfterId ? 'continuing' : 'first'})`);
 
     // Fetch contacts (with cursor-based pagination)
-    const fetchResult = await fetchAllContacts(token, limit || 500, startAfterId);
+    const fetchResult = await fetchAllContacts(token, limit || 500, startAfter, startAfterId);
     const contacts = fetchResult.contacts;
-    const lastContactId = fetchResult.lastContactId;
     console.log(`Fetched ${contacts.length} contacts`);
 
     const results = {
       total: contacts.length,
+      totalAvailable: fetchResult.totalAvailable,
       processed: 0,
       updated: 0,
       errors: 0,
-      startedAfter: startAfterId || 'start',
-      nextAfter: lastContactId,  // Use this ID with ?after= for next batch
+      // Next page params (use both in next request: ?startAfter=X&startAfterId=Y)
+      nextStartAfter: fetchResult.nextStartAfter,
+      nextStartAfterId: fetchResult.nextStartAfterId,
       byType: {
         [CONTACT_TYPES.PROSPECT]: 0,
         [CONTACT_TYPES.GUEST_BOOKED]: 0,
