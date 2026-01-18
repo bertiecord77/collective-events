@@ -64,7 +64,7 @@ async function ghlRequest(endpoint, method, token, body = null) {
 async function fetchAllContacts(token) {
   const contacts = [];
   let hasMore = true;
-  let startAfter = null;
+  let startAfterId = null;
   let page = 0;
 
   while (hasMore) {
@@ -73,15 +73,15 @@ async function fetchAllContacts(token) {
       limit: '100'
     });
 
-    if (startAfter) {
-      params.append('startAfter', startAfter);
+    if (startAfterId) {
+      params.append('startAfterId', startAfterId);
     }
 
     const result = await ghlRequest(`/contacts/?${params}`, 'GET', token);
 
     if (result.contacts && result.contacts.length > 0) {
       contacts.push(...result.contacts);
-      startAfter = result.contacts[result.contacts.length - 1].id;
+      startAfterId = result.contacts[result.contacts.length - 1].id;
       page++;
       console.log(`Fetched page ${page}, total contacts: ${contacts.length}`);
 
