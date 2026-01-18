@@ -728,9 +728,12 @@
         // Use the proper avatar placeholder for speakers without photos
         const DEFAULT_AVATAR = API.DEFAULT_AVATAR;
 
-        // Load all events and extract speakers from them
-        const eventsData = await API.fetchEvents({ limit: 200 });
-        const events = eventsData.events || [];
+        // Load all events (live + past) and extract speakers from them
+        const [liveData, pastData] = await Promise.all([
+          API.fetchEvents({ limit: 200 }),
+          fetch('https://api.notluck.co.uk/collective/events?status=past&limit=200').then(r => r.json()).catch(() => ({ events: [] }))
+        ]);
+        const events = [...(liveData.events || []), ...(pastData.events || [])];
 
       // Names to exclude from speaker list
       const excludeNames = ['tbc', 'tba', 'to be confirmed', 'to be announced', 'coming soon', 'n/a', ''];
@@ -795,7 +798,7 @@
 
       // Fetch live stats for accurate counts
       try {
-        const statsResponse = await fetch(API.API_BASE.replace('/collective', '/collective/stats'));
+        const statsResponse = await fetch('https://api.notluck.co.uk/collective/stats');
         if (statsResponse.ok) {
           const stats = await statsResponse.json();
           document.getElementById('stat-speakers').textContent = stats.speakers || speakers.length;
