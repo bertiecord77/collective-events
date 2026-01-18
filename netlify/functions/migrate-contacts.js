@@ -214,20 +214,24 @@ export const handler = async (event, context) => {
     if (diagnostic) {
       const testParams = new URLSearchParams({
         locationId: LOCATION_ID,
-        limit: '5'
+        limit: '1'
       });
       const testResult = await ghlRequest(`/contacts/?${testParams}`, 'GET', token);
+      const contact = testResult.contacts?.[0];
       return {
         statusCode: 200,
         headers: corsHeaders,
         body: JSON.stringify({
           diagnostic: true,
           contactsFound: testResult.contacts?.length || 0,
-          sampleContact: testResult.contacts?.[0] ? {
-            id: testResult.contacts[0].id,
-            name: `${testResult.contacts[0].firstName} ${testResult.contacts[0].lastName}`,
-            tags: testResult.contacts[0].tags,
-            type: testResult.contacts[0].type
+          sampleContact: contact ? {
+            id: contact.id,
+            name: `${contact.firstName} ${contact.lastName}`,
+            tags: contact.tags,
+            type: contact.type,
+            customFields: contact.customFields,
+            // Show all top-level keys to find where type might be stored
+            allKeys: Object.keys(contact)
           } : null
         }, null, 2)
       };
