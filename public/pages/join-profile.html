@@ -480,8 +480,8 @@
   </div>
 
   <script>
+    // Global state
     const PROFILE_API = '/.netlify/functions/update-profile';
-
     let currentStep = 1;
     const totalSteps = 4;
     const profileData = {
@@ -490,51 +490,65 @@
       teamSize: null,
       postcode: null
     };
+    let contactId = null;
 
-    // Check if we have the contact ID from step 1
-    const contactId = sessionStorage.getItem('collective_contact_id');
-    const firstName = sessionStorage.getItem('collective_first_name');
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check if we have the contact ID from step 1
+      contactId = sessionStorage.getItem('collective_contact_id');
+      const firstName = sessionStorage.getItem('collective_first_name');
 
-    // If no contact ID, redirect to join page
-    if (!contactId) {
-      window.location.href = '/join';
-    }
+      // If no contact ID, redirect to join page
+      if (!contactId) {
+        window.location.href = '/join';
+        return;
+      }
 
-    // Display user's name
-    if (firstName) {
-      document.getElementById('user-name').textContent = firstName;
-    }
+      // Display user's name
+      if (firstName) {
+        document.getElementById('user-name').textContent = firstName;
+      }
 
-    // Handle option selection
-    document.querySelectorAll('.options-grid').forEach(grid => {
-      grid.addEventListener('click', (e) => {
-        if (e.target.classList.contains('option-btn')) {
-          // Deselect others in this grid
-          grid.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-          // Select this one
-          e.target.classList.add('selected');
-          // Enable continue button
-          e.target.closest('.quiz-step').querySelector('.btn-next').disabled = false;
+      // Handle option selection - use event delegation on each grid
+      document.querySelectorAll('.options-grid').forEach(grid => {
+        grid.addEventListener('click', function(e) {
+          const btn = e.target.closest('.option-btn');
+          if (btn) {
+            // Deselect others in this grid
+            grid.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+            // Select this one
+            btn.classList.add('selected');
+            // Enable continue button
+            const quizStep = btn.closest('.quiz-step');
+            if (quizStep) {
+              const nextBtn = quizStep.querySelector('.btn-next');
+              if (nextBtn) nextBtn.disabled = false;
+            }
 
-          // Store the value
-          const step = parseInt(e.target.closest('.quiz-step').dataset.step);
-          const value = e.target.dataset.value;
+            // Store the value
+            const step = parseInt(quizStep?.dataset?.step || 0);
+            const value = btn.dataset.value;
 
-          if (step === 1) profileData.sector = value;
-          if (step === 2) profileData.stage = value;
-          if (step === 3) profileData.teamSize = value;
-        }
+            if (step === 1) profileData.sector = value;
+            if (step === 2) profileData.stage = value;
+            if (step === 3) profileData.teamSize = value;
+          }
+        });
       });
+
+      // Enable postcode continue button on input
+      const postcodeInput = document.getElementById('postcode');
+      if (postcodeInput) {
+        postcodeInput.addEventListener('input', function(e) {
+          const btn = document.querySelector('[data-step="4"] .btn-next');
+          if (btn) btn.disabled = e.target.value.trim().length < 2;
+        });
+      }
     });
 
-    // Enable postcode continue button on input
-    document.getElementById('postcode').addEventListener('input', (e) => {
-      const btn = document.querySelector('[data-step="4"] .btn-next');
-      btn.disabled = e.target.value.trim().length < 2;
-    });
-
+    // Global functions called from onclick handlers
     function updateProgress() {
-      document.querySelectorAll('.progress-step').forEach(step => {
+      document.querySelectorAll('.progress-step').forEach(function(step) {
         const stepNum = parseInt(step.dataset.step);
         step.classList.remove('active', 'completed');
         if (stepNum < currentStep) step.classList.add('completed');
@@ -543,8 +557,11 @@
     }
 
     function showStep(step) {
-      document.querySelectorAll('.quiz-step').forEach(s => s.classList.remove('active'));
-      document.querySelector(`[data-step="${step}"]`).classList.add('active');
+      document.querySelectorAll('.quiz-step').forEach(function(s) {
+        s.classList.remove('active');
+      });
+      const targetStep = document.querySelector('[data-step="' + step + '"]');
+      if (targetStep) targetStep.classList.add('active');
       updateProgress();
     }
 
@@ -566,7 +583,8 @@
 
     async function submitProfile() {
       // Get postcode
-      profileData.postcode = document.getElementById('postcode').value.trim().toUpperCase();
+      const postcodeEl = document.getElementById('postcode');
+      profileData.postcode = postcodeEl ? postcodeEl.value.trim().toUpperCase() : '';
 
       try {
         const response = await fetch(PROFILE_API, {
