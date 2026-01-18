@@ -236,7 +236,7 @@
     <section class="join-hero">
       <span class="free-badge">100% Free</span>
       <h1>Join COLLECTIVE.</h1>
-      <p>Connect with <span id="member-count">600+</span> creative, digital and tech professionals across the East Midlands.</p>
+      <p>Connect with <span id="member-count">570</span> creative, digital and tech professionals across the East Midlands.</p>
     </section>
 
     <!-- Form Section -->
@@ -424,7 +424,7 @@
         if (response.ok) {
           const stats = await response.json();
           if (stats.members) {
-            document.getElementById('member-count').textContent = stats.members.toLocaleString() + '+';
+            document.getElementById('member-count').textContent = stats.members.toLocaleString();
           }
         }
       } catch (e) {
