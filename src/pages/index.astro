@@ -1,0 +1,1039 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import StatsSection from '../components/StatsSection.astro';
+import LocationCard from '../components/LocationCard.astro';
+
+const locations = [
+  {
+    name: 'Nottingham',
+    description: 'Our flagship location in the heart of the city',
+    image: 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69454390106fdc3abdfa3264.png',
+    href: '/nottingham',
+    variant: 'nottingham' as const
+  },
+  {
+    name: 'Mansfield',
+    description: 'Connecting North Nottinghamshire creatives',
+    image: 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/69413d35ca7298e25b32203a.png',
+    href: '/mansfield',
+    variant: 'mansfield' as const
+  },
+  {
+    name: 'Chesterfield',
+    description: 'Bridging Derbyshire & the East Midlands',
+    image: 'https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/6967cbfe02f1be4a61702e71.png',
+    href: '/chesterfield',
+    variant: 'chesterfield' as const
+  }
+];
+---
+
+<BaseLayout
+  title="COLLECTIVE. Events | Creative Digital Innovation"
+  description="Join the COLLECTIVE. community for inspiring events, workshops and networking across Nottingham, Mansfield and Chesterfield."
+  activePage="events"
+>
+  <Fragment slot="head">
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "COLLECTIVE.",
+      "url": "https://collective-events.netlify.app",
+      "logo": "https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/696bc2db5e05d4243b73f7d5.png",
+      "description": "Connecting creative, digital and tech professionals across the East Midlands through inspiring events, workshops and networking.",
+      "areaServed": {
+        "@type": "Place",
+        "name": "East Midlands, UK"
+      }
+    })} />
+  </Fragment>
+
+  <!-- Animated Background -->
+  <div class="noise"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-badge" data-aos="fade-up" data-aos-delay="200">
+      <span class="dot"></span>
+      <span id="event-count">Loading events...</span>
+    </div>
+    <h1 data-aos="fade-up" data-aos-delay="400">
+      Where <span class="highlight">Creative</span> Minds <span class="highlight-lilac">Connect</span>
+    </h1>
+    <p data-aos="fade-up" data-aos-delay="600">
+      Join the East Midlands' fastest-growing community of digital innovators, creatives, and tech enthusiasts.
+    </p>
+    <div class="hero-cta" data-aos="fade-up" data-aos-delay="800">
+      <a href="#events" class="btn btn-primary">
+        View Events
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+      <a href="/join" class="btn btn-secondary">Join COLLECTIVE.</a>
+    </div>
+    <div class="scroll-indicator">
+      <span>Scroll</span>
+      <div class="line"></div>
+    </div>
+  </section>
+
+  <!-- Events Section -->
+  <section class="events-section" id="events">
+    <div class="section-header" data-aos="fade-up">
+      <h2>Upcoming Events</h2>
+      <p>Real conversations, authentic connections, and inspiring stories from the creative community.</p>
+    </div>
+
+    <!-- Location Filter -->
+    <div class="filter-bar" data-aos="fade-up" data-aos-delay="100">
+      <button class="filter-btn active" data-filter="all">All Locations</button>
+      <button class="filter-btn" data-filter="Nottingham">Nottingham</button>
+      <button class="filter-btn" data-filter="Mansfield">Mansfield</button>
+      <button class="filter-btn" data-filter="Chesterfield">Chesterfield</button>
+    </div>
+
+    <!-- Events Grid -->
+    <div class="events-grid" id="events-grid">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading events...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <StatsSection />
+
+  <!-- Locations Section -->
+  <section class="locations-section">
+    <div class="section-header" data-aos="fade-up">
+      <h2>Our Locations</h2>
+      <p>Find events across the East Midlands</p>
+    </div>
+    <div class="locations-grid">
+      {locations.map((location, index) => (
+        <div data-aos="fade-up" data-aos-delay={index * 100}>
+          <LocationCard {...location} />
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Past Events Section -->
+  <section class="past-events-section">
+    <div class="section-header" data-aos="fade-up">
+      <h2>Recent Events</h2>
+      <p>See what you missed</p>
+    </div>
+    <div class="events-grid" id="past-events-grid">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading past events...</p>
+      </div>
+    </div>
+    <div class="section-cta" data-aos="fade-up">
+      <a href="/past" class="btn btn-secondary">View All Past Events</a>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-card" data-aos="zoom-in">
+      <h2>Ready to Join?</h2>
+      <p>Become part of the COLLECTIVE. community. It's free, always.</p>
+      <a href="/join" class="btn btn-primary">
+        Join COLLECTIVE.
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <Fragment slot="scripts">
+    <!-- AOS JS -->
+    <script is:inline src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script is:inline>
+      // Initialize AOS
+      AOS.init({
+        duration: 800,
+        easing: 'ease-out-cubic',
+        once: true,
+        offset: 50
+      });
+    </script>
+
+    <!-- Events Logic -->
+    <script is:inline>
+      const API_URL = 'https://api.notluck.co.uk/collective/events';
+      let allEvents = [];
+      let currentFilter = 'all';
+
+      // Helper functions
+      function formatDate(dateStr) {
+        if (!dateStr) return { day: '--', month: '---' };
+        const date = new Date(dateStr);
+        return {
+          day: date.getDate().toString(),
+          month: date.toLocaleDateString('en-GB', { month: 'short' }).toUpperCase()
+        };
+      }
+
+      function formatTime(start, end) {
+        if (!start) return '';
+        const startDate = new Date(start);
+        const startTime = startDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        if (end) {
+          const endDate = new Date(end);
+          const endTime = endDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+          return `${startTime} - ${endTime}`;
+        }
+        return startTime;
+      }
+
+      function getInitials(name) {
+        if (!name) return '?';
+        return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      }
+
+      function getLocationClass(location) {
+        if (!location) return '';
+        const loc = location.toLowerCase();
+        if (loc === 'mansfield') return 'mansfield';
+        if (loc === 'chesterfield') return 'chesterfield';
+        return '';
+      }
+
+      function getSpeakerSlug(name) {
+        if (!name) return '';
+        return name.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
+      }
+
+      // Render event card
+      function renderEventCard(event, index, isPast = false) {
+        const date = formatDate(event.date);
+        const time = formatTime(event.startTime, event.endTime);
+        const eventUrl = `/event/${event.slug || event.id}`;
+        const locationClass = getLocationClass(event.locationTag);
+        const hasSpeaker = event.speaker?.name;
+
+        return `
+          <a href="${eventUrl}" class="event-card-link" data-aos="fade-up" data-aos-delay="${index * 100}">
+            <article class="event-card" data-location="${event.locationTag || ''}">
+              <div class="event-image">
+                ${event.featuredImage
+                  ? `<img src="${event.featuredImage}" alt="${event.title}" loading="lazy">`
+                  : `<div class="placeholder">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                      </svg>
+                    </div>`
+                }
+                <div class="event-date-badge">
+                  <span class="day">${date.day}</span>
+                  <span class="month">${date.month}</span>
+                </div>
+                ${event.locationTag ? `<div class="event-location-badge ${locationClass}">${event.locationTag}</div>` : ''}
+                ${isPast ? '<div class="past-event-badge">Past</div>' : ''}
+              </div>
+              <div class="event-content">
+                ${!isPast ? `
+                  <div class="event-meta">
+                    ${time ? `
+                      <span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        ${time}
+                      </span>
+                    ` : ''}
+                    <span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                      </svg>
+                      ${event.price || 'Free'}
+                    </span>
+                  </div>
+                ` : ''}
+                <h3 class="event-title">${event.title}</h3>
+                <p class="event-description">${event.shortDescription || 'Join us for this exciting event.'}</p>
+                ${hasSpeaker && !isPast ? `
+                  <div class="event-speaker">
+                    <div class="event-speaker-avatar">${getInitials(event.speaker.name)}</div>
+                    <div class="event-speaker-info">
+                      <div class="event-speaker-name">${event.speaker.name}</div>
+                      ${event.speaker.title ? `<div class="event-speaker-title">${event.speaker.title}</div>` : ''}
+                    </div>
+                    <span class="event-cta">
+                      View
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                      </svg>
+                    </span>
+                  </div>
+                ` : !isPast ? `
+                  <span class="event-cta" style="margin-top: auto;">
+                    View Event
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  </span>
+                ` : ''}
+              </div>
+            </article>
+          </a>
+        `;
+      }
+
+      // Render events
+      function renderEvents(events, gridId = 'events-grid', isPast = false) {
+        const grid = document.getElementById(gridId);
+        if (!grid) return;
+
+        if (!events || events.length === 0) {
+          grid.innerHTML = `
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <h3>${isPast ? 'No past events yet' : 'No upcoming events'}</h3>
+              <p>${isPast ? 'Stay tuned for our upcoming events!' : 'Check back soon for new events.'}</p>
+            </div>
+          `;
+          return;
+        }
+
+        grid.innerHTML = events.map((event, i) => renderEventCard(event, i, isPast)).join('');
+        AOS.refresh();
+      }
+
+      // Filter events
+      function filterEvents(location) {
+        currentFilter = location;
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.filter === location);
+        });
+
+        const filtered = location === 'all'
+          ? allEvents
+          : allEvents.filter(e => e.locationTag === location);
+
+        renderEvents(filtered);
+      }
+
+      // Load events
+      async function loadEvents() {
+        try {
+          const response = await fetch(`${API_URL}?status=live&limit=20`);
+          if (!response.ok) throw new Error('Failed to fetch events');
+
+          const data = await response.json();
+          allEvents = data.events || [];
+
+          // Update hero badge
+          const countEl = document.getElementById('event-count');
+          if (countEl) {
+            countEl.textContent = `${allEvents.length} upcoming event${allEvents.length !== 1 ? 's' : ''}`;
+          }
+
+          // Update stats
+          const eventsStatEl = document.getElementById('stat-events');
+          if (eventsStatEl) {
+            eventsStatEl.textContent = allEvents.length.toString();
+          }
+
+          renderEvents(allEvents);
+
+        } catch (error) {
+          console.error('Error loading events:', error);
+          const grid = document.getElementById('events-grid');
+          if (grid) {
+            grid.innerHTML = `
+              <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <h3>Unable to load events</h3>
+                <p>Please try again later.</p>
+              </div>
+            `;
+          }
+        }
+      }
+
+      // Load past events
+      async function loadPastEvents() {
+        try {
+          const response = await fetch(`${API_URL}?status=past&limit=6`);
+          if (!response.ok) throw new Error('Failed to fetch past events');
+
+          const data = await response.json();
+          const pastEvents = (data.events || [])
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 3);
+
+          renderEvents(pastEvents, 'past-events-grid', true);
+
+        } catch (error) {
+          console.error('Error loading past events:', error);
+          const grid = document.getElementById('past-events-grid');
+          if (grid) {
+            grid.innerHTML = '<div class="empty-state"><p>Unable to load past events.</p></div>';
+          }
+        }
+      }
+
+      // Setup filter buttons
+      function setupFilters() {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+          btn.addEventListener('click', () => filterEvents(btn.dataset.filter));
+        });
+      }
+
+      // Initialize
+      document.addEventListener('DOMContentLoaded', () => {
+        setupFilters();
+        loadEvents();
+        loadPastEvents();
+      });
+    </script>
+  </Fragment>
+</BaseLayout>
+
+<style>
+  /* Animated noise background */
+  .noise {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.02;
+    z-index: 1000;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+
+  /* Gradient orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.2;
+    pointer-events: none;
+    animation: float 25s ease-in-out infinite;
+  }
+
+  .orb-1 {
+    width: 700px;
+    height: 700px;
+    background: var(--lime);
+    top: -300px;
+    right: -200px;
+  }
+
+  .orb-2 {
+    width: 500px;
+    height: 500px;
+    background: var(--lilac);
+    bottom: -150px;
+    left: -150px;
+    animation-delay: -12s;
+  }
+
+  .orb-3 {
+    width: 300px;
+    height: 300px;
+    background: var(--lime);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.1;
+    animation-delay: -6s;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(40px, -40px) rotate(5deg); }
+    50% { transform: translate(-30px, 30px) rotate(-5deg); }
+    75% { transform: translate(30px, 40px) rotate(3deg); }
+  }
+
+  /* Hero Section */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+    position: relative;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    background: rgba(229, 246, 8, 0.1);
+    border: 1px solid var(--lime-30);
+    border-radius: 100px;
+    font-size: 0.85rem;
+    color: var(--lime);
+    margin-bottom: 2rem;
+  }
+
+  .hero-badge .dot {
+    width: 8px;
+    height: 8px;
+    background: var(--lime);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+  }
+
+  .hero h1 {
+    font-size: clamp(3rem, 10vw, 6.5rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 .highlight {
+    color: var(--lime);
+  }
+
+  .hero h1 .highlight-lilac {
+    color: var(--lilac);
+  }
+
+  .hero p {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin-bottom: 3rem;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .scroll-indicator .line {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--text-muted), transparent);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scroll-indicator .line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background: var(--lime);
+    animation: scrollLine 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollLine {
+    0% { transform: translateY(-20px); }
+    50% { transform: translateY(60px); }
+    100% { transform: translateY(-20px); }
+  }
+
+  /* Sections */
+  .events-section,
+  .locations-section,
+  .past-events-section,
+  .cta-section {
+    padding: 6rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .section-header h2 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 1rem;
+  }
+
+  .section-header p {
+    color: var(--text-secondary);
+    font-size: 1.125rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Filter Bar */
+  .filter-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 100px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s var(--transition-smooth);
+    font-family: inherit;
+  }
+
+  .filter-btn:hover,
+  .filter-btn.active {
+    background: var(--bg-card-hover);
+    border-color: var(--lime);
+    color: var(--lime);
+  }
+
+  .filter-btn.active {
+    background: rgba(229, 246, 8, 0.1);
+  }
+
+  /* Events Grid */
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 2rem;
+  }
+
+  /* Locations Grid */
+  .locations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* Past Events */
+  .past-events-section {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+  }
+
+  .section-cta {
+    text-align: center;
+    margin-top: 3rem;
+  }
+
+  /* CTA Section */
+  .cta-section {
+    text-align: center;
+    padding: 8rem 2rem;
+  }
+
+  .cta-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 32px;
+    padding: 4rem;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, transparent, var(--lime), var(--lilac), transparent 40%);
+    animation: rotate 10s linear infinite;
+    opacity: 0.08;
+  }
+
+  @keyframes rotate {
+    to { transform: rotate(360deg); }
+  }
+
+  .cta-card h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+
+  .cta-card p {
+    color: var(--text-secondary);
+    font-size: 1.125rem;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .cta-card .btn {
+    position: relative;
+  }
+
+  /* Loading State */
+  .loading-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem;
+    color: var(--text-muted);
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--lime);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Empty State */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  .empty-state h3 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  /* Event Card Styles (for JS-rendered cards) */
+  :global(.event-card-link) {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  :global(.event-card) {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    transition: all 0.4s var(--transition-smooth);
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  :global(.event-card::before) {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--card-radius);
+    padding: 1px;
+    background: linear-gradient(135deg, transparent 40%, var(--lime) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s var(--transition-smooth);
+  }
+
+  :global(.event-card:hover) {
+    transform: translateY(-8px);
+    border-color: transparent;
+    box-shadow: 0 20px 50px rgba(229, 246, 8, 0.1);
+  }
+
+  :global(.event-card:hover::before) {
+    opacity: 1;
+  }
+
+  :global(.event-image) {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+  }
+
+  :global(.event-image img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--transition-smooth);
+  }
+
+  :global(.event-card:hover .event-image img) {
+    transform: scale(1.08);
+  }
+
+  :global(.event-image .placeholder) {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global(.event-image .placeholder svg) {
+    width: 48px;
+    height: 48px;
+    color: var(--text-muted);
+  }
+
+  :global(.event-date-badge) {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    min-width: 70px;
+  }
+
+  :global(.event-date-badge .day) {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--lime);
+  }
+
+  :global(.event-date-badge .month) {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+  }
+
+  :global(.event-location-badge) {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--lime);
+    color: var(--black);
+    border-radius: 100px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  :global(.event-location-badge.mansfield) {
+    background: var(--lilac);
+  }
+
+  :global(.event-location-badge.chesterfield) {
+    background: var(--grey);
+  }
+
+  :global(.past-event-badge) {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--grey);
+    color: var(--black);
+    border-radius: 100px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  :global(.event-content) {
+    padding: 1.75rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  :global(.event-meta) {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  :global(.event-meta svg) {
+    width: 16px;
+    height: 16px;
+  }
+
+  :global(.event-meta span) {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  :global(.event-title) {
+    font-size: 1.35rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+  }
+
+  :global(.event-description) {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  :global(.event-speaker) {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+  }
+
+  :global(.event-speaker-avatar) {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gradient-brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--black);
+    flex-shrink: 0;
+  }
+
+  :global(.event-speaker-info) {
+    flex: 1;
+  }
+
+  :global(.event-speaker-name) {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  :global(.event-speaker-title) {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  :global(.event-cta) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: transparent;
+    border: 1px solid var(--lime);
+    border-radius: 100px;
+    color: var(--lime);
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s var(--transition-smooth);
+    flex-shrink: 0;
+  }
+
+  :global(.event-card:hover .event-cta) {
+    background: var(--lime);
+    color: var(--black);
+  }
+
+  :global(.event-cta svg) {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s var(--transition-smooth);
+  }
+
+  :global(.event-card:hover .event-cta svg) {
+    transform: translateX(4px);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero {
+      padding: 6rem 1.5rem 3rem;
+    }
+
+    .events-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .cta-card {
+      padding: 2.5rem 1.5rem;
+    }
+  }
+</style>

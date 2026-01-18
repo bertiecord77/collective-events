@@ -1,0 +1,430 @@
+---
+interface Props {
+  event: {
+    id: string;
+    slug?: string;
+    title: string;
+    date?: string;
+    startTime?: string;
+    endTime?: string;
+    locationTag?: string;
+    shortDescription?: string;
+    featuredImage?: string;
+    price?: string;
+    speaker?: {
+      name?: string;
+      title?: string;
+      contactId?: string;
+      photo?: string;
+    };
+  };
+  isPast?: boolean;
+  index?: number;
+}
+
+const { event, isPast = false, index = 0 } = Astro.props;
+
+// Format date
+function formatDate(dateStr: string | undefined) {
+  if (!dateStr) return { day: '--', month: '---' };
+  const date = new Date(dateStr);
+  return {
+    day: date.getDate().toString(),
+    month: date.toLocaleDateString('en-GB', { month: 'short' }).toUpperCase()
+  };
+}
+
+// Format time
+function formatTime(start?: string, end?: string) {
+  if (!start) return '';
+  const startDate = new Date(start);
+  const startTime = startDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  if (end) {
+    const endDate = new Date(end);
+    const endTime = endDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    return `${startTime} - ${endTime}`;
+  }
+  return startTime;
+}
+
+// Get initials
+function getInitials(name?: string) {
+  if (!name) return '?';
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+}
+
+// Get speaker slug
+function getSpeakerSlug(name?: string) {
+  if (!name) return '';
+  return name.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
+}
+
+// Get location class
+function getLocationClass(location?: string) {
+  if (!location) return '';
+  const loc = location.toLowerCase();
+  if (loc === 'mansfield') return 'mansfield';
+  if (loc === 'chesterfield') return 'chesterfield';
+  return '';
+}
+
+const date = formatDate(event.date);
+const time = formatTime(event.startTime, event.endTime);
+const eventUrl = `/event/${event.slug || event.id}`;
+const locationClass = getLocationClass(event.locationTag);
+const hasSpeaker = event.speaker?.name;
+---
+
+<a href={eventUrl} class="event-card-link" data-aos="fade-up" data-aos-delay={index * 100}>
+  <article class="event-card" data-location={event.locationTag || ''}>
+    <div class="event-image">
+      {event.featuredImage ? (
+        <img src={event.featuredImage} alt={event.title} loading="lazy" />
+      ) : (
+        <div class="placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </div>
+      )}
+      <div class="event-date-badge">
+        <span class="day">{date.day}</span>
+        <span class="month">{date.month}</span>
+      </div>
+      {event.locationTag && (
+        <div class={`event-location-badge ${locationClass}`}>{event.locationTag}</div>
+      )}
+      {isPast && <div class="past-event-badge">Past</div>}
+    </div>
+    <div class="event-content">
+      {!isPast && (
+        <div class="event-meta">
+          {time && (
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              {time}
+            </span>
+          )}
+          <span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            {event.price || 'Free'}
+          </span>
+        </div>
+      )}
+      <h3 class="event-title">{event.title}</h3>
+      <p class="event-description">{event.shortDescription || 'Join us for this exciting event.'}</p>
+      {hasSpeaker && !isPast ? (
+        <div class="event-speaker">
+          <div class="event-speaker-avatar">{getInitials(event.speaker?.name)}</div>
+          <div class="event-speaker-info">
+            {event.speaker?.contactId ? (
+              <span class="event-speaker-link" data-speaker-slug={getSpeakerSlug(event.speaker?.name)}>
+                <div class="event-speaker-name">{event.speaker?.name}</div>
+                {event.speaker?.title && <div class="event-speaker-title">{event.speaker.title}</div>}
+              </span>
+            ) : (
+              <>
+                <div class="event-speaker-name">{event.speaker?.name}</div>
+                {event.speaker?.title && <div class="event-speaker-title">{event.speaker.title}</div>}
+              </>
+            )}
+          </div>
+          <span class="event-cta">
+            View
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </span>
+        </div>
+      ) : !isPast && (
+        <span class="event-cta" style="margin-top: auto;">
+          View Event
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </span>
+      )}
+    </div>
+  </article>
+</a>
+
+<style>
+  .event-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .event-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    transition: all 0.4s var(--transition-smooth);
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .event-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--card-radius);
+    padding: 1px;
+    background: linear-gradient(135deg, transparent 40%, var(--lime) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.4s var(--transition-smooth);
+  }
+
+  .event-card:hover {
+    transform: translateY(-8px);
+    border-color: transparent;
+    box-shadow: 0 20px 50px rgba(229, 246, 8, 0.1);
+  }
+
+  .event-card:hover::before {
+    opacity: 1;
+  }
+
+  .event-image {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+  }
+
+  .event-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--transition-smooth);
+  }
+
+  .event-card:hover .event-image img {
+    transform: scale(1.08);
+  }
+
+  .event-image .placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .event-image .placeholder svg {
+    width: 48px;
+    height: 48px;
+    color: var(--text-muted);
+  }
+
+  .event-date-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    min-width: 70px;
+  }
+
+  .event-date-badge .day {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--lime);
+  }
+
+  .event-date-badge .month {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+    font-weight: 500;
+  }
+
+  .event-location-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--lime);
+    color: var(--black);
+    border-radius: 100px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .event-location-badge.mansfield {
+    background: var(--lilac);
+  }
+
+  .event-location-badge.chesterfield {
+    background: var(--grey);
+    color: var(--black);
+  }
+
+  .past-event-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--grey);
+    color: var(--black);
+    border-radius: 100px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .event-content {
+    padding: 1.75rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .event-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .event-meta svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .event-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .event-title {
+    font-size: 1.35rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.02em;
+  }
+
+  .event-description {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .event-speaker {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: auto;
+  }
+
+  .event-speaker-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gradient-brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--black);
+    flex-shrink: 0;
+  }
+
+  .event-speaker-info {
+    flex: 1;
+  }
+
+  .event-speaker-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .event-speaker-title {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .event-speaker-link {
+    cursor: pointer;
+    display: block;
+  }
+
+  .event-speaker-link:hover .event-speaker-name {
+    color: var(--lime);
+  }
+
+  .event-cta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: transparent;
+    border: 1px solid var(--lime);
+    border-radius: 100px;
+    color: var(--lime);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s var(--transition-smooth);
+    flex-shrink: 0;
+  }
+
+  .event-card:hover .event-cta {
+    background: var(--lime);
+    color: var(--black);
+  }
+
+  .event-cta svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s var(--transition-smooth);
+  }
+
+  .event-card:hover .event-cta svg {
+    transform: translateX(4px);
+  }
+</style>
