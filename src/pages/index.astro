@@ -218,6 +218,11 @@ const locations = [
         return name.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
       }
 
+      function getVenueSlug(name) {
+        if (!name) return '';
+        return name.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-');
+      }
+
       // Render event card
       function renderEventCard(event, index, isPast = false) {
         const date = formatDate(event.date);
@@ -266,6 +271,15 @@ const locations = [
                       ${event.price || 'Free'}
                     </span>
                   </div>
+                  ${event.venue?.name ? `
+                    <a href="/venue/${getVenueSlug(event.venue.name)}" class="event-venue" onclick="event.stopPropagation()">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                      </svg>
+                      ${event.venue.name}
+                    </a>
+                  ` : ''}
                 ` : ''}
                 <h3 class="event-title">${event.title}</h3>
                 <p class="event-description">${event.shortDescription || 'Join us for this exciting event.'}</p>
@@ -962,6 +976,31 @@ const locations = [
     display: flex;
     align-items: center;
     gap: 0.4rem;
+  }
+
+  :global(.event-venue) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-bottom: 1rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    transition: all 0.3s var(--transition-smooth);
+  }
+
+  :global(.event-venue:hover) {
+    color: var(--lime);
+    background: rgba(229, 246, 8, 0.1);
+  }
+
+  :global(.event-venue svg) {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
   }
 
   :global(.event-title) {
