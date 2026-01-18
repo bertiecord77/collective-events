@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Join COLLECTIVE. | Free Community Membership</title>
-  <meta name="description" content="Join the COLLECTIVE. community for free. Get early access to events, connect with 500+ professionals across the East Midlands.">
+  <meta name="description" content="Join the COLLECTIVE. community for free. Get early access to events, connect with creative, digital and tech professionals across the East Midlands.">
 
   <!-- Open Graph -->
   <meta property="og:title" content="Join COLLECTIVE. - It's Free">
@@ -236,7 +236,7 @@
     <section class="join-hero">
       <span class="free-badge">100% Free</span>
       <h1>Join COLLECTIVE.</h1>
-      <p>Connect with 500+ creative, digital and tech professionals across the East Midlands.</p>
+      <p>Connect with <span id="member-count">600+</span> creative, digital and tech professionals across the East Midlands.</p>
     </section>
 
     <!-- Form Section -->
@@ -416,6 +416,21 @@
         submitBtn.textContent = 'Join COLLECTIVE';
       }
     });
+
+    // Fetch live member count
+    (async function() {
+      try {
+        const response = await fetch('https://api.notluck.co.uk/collective/stats');
+        if (response.ok) {
+          const stats = await response.json();
+          if (stats.members) {
+            document.getElementById('member-count').textContent = stats.members.toLocaleString() + '+';
+          }
+        }
+      } catch (e) {
+        // Keep default on error
+      }
+    })();
   </script>
 
   <!-- Cookie Consent & Analytics -->

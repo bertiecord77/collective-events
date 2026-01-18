@@ -1931,18 +1931,23 @@
       renderEvents(filtered);
     }
 
-    // Update stats
-    function updateStats(events) {
-      // Count unique speakers
-      const speakers = new Set();
-      events.forEach(e => {
-        if (e.speaker?.name) speakers.add(e.speaker.name);
-      });
+    // Update stats from live API
+    async function updateStats(upcomingEventsCount) {
+      // Set upcoming events count immediately
+      document.getElementById('stat-events').textContent = upcomingEventsCount;
 
-      document.getElementById('stat-events').textContent = events.length;
-      document.getElementById('stat-speakers').textContent = speakers.size;
-      // Members would come from contacts API - placeholder for now
-      document.getElementById('stat-members').textContent = '500+';
+      // Fetch live stats from API (members, total speakers)
+      try {
+        const statsResponse = await fetch(`${API_URL.replace('/events', '/stats')}`);
+        if (statsResponse.ok) {
+          const stats = await statsResponse.json();
+          document.getElementById('stat-members').textContent = stats.members || '-';
+          document.getElementById('stat-speakers').textContent = stats.speakers || '-';
+        }
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+        // Keep showing dash on error
+      }
     }
 
     // Load events
@@ -1960,8 +1965,8 @@
         const countEl = document.getElementById('event-count');
         countEl.textContent = `${allEvents.length} upcoming event${allEvents.length !== 1 ? 's' : ''}`;
 
-        // Update stats
-        updateStats(allEvents);
+        // Update stats with live data
+        updateStats(allEvents.length);
 
         renderEvents(allEvents);
 
@@ -2066,13 +2071,6 @@
         const pastEvents = data.events || [];
 
         console.log('Loaded past events:', pastEvents);
-
-        // Update total speakers stat with past events too
-        const allSpeakers = new Set();
-        [...allEvents, ...pastEvents].forEach(e => {
-          if (e.speaker?.name) allSpeakers.add(e.speaker.name);
-        });
-        document.getElementById('stat-speakers').textContent = allSpeakers.size || '-';
 
         renderPastEvents(pastEvents);
 

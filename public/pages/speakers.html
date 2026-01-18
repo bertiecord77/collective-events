@@ -732,6 +732,9 @@
         const eventsData = await API.fetchEvents({ limit: 200 });
         const events = eventsData.events || [];
 
+      // Names to exclude from speaker list
+      const excludeNames = ['tbc', 'tba', 'to be confirmed', 'to be announced', 'coming soon', 'n/a', ''];
+
       // Extract unique speakers from events
       const speakersMap = new Map();
       const speakerEventCounts = {};
@@ -739,36 +742,50 @@
       events.forEach(event => {
         // Handle single speaker field
         if (event.speaker && event.speaker.name) {
-          const key = event.speaker.name;
-          if (!speakersMap.has(key)) {
-            speakersMap.set(key, {
-              name: event.speaker.name,
-              title: event.speaker.title,
-              company: event.speaker.company,
-              bio: event.speaker.bio,
-              image: event.speaker.photo,
-              slug: key.toLowerCase().replace(/\s+/g, '-')
-            });
+          const name = event.speaker.name.trim();
+          const nameLower = name.toLowerCase();
+
+          // Skip excluded names
+          if (!excludeNames.includes(nameLower)) {
+            const key = name;
+            if (!speakersMap.has(key)) {
+              speakersMap.set(key, {
+                name: name,
+                title: event.speaker.title,
+                company: event.speaker.company,
+                bio: event.speaker.bio,
+                image: event.speaker.photo,
+                slug: key.toLowerCase().replace(/\s+/g, '-'),
+                hasProfile: !!(event.speaker.contactId || event.speaker.bio || event.speaker.photo)
+              });
+            }
+            speakerEventCounts[key] = (speakerEventCounts[key] || 0) + 1;
           }
-          speakerEventCounts[key] = (speakerEventCounts[key] || 0) + 1;
         }
 
         // Handle speakers array
         if (event.speakers && Array.isArray(event.speakers)) {
           event.speakers.forEach(s => {
             if (s.name) {
-              const key = s.name;
-              if (!speakersMap.has(key)) {
-                speakersMap.set(key, {
-                  name: s.name,
-                  title: s.title,
-                  company: s.company,
-                  bio: s.bio,
-                  image: s.photo || s.image,
-                  slug: key.toLowerCase().replace(/\s+/g, '-')
-                });
+              const name = s.name.trim();
+              const nameLower = name.toLowerCase();
+
+              // Skip excluded names
+              if (!excludeNames.includes(nameLower)) {
+                const key = name;
+                if (!speakersMap.has(key)) {
+                  speakersMap.set(key, {
+                    name: name,
+                    title: s.title,
+                    company: s.company,
+                    bio: s.bio,
+                    image: s.photo || s.image,
+                    slug: key.toLowerCase().replace(/\s+/g, '-'),
+                    hasProfile: !!(s.contactId || s.bio || s.photo)
+                  });
+                }
+                speakerEventCounts[key] = (speakerEventCounts[key] || 0) + 1;
               }
-              speakerEventCounts[key] = (speakerEventCounts[key] || 0) + 1;
             }
           });
         }
@@ -776,9 +793,21 @@
 
       const speakers = Array.from(speakersMap.values());
 
-      // Update stats
-      document.getElementById('stat-speakers').textContent = speakers.length;
-      document.getElementById('stat-events').textContent = events.length;
+      // Fetch live stats for accurate counts
+      try {
+        const statsResponse = await fetch(API.API_BASE.replace('/collective', '/collective/stats'));
+        if (statsResponse.ok) {
+          const stats = await statsResponse.json();
+          document.getElementById('stat-speakers').textContent = stats.speakers || speakers.length;
+          document.getElementById('stat-events').textContent = stats.events || events.length;
+        } else {
+          document.getElementById('stat-speakers').textContent = speakers.length;
+          document.getElementById('stat-events').textContent = events.length;
+        }
+      } catch (e) {
+        document.getElementById('stat-speakers').textContent = speakers.length;
+        document.getElementById('stat-events').textContent = events.length;
+      }
 
       // Render speakers
       if (speakers.length === 0) {
