@@ -155,19 +155,21 @@ function calculateBookingStats(appointments) {
 
 // Update a single contact
 async function updateContact(token, contactId, contactType, stats, dryRun) {
-  // Only set contact type for now - booking stats will be added later via batch job
-  const payload = {
-    type: contactType
-  };
+  // Set contact type via customFields (GHL contact.type is a custom field)
+  const customFields = [
+    { key: 'type', field_value: contactType }
+  ];
 
-  // Only add booking stats if we have actual data (not zeros from skipped appointments)
+  // Add booking stats if we have actual data
   if (stats.booked > 0) {
-    payload.customFields = [
+    customFields.push(
       { key: BOOKING_STATS_FIELDS.events_booked, field_value: String(stats.booked) },
       { key: BOOKING_STATS_FIELDS.events_attended, field_value: String(stats.attended) },
       { key: BOOKING_STATS_FIELDS.no_show, field_value: String(stats.noShow) }
-    ];
+    );
   }
+
+  const payload = { customFields };
 
   if (dryRun) {
     return { dryRun: true, payload };

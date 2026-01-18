@@ -119,7 +119,9 @@ export const handler = async (event, context) => {
       locationId: LOCATION_ID,
       source: 'COLLECTIVE Website - Join',
       tags: tags,
-      type: 'Collective Member'  // Set contact type for membership status
+      customFields: [
+        { key: 'type', field_value: 'Collective Member' }
+      ]
     };
 
     // Create/update contact

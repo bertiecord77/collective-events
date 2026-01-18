@@ -291,8 +291,10 @@ export const handler = async (event, context) => {
     }
 
     // Determine contact type - don't downgrade Collective Members to Guest Booked
-    const isAlreadyMember = existingContact?.type === 'Collective Member';
-    const contactType = isAlreadyMember ? undefined : 'Guest Booked';
+    // Check both top-level type and customFields for existing type
+    const existingType = existingContact?.type ||
+      existingContact?.customFields?.find(f => f.key === 'type')?.field_value;
+    const isAlreadyMember = existingType === 'Collective Member';
 
     const contactPayload = {
       firstName: body.firstName,
@@ -305,9 +307,11 @@ export const handler = async (event, context) => {
       tags: ['COLLECTIVE Event Booking', `COLLECTIVE: ${body.eventTitle}`]
     };
 
-    // Only set type if not already a member
-    if (contactType) {
-      contactPayload.type = contactType;
+    // Only set type if not already a member (use customFields)
+    if (!isAlreadyMember) {
+      contactPayload.customFields = [
+        { key: 'type', field_value: 'Guest Booked' }
+      ];
     }
 
     const contactResult = await ghlRequest(
