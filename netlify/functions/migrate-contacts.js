@@ -153,10 +153,12 @@ function calculateBookingStats(appointments) {
   return { booked, attended, noShow };
 }
 
-// Update a single contact
-async function updateContact(token, contactId, contactType, stats, dryRun) {
-  // Set contact type (top-level GHL field with values: lead, guest_booker, customer, community_member)
+// Update a single contact using upsert
+async function updateContact(token, contactId, email, contactType, stats, dryRun) {
+  // Use upsert endpoint with email - this properly updates contact type
   const payload = {
+    email: email,
+    locationId: LOCATION_ID,
     type: contactType
   };
 
@@ -173,7 +175,8 @@ async function updateContact(token, contactId, contactType, stats, dryRun) {
     return { dryRun: true, payload };
   }
 
-  await ghlRequest(`/contacts/${contactId}`, 'PUT', token, payload);
+  // Use upsert endpoint to update contact type
+  await ghlRequest('/contacts/upsert', 'POST', token, payload);
   return { success: true };
 }
 
@@ -266,8 +269,8 @@ export const handler = async (event, context) => {
         // Determine contact type
         const contactType = determineContactType(contact, appointments.length > 0);
 
-        // Update contact
-        const updateResult = await updateContact(token, contact.id, contactType, stats, dryRun);
+        // Update contact (pass email for upsert)
+        const updateResult = await updateContact(token, contact.id, contact.email, contactType, stats, dryRun);
 
         results.processed++;
         results.byType[contactType]++;
