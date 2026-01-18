@@ -290,11 +290,10 @@ export const handler = async (event, context) => {
       log('Contact search failed (may be new): ' + searchError.message);
     }
 
-    // Determine contact type - don't downgrade Collective Members to Guest Booked
-    // Check both top-level type and customFields for existing type
-    const existingType = existingContact?.type ||
-      existingContact?.customFields?.find(f => f.key === 'type')?.field_value;
-    const isAlreadyMember = existingType === 'Collective Member';
+    // Determine contact type - don't downgrade Members to Guest Booker
+    // GHL type values: lead=Prospect, guest_booker=Guest Booker, customer=Member, community_member=Community
+    const existingType = existingContact?.type;
+    const isAlreadyMember = existingType === 'customer' || existingType === 'community_member';
 
     const contactPayload = {
       firstName: body.firstName,
@@ -307,11 +306,9 @@ export const handler = async (event, context) => {
       tags: ['COLLECTIVE Event Booking', `COLLECTIVE: ${body.eventTitle}`]
     };
 
-    // Only set type if not already a member (use customFields)
+    // Only set type to guest_booker if not already a member
     if (!isAlreadyMember) {
-      contactPayload.customFields = [
-        { key: 'type', field_value: 'Guest Booked' }
-      ];
+      contactPayload.type = 'guest_booker';
     }
 
     const contactResult = await ghlRequest(

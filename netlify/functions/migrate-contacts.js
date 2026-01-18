@@ -10,12 +10,12 @@ const GHL_API_BASE = 'https://services.leadconnectorhq.com';
 const LOCATION_ID = 'JcB0t2fZpGS0lMrqKDWQ';
 const API_VERSION = '2021-07-28';
 
-// Contact type values
+// Contact type values (GHL option values)
 const CONTACT_TYPES = {
-  PROSPECT: 'Prospect',
-  GUEST_BOOKED: 'Guest Booked',
-  COLLECTIVE_MEMBER: 'Collective Member',
-  COLLECTIVE_COMMUNITY: 'Collective Community'
+  PROSPECT: 'lead',
+  GUEST_BOOKED: 'guest_booker',
+  COLLECTIVE_MEMBER: 'customer',
+  COLLECTIVE_COMMUNITY: 'community_member'
 };
 
 // Custom field keys for booking stats
@@ -155,21 +155,19 @@ function calculateBookingStats(appointments) {
 
 // Update a single contact
 async function updateContact(token, contactId, contactType, stats, dryRun) {
-  // Set contact type via customFields (GHL contact.type is a custom field)
-  const customFields = [
-    { key: 'type', field_value: contactType }
-  ];
+  // Set contact type (top-level GHL field with values: lead, guest_booker, customer, community_member)
+  const payload = {
+    type: contactType
+  };
 
   // Add booking stats if we have actual data
   if (stats.booked > 0) {
-    customFields.push(
+    payload.customFields = [
       { key: BOOKING_STATS_FIELDS.events_booked, field_value: String(stats.booked) },
       { key: BOOKING_STATS_FIELDS.events_attended, field_value: String(stats.attended) },
       { key: BOOKING_STATS_FIELDS.no_show, field_value: String(stats.noShow) }
-    );
+    ];
   }
-
-  const payload = { customFields };
 
   if (dryRun) {
     return { dryRun: true, payload };

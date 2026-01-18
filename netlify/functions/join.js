@@ -119,9 +119,7 @@ export const handler = async (event, context) => {
       locationId: LOCATION_ID,
       source: 'COLLECTIVE Website - Join',
       tags: tags,
-      customFields: [
-        { key: 'type', field_value: 'Collective Member' }
-      ]
+      type: 'customer'  // GHL type: customer = "Member"
     };
 
     // Create/update contact
