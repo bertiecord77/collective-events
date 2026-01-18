@@ -60,26 +60,30 @@ async function ghlRequest(endpoint, method, token, body = null) {
   return data;
 }
 
-// Fetch all contacts with pagination (using skip/limit offset pagination)
+// Fetch all contacts with pagination (startAfter is numeric offset)
 async function fetchAllContacts(token) {
   const contacts = [];
   let hasMore = true;
-  let skip = 0;
+  let startAfter = 0;
   const batchSize = 100;
   let page = 0;
 
   while (hasMore) {
     const params = new URLSearchParams({
       locationId: LOCATION_ID,
-      limit: String(batchSize),
-      skip: String(skip)
+      limit: String(batchSize)
     });
+
+    // startAfter is a numeric offset, only add if not first page
+    if (startAfter > 0) {
+      params.append('startAfter', String(startAfter));
+    }
 
     const result = await ghlRequest(`/contacts/?${params}`, 'GET', token);
 
     if (result.contacts && result.contacts.length > 0) {
       contacts.push(...result.contacts);
-      skip += result.contacts.length;
+      startAfter += result.contacts.length;
       page++;
       console.log(`Fetched page ${page}, total contacts: ${contacts.length}`);
 
