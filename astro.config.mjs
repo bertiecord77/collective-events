@@ -14,5 +14,10 @@ export default defineConfig({
   site: 'https://collective-events.netlify.app',
 
   // Use clean URLs without trailing slashes
-  trailingSlash: 'never'
+  trailingSlash: 'never',
+
+  // Output /about.html instead of /about/index.html
+  build: {
+    format: 'file'
+  }
 });
