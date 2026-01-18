@@ -191,14 +191,11 @@ const locations = [
 
       function formatTime(start, end) {
         if (!start) return '';
-        const startDate = new Date(start);
-        const startTime = startDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        // API returns time as "HH:MM" string, use directly
         if (end) {
-          const endDate = new Date(end);
-          const endTime = endDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-          return `${startTime} - ${endTime}`;
+          return `${start} - ${end}`;
         }
-        return startTime;
+        return start;
       }
 
       function getInitials(name) {
