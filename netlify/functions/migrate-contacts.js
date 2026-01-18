@@ -199,11 +199,35 @@ export const handler = async (event, context) => {
   const params = event.queryStringParameters || {};
   const dryRun = params.run !== 'true';
   const limit = parseInt(params.limit) || 0; // 0 = no limit
+  const diagnostic = params.diag === 'true';
 
   try {
     const token = process.env.COLLECTIVE_API_TOKEN;
     if (!token) {
       throw new Error('API token not configured');
+    }
+
+    // Diagnostic mode - just test the contacts API
+    if (diagnostic) {
+      const testParams = new URLSearchParams({
+        locationId: LOCATION_ID,
+        limit: '5'
+      });
+      const testResult = await ghlRequest(`/contacts/?${testParams}`, 'GET', token);
+      return {
+        statusCode: 200,
+        headers: corsHeaders,
+        body: JSON.stringify({
+          diagnostic: true,
+          contactsFound: testResult.contacts?.length || 0,
+          sampleContact: testResult.contacts?.[0] ? {
+            id: testResult.contacts[0].id,
+            name: `${testResult.contacts[0].firstName} ${testResult.contacts[0].lastName}`,
+            tags: testResult.contacts[0].tags,
+            type: testResult.contacts[0].type
+          } : null
+        }, null, 2)
+      };
     }
 
     console.log(`Starting migration... (dryRun: ${dryRun}, limit: ${limit || 'none'})`);
