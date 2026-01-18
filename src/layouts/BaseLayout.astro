@@ -1,0 +1,77 @@
+---
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  activePage?: string;
+  noIndex?: boolean;
+}
+
+const { 
+  title, 
+  description = 'Join the COLLECTIVE. community for inspiring events, workshops and networking across the East Midlands.',
+  activePage = '',
+  noIndex = false
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  {noIndex && <meta name="robots" content="noindex">}
+  <link rel="canonical" href={canonicalURL}>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content={canonicalURL}>
+  <meta property="og:title" content={title}>
+  <meta property="og:description" content={description}>
+  <meta property="og:image" content="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/696bc2db5e05d4243b73f7d5.png">
+  <meta property="og:site_name" content="COLLECTIVE.">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content={title}>
+  <meta name="twitter:description" content={description}>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/696bc2db5e05d4243b73f7d5.png">
+  <link rel="apple-touch-icon" href="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/696bc2db5e05d4243b73f7d5.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="/assets/css/main.css">
+
+  <slot name="head" />
+</head>
+<body>
+  <Nav activePage={activePage} />
+
+  <main>
+    <slot />
+  </main>
+
+  <Footer />
+
+  <!-- Cookie Consent -->
+  <script is:inline>
+    window.GA_MEASUREMENT_ID = "";
+    window.HOTJAR_ID = "";
+  </script>
+  <script is:inline src="/assets/js/cookie-consent.js"></script>
+  
+  <slot name="scripts" />
+</body>
+</html>

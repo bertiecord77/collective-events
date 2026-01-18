@@ -1,0 +1,26 @@
+{
+  "name": "collective-events",
+  "version": "1.0.0",
+  "description": "COLLECTIVE. Events - Creative, Digital & Tech community platform",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bertiecord77/collective-events.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/bertiecord77/collective-events/issues"
+  },
+  "homepage": "https://github.com/bertiecord77/collective-events#readme",
+  "dependencies": {
+    "astro": "^5.16.11"
+  }
+}

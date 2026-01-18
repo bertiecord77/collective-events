@@ -1,0 +1,21 @@
+---
+interface Props {
+  activePage?: string;
+}
+
+const { activePage = '' } = Astro.props;
+---
+
+<nav class="nav">
+  <div class="nav-container">
+    <a href="/" class="nav-logo">
+      <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/696bc2db5e05d4243b73f7d5.png" alt="COLLECTIVE.">
+    </a>
+    <div class="nav-links">
+      <a href="/" class:list={["nav-link", { active: activePage === 'events' }]}>Events</a>
+      <a href="/speakers" class:list={["nav-link", { active: activePage === 'speakers' }]}>Speakers</a>
+      <a href="/about" class:list={["nav-link", { active: activePage === 'about' }]}>About</a>
+    </div>
+    <a href="/join" class="nav-cta">Join COLLECTIVE</a>
+  </div>
+</nav>

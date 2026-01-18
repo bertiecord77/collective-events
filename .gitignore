@@ -1,1 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Astro
+.astro/
+
+# Environment
+.env
+.env.*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
 collective-events/
