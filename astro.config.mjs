@@ -11,5 +11,8 @@ export default defineConfig({
   publicDir: './public',
 
   // Site URL for canonical links
-  site: 'https://collective-events.netlify.app'
+  site: 'https://collective-events.netlify.app',
+
+  // Use clean URLs without trailing slashes
+  trailingSlash: 'never'
 });

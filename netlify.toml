@@ -4,6 +4,12 @@
   functions = "netlify/functions"
   edge_functions = "netlify/edge-functions"
 
+# Enable pretty URLs (serve /about.html as /about)
+[build.processing]
+  skip_processing = false
+[build.processing.html]
+  pretty_urls = true
+
 [context.production]
   [context.production.environment]
     NODE_ENV = "production"
@@ -123,12 +129,7 @@
   status = 200
   force = true
 
-# Homepage
-[[redirects]]
-  from = "/"
-  to = "/index.html"
-  status = 200
-  force = true
+# Homepage - handled by Astro (dist/index.html)
 
 # Security headers
 [[headers]]
