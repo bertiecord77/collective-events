@@ -405,7 +405,7 @@
           sessionStorage.setItem('collective_contact_id', result.contactId);
           sessionStorage.setItem('collective_first_name', formData.firstName);
           // Redirect to profile page
-          window.location.href = '/join/profile';
+          window.location.href = '/pages/join-profile';
         } else {
           throw new Error(result.error || 'Something went wrong');
         }
