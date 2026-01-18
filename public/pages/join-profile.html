@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Your Profile | COLLECTIVE.</title>
+  <meta name="description" content="Tell us a bit about yourself to help us connect you with the right people and events.">
+  <meta name="robots" content="noindex">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/696bc2db5e05d4243b73f7d5.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <style>
+    .profile-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--black);
+    }
+
+    .profile-header {
+      padding: calc(80px + var(--space-6)) var(--space-4) var(--space-4);
+      text-align: center;
+    }
+
+    .profile-header h1 {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 600;
+      margin-bottom: var(--space-2);
+    }
+
+    .profile-header h1 span {
+      color: var(--lime);
+    }
+
+    .profile-header p {
+      color: var(--text-secondary);
+      font-size: var(--text-sm);
+    }
+
+    .profile-content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: var(--space-4) var(--space-4) var(--space-8);
+    }
+
+    .profile-card {
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .progress-bar {
+      display: flex;
+      gap: var(--space-2);
+      margin-bottom: var(--space-6);
+    }
+
+    .progress-step {
+      flex: 1;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      transition: background var(--transition-fast);
+    }
+
+    .progress-step.active {
+      background: var(--lime);
+    }
+
+    .progress-step.completed {
+      background: var(--lime);
+    }
+
+    .quiz-step {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .quiz-step.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-question {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      margin-bottom: var(--space-6);
+      text-align: center;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3);
+    }
+
+    @media (max-width: 500px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .option-btn {
+      padding: var(--space-4);
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      color: var(--text-primary);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      text-align: center;
+    }
+
+    .option-btn:hover {
+      border-color: var(--lime);
+      background: var(--surface-elevated);
+    }
+
+    .option-btn.selected {
+      border-color: var(--lime);
+      background: rgba(225, 255, 0, 0.1);
+    }
+
+    .option-btn.selected::before {
+      content: '✓ ';
+      color: var(--lime);
+    }
+
+    /* Text input step */
+    .input-step {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .form-input-large {
+      width: 100%;
+      padding: var(--space-4);
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
+      color: var(--text-primary);
+      font-size: var(--text-lg);
+      text-align: center;
+      transition: all var(--transition-fast);
+    }
+
+    .form-input-large:focus {
+      outline: none;
+      border-color: var(--lime);
+    }
+
+    .form-input-large::placeholder {
+      color: var(--text-muted);
+    }
+
+    .input-hint {
+      text-align: center;
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-top: var(--space-2);
+    }
+
+    .step-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: var(--space-6);
+      padding-top: var(--space-6);
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-skip {
+      padding: var(--space-3) var(--space-5);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: var(--text-sm);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-skip:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    .btn-next {
+      padding: var(--space-3) var(--space-6);
+      background: var(--lime);
+      border: none;
+      border-radius: var(--radius-md);
+      color: var(--black);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-next:hover {
+      background: var(--white);
+    }
+
+    .btn-next:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Success state */
+    .success-state {
+      text-align: center;
+      padding: var(--space-8);
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--lime);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-6);
+    }
+
+    .success-icon svg {
+      width: 40px;
+      height: 40px;
+      color: var(--black);
+    }
+
+    .success-state h2 {
+      font-size: var(--text-2xl);
+      margin-bottom: var(--space-3);
+    }
+
+    .success-state p {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-6);
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .success-actions {
+      display: flex;
+      gap: var(--space-3);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-6);
+      background: var(--lime);
+      color: var(--black);
+      text-decoration: none;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-primary:hover {
+      background: var(--white);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-6);
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      text-decoration: none;
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--lime);
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-page">
+    <!-- Navigation -->
+    <nav class="nav">
+      <div class="nav-inner">
+        <a href="/" class="nav-logo">
+          <img src="https://storage.googleapis.com/msgsndr/JcB0t2fZpGS0lMrqKDWQ/media/696bc2db5e05d4243b73f7d5.png" alt="COLLECTIVE.">
+        </a>
+        <div class="nav-links">
+          <a href="/" class="nav-link">Events</a>
+          <a href="/speakers" class="nav-link">Speakers</a>
+          <a href="/about" class="nav-link">About</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="profile-header">
+      <h1>Welcome, <span id="user-name">there</span>!</h1>
+      <p>Help us connect you with the right people. This takes about 30 seconds.</p>
+    </section>
+
+    <!-- Quiz Content -->
+    <section class="profile-content">
+      <div class="profile-card">
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+          <div class="progress-step active" data-step="1"></div>
+          <div class="progress-step" data-step="2"></div>
+          <div class="progress-step" data-step="3"></div>
+          <div class="progress-step" data-step="4"></div>
+        </div>
+
+        <!-- Step 1: Business Sector -->
+        <div class="quiz-step active" data-step="1">
+          <h2 class="step-question">What sector are you in?</h2>
+          <div class="options-grid" id="sector-options">
+            <button class="option-btn" data-value="Creative Agency / Design Studio">Creative / Design</button>
+            <button class="option-btn" data-value="Marketing / PR / Branding">Marketing / PR</button>
+            <button class="option-btn" data-value="Film / TV / Video Production">Film / Video</button>
+            <button class="option-btn" data-value="Photography / Visual Arts">Photography</button>
+            <button class="option-btn" data-value="Digital / Web / App Development">Digital / Web / Apps</button>
+            <button class="option-btn" data-value="Technology / MedTech / Health Tech">Technology</button>
+            <button class="option-btn" data-value="Consultancy / Business Services">Consultancy</button>
+            <button class="option-btn" data-value="Music / Performance / Arts">Music / Arts</button>
+            <button class="option-btn" data-value="Architecture / Built Environment">Architecture</button>
+            <button class="option-btn" data-value="Fashion / Textiles">Fashion / Textiles</button>
+            <button class="option-btn" data-value="Social Enterprise / NPO / Charity">Social Enterprise</button>
+            <button class="option-btn" data-value="Government / Local Authority / Public Sector">Public Sector</button>
+            <button class="option-btn" data-value="Education">Education</button>
+            <button class="option-btn" data-value="Student / Training / Events">Student / Training</button>
+            <button class="option-btn" data-value="Hospitality / Retail">Hospitality / Retail</button>
+            <button class="option-btn" data-value="Law / Legal / Financial Services">Legal / Finance</button>
+          </div>
+          <div class="step-actions">
+            <button class="btn-skip" onclick="skipStep()">Skip</button>
+            <button class="btn-next" onclick="nextStep()" disabled>Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Business Stage -->
+        <div class="quiz-step" data-step="2">
+          <h2 class="step-question">How would you describe yourself?</h2>
+          <div class="options-grid" id="stage-options">
+            <button class="option-btn" data-value="Established business">Established Business</button>
+            <button class="option-btn" data-value="Startup">Startup</button>
+            <button class="option-btn" data-value="Pre-start">Pre-start / Planning</button>
+            <button class="option-btn" data-value="Freelancer">Freelancer</button>
+            <button class="option-btn" data-value="Independent">Independent / Contractor</button>
+            <button class="option-btn" data-value="Employee">Employee</button>
+          </div>
+          <div class="step-actions">
+            <button class="btn-skip" onclick="skipStep()">Skip</button>
+            <button class="btn-next" onclick="nextStep()" disabled>Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Team Size -->
+        <div class="quiz-step" data-step="3">
+          <h2 class="step-question">How many people in your team?</h2>
+          <div class="options-grid" id="size-options">
+            <button class="option-btn" data-value="Just me">Just me</button>
+            <button class="option-btn" data-value="2-5">2-5</button>
+            <button class="option-btn" data-value="6-10">6-10</button>
+            <button class="option-btn" data-value="11-25">11-25</button>
+            <button class="option-btn" data-value="26-50">26-50</button>
+            <button class="option-btn" data-value="51+">51+</button>
+          </div>
+          <div class="step-actions">
+            <button class="btn-skip" onclick="skipStep()">Skip</button>
+            <button class="btn-next" onclick="nextStep()" disabled>Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Postcode -->
+        <div class="quiz-step" data-step="4">
+          <h2 class="step-question">What's your business postcode?</h2>
+          <div class="input-step">
+            <input type="text" id="postcode" class="form-input-large" placeholder="e.g. NG1 1AA" maxlength="10">
+            <p class="input-hint">This helps us find events near you</p>
+          </div>
+          <div class="step-actions">
+            <button class="btn-skip" onclick="skipStep()">Skip</button>
+            <button class="btn-next" onclick="submitProfile()">Complete Profile</button>
+          </div>
+        </div>
+
+        <!-- Success State -->
+        <div class="quiz-step" data-step="success">
+          <div class="success-state">
+            <div class="success-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <h2>You're all set!</h2>
+            <p>Welcome to COLLECTIVE. You'll receive updates about events and opportunities relevant to you.</p>
+            <div class="success-actions">
+              <a href="/" class="btn-primary">
+                Browse Events
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </a>
+              <a href="/speakers" class="btn-secondary">Meet Speakers</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const PROFILE_API = '/.netlify/functions/update-profile';
+
+    let currentStep = 1;
+    const totalSteps = 4;
+    const profileData = {
+      sector: null,
+      stage: null,
+      teamSize: null,
+      postcode: null
+    };
+
+    // Check if we have the contact ID from step 1
+    const contactId = sessionStorage.getItem('collective_contact_id');
+    const firstName = sessionStorage.getItem('collective_first_name');
+
+    // If no contact ID, redirect to join page
+    if (!contactId) {
+      window.location.href = '/join';
+    }
+
+    // Display user's name
+    if (firstName) {
+      document.getElementById('user-name').textContent = firstName;
+    }
+
+    // Handle option selection
+    document.querySelectorAll('.options-grid').forEach(grid => {
+      grid.addEventListener('click', (e) => {
+        if (e.target.classList.contains('option-btn')) {
+          // Deselect others in this grid
+          grid.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+          // Select this one
+          e.target.classList.add('selected');
+          // Enable continue button
+          e.target.closest('.quiz-step').querySelector('.btn-next').disabled = false;
+
+          // Store the value
+          const step = parseInt(e.target.closest('.quiz-step').dataset.step);
+          const value = e.target.dataset.value;
+
+          if (step === 1) profileData.sector = value;
+          if (step === 2) profileData.stage = value;
+          if (step === 3) profileData.teamSize = value;
+        }
+      });
+    });
+
+    // Enable postcode continue button on input
+    document.getElementById('postcode').addEventListener('input', (e) => {
+      const btn = document.querySelector('[data-step="4"] .btn-next');
+      btn.disabled = e.target.value.trim().length < 2;
+    });
+
+    function updateProgress() {
+      document.querySelectorAll('.progress-step').forEach(step => {
+        const stepNum = parseInt(step.dataset.step);
+        step.classList.remove('active', 'completed');
+        if (stepNum < currentStep) step.classList.add('completed');
+        if (stepNum === currentStep) step.classList.add('active');
+      });
+    }
+
+    function showStep(step) {
+      document.querySelectorAll('.quiz-step').forEach(s => s.classList.remove('active'));
+      document.querySelector(`[data-step="${step}"]`).classList.add('active');
+      updateProgress();
+    }
+
+    function nextStep() {
+      if (currentStep < totalSteps) {
+        currentStep++;
+        showStep(currentStep);
+      }
+    }
+
+    function skipStep() {
+      if (currentStep < totalSteps) {
+        currentStep++;
+        showStep(currentStep);
+      } else {
+        submitProfile();
+      }
+    }
+
+    async function submitProfile() {
+      // Get postcode
+      profileData.postcode = document.getElementById('postcode').value.trim().toUpperCase();
+
+      try {
+        const response = await fetch(PROFILE_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contactId: contactId,
+            ...profileData
+          })
+        });
+
+        const result = await response.json();
+
+        // Clear session storage
+        sessionStorage.removeItem('collective_contact_id');
+        sessionStorage.removeItem('collective_first_name');
+
+        // Show success
+        showStep('success');
+
+      } catch (error) {
+        console.error('Profile update error:', error);
+        // Still show success - they're already a member
+        showStep('success');
+      }
+    }
+  </script>
+
+  <!-- Cookie Consent & Analytics -->
+  <script>
+    window.GA_MEASUREMENT_ID = "";
+    window.HOTJAR_ID = "";
+  </script>
+  <script src="/assets/js/cookie-consent.js"></script>
+</body>
+</html>

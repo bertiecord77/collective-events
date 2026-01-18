@@ -113,10 +113,16 @@
   status = 200
   force = true
 
-# Join page
+# Join pages
 [[redirects]]
   from = "/join"
   to = "/pages/join.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/join/profile"
+  to = "/pages/join-profile.html"
   status = 200
   force = true
 

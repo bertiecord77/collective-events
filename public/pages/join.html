@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Join the Community | COLLECTIVE.</title>
-  <meta name="description" content="Join the COLLECTIVE. community and stay connected with inspiring events, workshops and networking across the East Midlands.">
+  <title>Join COLLECTIVE. | Free Community Membership</title>
+  <meta name="description" content="Join the COLLECTIVE. community for free. Get early access to events, connect with 500+ professionals across the East Midlands.">
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Join COLLECTIVE.">
+  <meta property="og:title" content="Join COLLECTIVE. - It's Free">
   <meta property="og:description" content="Join our growing community of digital innovators, creatives, and tech enthusiasts across the East Midlands.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://collective-events.netlify.app/join">
@@ -27,78 +27,72 @@
     }
 
     .join-hero {
-      padding: calc(80px + var(--space-8)) var(--space-4) var(--space-8);
+      padding: calc(80px + var(--space-8)) var(--space-4) var(--space-6);
       text-align: center;
       background: linear-gradient(135deg, var(--surface) 0%, var(--black) 100%);
     }
 
-    .join-hero h1 {
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      font-weight: 700;
+    .free-badge {
+      display: inline-block;
+      padding: var(--space-2) var(--space-4);
+      background: var(--lime);
+      color: var(--black);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      border-radius: var(--radius-full);
       margin-bottom: var(--space-4);
-      background: linear-gradient(135deg, var(--white) 0%, var(--text-secondary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    }
+
+    .join-hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      margin-bottom: var(--space-3);
     }
 
     .join-hero p {
       font-size: var(--text-lg);
       color: var(--text-secondary);
-      max-width: 600px;
+      max-width: 500px;
       margin: 0 auto;
-      line-height: 1.7;
+      line-height: 1.6;
     }
 
     .join-content {
       flex: 1;
       display: flex;
       justify-content: center;
-      padding: var(--space-8) var(--space-4);
+      padding: var(--space-6) var(--space-4) var(--space-8);
     }
 
     .join-card {
       width: 100%;
-      max-width: 500px;
+      max-width: 420px;
       background: var(--surface-elevated);
       border: 1px solid var(--border);
       border-radius: var(--radius-xl);
-      padding: var(--space-8);
+      padding: var(--space-6);
     }
 
     .join-benefits {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3);
       margin-bottom: var(--space-6);
       padding-bottom: var(--space-6);
       border-bottom: 1px solid var(--border);
     }
 
-    .join-benefits h3 {
-      font-size: var(--text-sm);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--lime);
-      margin-bottom: var(--space-4);
-    }
-
-    .benefit-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .benefit-list li {
+    .benefit-item {
       display: flex;
-      align-items: flex-start;
-      gap: var(--space-3);
-      margin-bottom: var(--space-3);
-      color: var(--text-secondary);
+      align-items: center;
+      gap: var(--space-2);
       font-size: var(--text-sm);
+      color: var(--text-secondary);
     }
 
-    .benefit-list li svg {
-      flex-shrink: 0;
+    .benefit-item svg {
       color: var(--lime);
-      margin-top: 2px;
+      flex-shrink: 0;
     }
 
     .form-group {
@@ -108,11 +102,14 @@
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: var(--space-4);
+      gap: var(--space-3);
     }
 
-    @media (max-width: 500px) {
+    @media (max-width: 400px) {
       .form-row {
+        grid-template-columns: 1fr;
+      }
+      .join-benefits {
         grid-template-columns: 1fr;
       }
     }
@@ -154,30 +151,24 @@
       display: flex;
       align-items: flex-start;
       gap: var(--space-3);
-      margin-top: var(--space-4);
-      padding: var(--space-4);
+      padding: var(--space-3);
       background: var(--surface);
       border-radius: var(--radius-md);
+      margin-top: var(--space-2);
     }
 
     .form-checkbox {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       flex-shrink: 0;
       margin-top: 2px;
       accent-color: var(--lime);
     }
 
     .form-checkbox-label {
-      font-size: var(--text-sm);
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
-
-    .form-checkbox-label strong {
-      color: var(--text-primary);
-      display: block;
-      margin-bottom: var(--space-1);
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      line-height: 1.4;
     }
 
     .submit-btn {
@@ -209,51 +200,18 @@
       background: rgba(255, 100, 100, 0.1);
       border: 1px solid rgba(255, 100, 100, 0.3);
       color: #ff6464;
-      padding: var(--space-3) var(--space-4);
+      padding: var(--space-3);
       border-radius: var(--radius-md);
       margin-bottom: var(--space-4);
       font-size: var(--text-sm);
       display: none;
     }
 
-    .form-success {
+    .form-note {
       text-align: center;
-      padding: var(--space-8);
-      display: none;
-    }
-
-    .form-success svg {
-      width: 64px;
-      height: 64px;
-      color: var(--lime);
-      margin-bottom: var(--space-4);
-    }
-
-    .form-success h2 {
-      font-size: var(--text-2xl);
-      margin-bottom: var(--space-3);
-    }
-
-    .form-success p {
-      color: var(--text-secondary);
-      margin-bottom: var(--space-6);
-    }
-
-    .form-success .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--space-2);
-      padding: var(--space-3) var(--space-6);
-      background: var(--lime);
-      color: var(--black);
-      text-decoration: none;
-      border-radius: var(--radius-md);
-      font-weight: 600;
-      transition: all var(--transition-fast);
-    }
-
-    .form-success .btn:hover {
-      background: var(--white);
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      margin-top: var(--space-4);
     }
   </style>
 </head>
@@ -275,8 +233,9 @@
 
     <!-- Hero -->
     <section class="join-hero">
-      <h1>Join the Community</h1>
-      <p>Connect with digital innovators, creatives, and tech enthusiasts across the East Midlands. Get event updates, exclusive content, and networking opportunities.</p>
+      <span class="free-badge">100% Free</span>
+      <h1>Join COLLECTIVE.</h1>
+      <p>Connect with 500+ creative, digital and tech professionals across the East Midlands.</p>
     </section>
 
     <!-- Form Section -->
@@ -284,33 +243,22 @@
       <div class="join-card">
         <!-- Benefits -->
         <div class="join-benefits">
-          <h3>What you'll get</h3>
-          <ul class="benefit-list">
-            <li>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-              Early access to event tickets before public release
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-              Updates on speakers, workshops, and networking events
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-              Connect with a community of 500+ professionals
-            </li>
-            <li>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-              It's completely free - always
-            </li>
-          </ul>
+          <div class="benefit-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Early event access
+          </div>
+          <div class="benefit-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Speaker updates
+          </div>
+          <div class="benefit-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Community news
+          </div>
+          <div class="benefit-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Networking events
+          </div>
         </div>
 
         <!-- Form -->
@@ -338,40 +286,19 @@
             <input type="tel" id="phone" name="phone" class="form-input" placeholder="For WhatsApp updates">
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="businessName">Business / Organisation <span style="color: var(--text-muted); font-weight: 400;">(optional)</span></label>
-            <input type="text" id="businessName" name="businessName" class="form-input" placeholder="Where do you work?">
-          </div>
-
           <div class="form-checkbox-group">
             <input type="checkbox" id="optIn" name="optIn" class="form-checkbox" checked>
             <label for="optIn" class="form-checkbox-label">
-              <strong>Keep me in the loop</strong>
-              Send me event announcements, speaker updates, and community news. If you add your phone, we'll send occasional WhatsApp updates too. Unsubscribe anytime.
+              Send me event news and community updates. Unsubscribe anytime.
             </label>
           </div>
 
           <button type="submit" class="submit-btn" id="submit-btn">
-            Join COLLECTIVE.
+            Join COLLECTIVE
           </button>
-        </form>
 
-        <!-- Success State -->
-        <div id="form-success" class="form-success">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="16 10 11 15 8 12"></polyline>
-          </svg>
-          <h2>Welcome to COLLECTIVE!</h2>
-          <p>You're now part of our community. Keep an eye on your inbox for event updates and exclusive content.</p>
-          <a href="/" class="btn">
-            Browse Events
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </a>
-        </div>
+          <p class="form-note">Takes 30 seconds. We'll ask a couple more questions next.</p>
+        </form>
       </div>
     </section>
 
@@ -416,14 +343,10 @@
         </div>
         <div class="social-links">
           <a href="https://linkedin.com/company/cdicollective" target="_blank" aria-label="LinkedIn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
           </a>
           <a href="https://instagram.com/cdicollective" target="_blank" aria-label="Instagram">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
           </a>
         </div>
       </div>
@@ -438,20 +361,15 @@
 
       const submitBtn = document.getElementById('submit-btn');
       const errorDiv = document.getElementById('form-error');
-      const form = document.getElementById('join-form');
-      const successDiv = document.getElementById('form-success');
 
-      // Reset error state
       errorDiv.style.display = 'none';
       errorDiv.textContent = '';
 
-      // Get form data
       const formData = {
         firstName: document.getElementById('firstName').value.trim(),
         lastName: document.getElementById('lastName').value.trim(),
         email: document.getElementById('email').value.trim(),
         phone: document.getElementById('phone').value.trim(),
-        businessName: document.getElementById('businessName').value.trim(),
         optIn: document.getElementById('optIn').checked
       };
 
@@ -469,7 +387,6 @@
         return;
       }
 
-      // Submit
       submitBtn.disabled = true;
       submitBtn.textContent = 'Joining...';
 
@@ -483,10 +400,11 @@
         const result = await response.json();
 
         if (result.success) {
-          // Show success state
-          form.style.display = 'none';
-          document.querySelector('.join-benefits').style.display = 'none';
-          successDiv.style.display = 'block';
+          // Store contact ID for step 2
+          sessionStorage.setItem('collective_contact_id', result.contactId);
+          sessionStorage.setItem('collective_first_name', formData.firstName);
+          // Redirect to profile page
+          window.location.href = '/join/profile';
         } else {
           throw new Error(result.error || 'Something went wrong');
         }
@@ -494,7 +412,7 @@
         errorDiv.textContent = error.message || 'Failed to join. Please try again.';
         errorDiv.style.display = 'block';
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Join COLLECTIVE.';
+        submitBtn.textContent = 'Join COLLECTIVE';
       }
     });
   </script>

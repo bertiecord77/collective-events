@@ -270,6 +270,37 @@ body {
   width: 100%;
 }
 
+/* Nav CTA Button */
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--lime);
+  color: var(--black);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  transition: var(--transition-fast);
+  margin-left: var(--space-4);
+}
+
+.nav-cta:hover {
+  background: var(--white);
+  transform: scale(1.05);
+}
+
+.nav-cta::after {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .nav-cta {
+    display: none;
+  }
+}
+
 /* Mobile menu */
 .nav__toggle {
   display: none;
