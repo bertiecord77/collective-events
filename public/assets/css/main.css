@@ -769,10 +769,9 @@ footer {
   line-height: 1.6;
 }
 
+/* Each footer-links div is a single column - no grid needed */
 .footer-links {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-xl);
+  display: block;
 }
 
 .footer-column h4 {

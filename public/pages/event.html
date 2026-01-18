@@ -32,6 +32,8 @@
   <link rel="stylesheet" href="/assets/css/main.css">
   <style>
     /* Event Page Specific Styles */
+
+    /* Hero with background image (no-image/placeholder mode) */
     .event-hero {
       position: relative;
       min-height: 60vh;
@@ -66,6 +68,31 @@
       max-width: 900px;
       width: 100%;
       margin: 0 auto;
+    }
+
+    /* Simple header mode (when there's an actual event image) */
+    .event-hero.simple-header {
+      min-height: auto;
+      padding: calc(80px + var(--space-8)) var(--space-4) var(--space-6);
+      background: var(--black);
+    }
+
+    .event-hero.simple-header .event-hero-bg {
+      display: none;
+    }
+
+    /* Featured image displayed in content area */
+    .event-featured-image {
+      max-width: 900px;
+      margin: 0 auto var(--space-6);
+      padding: 0 var(--space-4);
+    }
+
+    .event-featured-image img {
+      width: 100%;
+      border-radius: var(--radius-lg);
+      aspect-ratio: 16/9;
+      object-fit: cover;
     }
 
     .event-meta {
@@ -877,6 +904,11 @@
       </div>
     </section>
 
+    <!-- Featured Image (shown when event has an actual image) -->
+    <section id="event-featured-image" class="event-featured-image" style="display: none;">
+      <img id="featured-image" src="" alt="">
+    </section>
+
     <!-- Speaker Spotlight (shown between hero and content if speakers exist) -->
     <section id="speaker-spotlight" class="speaker-spotlight" style="display: none;">
       <div class="speaker-spotlight-inner" id="speaker-spotlight-content"></div>
@@ -1205,10 +1237,30 @@
       document.getElementById('loading').style.display = 'none';
       document.getElementById('event-content').style.display = 'block';
 
-      // Hero image - use placeholder if no image
+      const heroSection = document.querySelector('.event-hero');
       const heroImg = document.getElementById('event-image');
-      heroImg.src = hasEventImage(event) ? getEventImage(event) : getEventPlaceholder(event);
-      heroImg.alt = event.title;
+      const featuredImageSection = document.getElementById('event-featured-image');
+      const featuredImg = document.getElementById('featured-image');
+
+      // Check if event has an actual image (not placeholder)
+      const eventHasImage = hasEventImage(event);
+
+      if (eventHasImage) {
+        // Mode: Simple header + featured image in content
+        heroSection.classList.add('simple-header');
+        featuredImageSection.style.display = 'block';
+        featuredImg.src = getEventImage(event);
+        featuredImg.alt = event.title;
+        // Hide hero background image
+        heroImg.style.display = 'none';
+      } else {
+        // Mode: Full hero with placeholder/gradient background
+        heroSection.classList.remove('simple-header');
+        featuredImageSection.style.display = 'none';
+        heroImg.src = getEventPlaceholder(event);
+        heroImg.alt = event.title;
+        heroImg.style.display = 'block';
+      }
 
       // Badge
       const badge = document.getElementById('event-badge');
