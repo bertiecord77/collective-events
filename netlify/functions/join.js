@@ -104,7 +104,7 @@ export const handler = async (event, context) => {
     }
 
     // Build tags
-    const tags = ['COLLECTIVE Community', 'Website Signup'];
+    const tags = ['COLLECTIVE Community', 'Website Signup', 'Profile Complete'];
     if (body.optIn) {
       tags.push('COLLECTIVE Newsletter', 'Marketing Opted In');
     }

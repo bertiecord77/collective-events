@@ -110,30 +110,11 @@ async function fetchContactAppointments(token, contactId) {
   return [];
 }
 
-// Determine contact type based on tags and bookings
+// Determine contact type - all existing contacts are Members
+// Prospects are only for NEW contacts from non-booking/non-join sources
 function determineContactType(contact, hasBookings) {
-  const tags = contact.tags || [];
-  const tagLower = tags.map(t => t.toLowerCase());
-
-  // Check for COLLECTIVE Community tag (member who completed join form)
-  if (tagLower.includes('collective community') || tags.includes('COLLECTIVE Community')) {
-    return CONTACT_TYPES.COLLECTIVE_MEMBER;
-  }
-
-  // Check for booking-related tags (indicates they've booked before)
-  const hasBookingTag = tags.some(t =>
-    t.includes('COLLECTIVE Event Booking') ||
-    t.includes('COLLECTIVE:') ||
-    t.toLowerCase().includes('event booking')
-  );
-
-  // Has bookings (from appointments or tags) but not a member
-  if (hasBookings || hasBookingTag) {
-    return CONTACT_TYPES.GUEST_BOOKED;
-  }
-
-  // Default - no bookings, not joined
-  return CONTACT_TYPES.PROSPECT;
+  // All existing/imported contacts are considered Members
+  return CONTACT_TYPES.COLLECTIVE_MEMBER;
 }
 
 // Calculate booking stats from appointments
@@ -266,8 +247,6 @@ export const handler = async (event, context) => {
       nextStartAfter: fetchResult.nextStartAfter,
       nextStartAfterId: fetchResult.nextStartAfterId,
       byType: {
-        [CONTACT_TYPES.PROSPECT]: 0,
-        [CONTACT_TYPES.GUEST_BOOKED]: 0,
         [CONTACT_TYPES.COLLECTIVE_MEMBER]: 0
       },
       samples: [],

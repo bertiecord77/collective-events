@@ -274,27 +274,7 @@ export const handler = async (event, context) => {
     // ========================================
     log('Step 1: Creating/updating contact via API...');
 
-    // First, check if contact already exists and get their current type
-    let existingContact = null;
-    try {
-      const searchParams = new URLSearchParams({
-        locationId: LOCATION_ID,
-        query: body.email
-      });
-      const searchResult = await ghlRequest(`/contacts/search/duplicate?${searchParams}`, 'GET', token);
-      if (searchResult.contact) {
-        existingContact = searchResult.contact;
-        log('Found existing contact: ' + existingContact.id + ', type: ' + existingContact.type);
-      }
-    } catch (searchError) {
-      log('Contact search failed (may be new): ' + searchError.message);
-    }
-
-    // Determine contact type - don't downgrade Members to Guest Booker
-    // GHL type values: lead=Prospect, guest_booker=Guest Booker, customer=Member, community_member=Community
-    const existingType = existingContact?.type;
-    const isAlreadyMember = existingType === 'customer' || existingType === 'community_member';
-
+    // Build contact payload - booking = joining COLLECTIVE
     const contactPayload = {
       firstName: body.firstName,
       lastName: body.lastName,
@@ -303,13 +283,9 @@ export const handler = async (event, context) => {
       companyName: body.businessName,
       locationId: LOCATION_ID,
       source: 'COLLECTIVE Events Website',
-      tags: ['COLLECTIVE Event Booking', `COLLECTIVE: ${body.eventTitle}`]
+      tags: ['COLLECTIVE Event Booking', `COLLECTIVE: ${body.eventTitle}`],
+      type: 'customer'  // Booking an event = Member
     };
-
-    // Only set type to guest_booker if not already a member
-    if (!isAlreadyMember) {
-      contactPayload.type = 'guest_booker';
-    }
 
     const contactResult = await ghlRequest(
       '/contacts/upsert',
@@ -322,7 +298,7 @@ export const handler = async (event, context) => {
     if (!contactId) {
       throw new Error('Failed to create contact - no ID returned');
     }
-    log('Contact created/updated: ' + contactId + (isAlreadyMember ? ' (kept Collective Member status)' : ' (set to Guest Booked)'));
+    log('Contact created/updated: ' + contactId + ' (Member)');
 
     // ========================================
     // STEP 2: Trigger webhook to create appointment
