@@ -60,18 +60,19 @@ async function ghlRequest(endpoint, method, token, body = null) {
   return data;
 }
 
-// Fetch all contacts with pagination (startAfter is numeric offset)
-async function fetchAllContacts(token) {
+// Fetch contacts with pagination (with optional limit)
+async function fetchAllContacts(token, maxContacts = 500) {
   const contacts = [];
   let hasMore = true;
   let startAfter = 0;
-  const batchSize = 100;
+  const batchSize = Math.min(100, maxContacts);
   let page = 0;
 
-  while (hasMore) {
+  while (hasMore && contacts.length < maxContacts) {
+    const fetchLimit = Math.min(batchSize, maxContacts - contacts.length);
     const params = new URLSearchParams({
       locationId: LOCATION_ID,
-      limit: String(batchSize)
+      limit: String(fetchLimit)
     });
 
     // startAfter is a numeric offset, only add if not first page
@@ -88,10 +89,10 @@ async function fetchAllContacts(token) {
       console.log(`Fetched page ${page}, total contacts: ${contacts.length}`);
 
       // Rate limiting - small delay between pages
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 50));
     }
 
-    hasMore = result.contacts && result.contacts.length === batchSize;
+    hasMore = result.contacts && result.contacts.length === fetchLimit && contacts.length < maxContacts;
   }
 
   return contacts;
@@ -232,14 +233,9 @@ export const handler = async (event, context) => {
 
     console.log(`Starting migration... (dryRun: ${dryRun}, limit: ${limit || 'none'})`);
 
-    // Fetch all contacts
-    let contacts = await fetchAllContacts(token);
-    console.log(`Total contacts: ${contacts.length}`);
-
-    if (limit > 0) {
-      contacts = contacts.slice(0, limit);
-      console.log(`Limited to ${contacts.length} contacts`);
-    }
+    // Fetch contacts (with limit applied during fetch for efficiency)
+    let contacts = await fetchAllContacts(token, limit || 500);  // Default max 500 to avoid timeout
+    console.log(`Fetched ${contacts.length} contacts`);
 
     const results = {
       total: contacts.length,
