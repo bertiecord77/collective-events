@@ -22,7 +22,7 @@ const CONTACT_TYPES = {
 const BOOKING_STATS_FIELDS = {
   events_booked: 'events_booked',
   events_attended: 'events_attended',
-  no_showed: 'no_showed'
+  no_show: 'no_show'
 };
 
 // Helper to make GHL API requests with rate limiting
@@ -134,7 +134,7 @@ function determineContactType(contact, hasBookings) {
 function calculateBookingStats(appointments) {
   let booked = 0;
   let attended = 0;
-  let noShowed = 0;
+  let noShow = 0;
 
   for (const apt of appointments) {
     booked++;
@@ -145,11 +145,11 @@ function calculateBookingStats(appointments) {
     if (status === 'showed' || status === 'completed' || status === 'confirmed') {
       attended++;
     } else if (status === 'no_show' || status === 'noshow' || status === 'no-show') {
-      noShowed++;
+      noShow++;
     }
   }
 
-  return { booked, attended, noShowed };
+  return { booked, attended, noShow };
 }
 
 // Update a single contact
@@ -157,7 +157,7 @@ async function updateContact(token, contactId, contactType, stats, dryRun) {
   const customFields = [
     { key: BOOKING_STATS_FIELDS.events_booked, field_value: String(stats.booked) },
     { key: BOOKING_STATS_FIELDS.events_attended, field_value: String(stats.attended) },
-    { key: BOOKING_STATS_FIELDS.no_showed, field_value: String(stats.noShowed) }
+    { key: BOOKING_STATS_FIELDS.no_show, field_value: String(stats.noShow) }
   ];
 
   const payload = {
