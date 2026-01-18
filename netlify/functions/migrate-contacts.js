@@ -97,20 +97,11 @@ async function fetchAllContacts(token) {
   return contacts;
 }
 
-// Fetch appointments for a contact
+// Fetch appointments for a contact (disabled for speed - can enable later)
 async function fetchContactAppointments(token, contactId) {
-  try {
-    const params = new URLSearchParams({
-      locationId: LOCATION_ID,
-      contactId: contactId
-    });
-
-    const result = await ghlRequest(`/calendars/events?${params}`, 'GET', token);
-    return result.events || [];
-  } catch (error) {
-    console.log(`Failed to fetch appointments for ${contactId}:`, error.message);
-    return [];
-  }
+  // Skip appointment fetching for now to avoid timeouts
+  // TODO: Enable this when running in batches
+  return [];
 }
 
 // Determine contact type based on tags and bookings
@@ -123,8 +114,15 @@ function determineContactType(contact, hasBookings) {
     return CONTACT_TYPES.COLLECTIVE_MEMBER;
   }
 
-  // Has bookings but not a member
-  if (hasBookings) {
+  // Check for booking-related tags (indicates they've booked before)
+  const hasBookingTag = tags.some(t =>
+    t.includes('COLLECTIVE Event Booking') ||
+    t.includes('COLLECTIVE:') ||
+    t.toLowerCase().includes('event booking')
+  );
+
+  // Has bookings (from appointments or tags) but not a member
+  if (hasBookings || hasBookingTag) {
     return CONTACT_TYPES.GUEST_BOOKED;
   }
 
@@ -156,16 +154,19 @@ function calculateBookingStats(appointments) {
 
 // Update a single contact
 async function updateContact(token, contactId, contactType, stats, dryRun) {
-  const customFields = [
-    { key: BOOKING_STATS_FIELDS.events_booked, field_value: String(stats.booked) },
-    { key: BOOKING_STATS_FIELDS.events_attended, field_value: String(stats.attended) },
-    { key: BOOKING_STATS_FIELDS.no_show, field_value: String(stats.noShow) }
-  ];
-
+  // Only set contact type for now - booking stats will be added later via batch job
   const payload = {
-    type: contactType,
-    customFields: customFields
+    type: contactType
   };
+
+  // Only add booking stats if we have actual data (not zeros from skipped appointments)
+  if (stats.booked > 0) {
+    payload.customFields = [
+      { key: BOOKING_STATS_FIELDS.events_booked, field_value: String(stats.booked) },
+      { key: BOOKING_STATS_FIELDS.events_attended, field_value: String(stats.attended) },
+      { key: BOOKING_STATS_FIELDS.no_show, field_value: String(stats.noShow) }
+    ];
+  }
 
   if (dryRun) {
     return { dryRun: true, payload };
