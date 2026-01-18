@@ -512,32 +512,25 @@
       // Handle option selection - use event delegation on each grid
       document.querySelectorAll('.options-grid').forEach(grid => {
         grid.addEventListener('click', function(e) {
-          console.log('Grid clicked, target:', e.target);
           const btn = e.target.closest('.option-btn');
-          console.log('Found button:', btn);
           if (btn) {
             // Deselect others in this grid
             grid.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
             // Select this one
             btn.classList.add('selected');
-            console.log('Button selected:', btn.dataset.value);
 
             // Enable continue button
             const quizStep = btn.closest('.quiz-step');
-            console.log('Quiz step:', quizStep);
             if (quizStep) {
               const nextBtn = quizStep.querySelector('.btn-next');
-              console.log('Continue button:', nextBtn);
               if (nextBtn) {
                 nextBtn.disabled = false;
-                console.log('Continue button enabled');
               }
             }
 
             // Store the value
             const step = parseInt(quizStep?.dataset?.step || 0);
             const value = btn.dataset.value;
-            console.log('Storing value for step', step, ':', value);
 
             if (step === 1) profileData.sector = value;
             if (step === 2) profileData.stage = value;
@@ -567,29 +560,20 @@
     }
 
     function showStep(step) {
-      console.log('showStep called with:', step);
       document.querySelectorAll('.quiz-step').forEach(function(s) {
         s.classList.remove('active');
       });
       const targetStep = document.querySelector('.quiz-step[data-step="' + step + '"]');
-      console.log('Target step element:', targetStep);
       if (targetStep) {
         targetStep.classList.add('active');
-        console.log('Step ' + step + ' is now active');
-      } else {
-        console.error('Could not find quiz-step with data-step=' + step);
       }
       updateProgress();
     }
 
     function nextStep() {
-      console.log('nextStep called. Current step:', currentStep);
       if (currentStep < totalSteps) {
         currentStep++;
-        console.log('Moving to step:', currentStep);
         showStep(currentStep);
-      } else {
-        console.log('Already at last step');
       }
     }
 

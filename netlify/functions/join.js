@@ -118,7 +118,8 @@ export const handler = async (event, context) => {
       companyName: body.businessName || undefined,
       locationId: LOCATION_ID,
       source: 'COLLECTIVE Website - Join',
-      tags: tags
+      tags: tags,
+      type: 'Collective Member'  // Set contact type for membership status
     };
 
     // Create/update contact

@@ -273,6 +273,27 @@ export const handler = async (event, context) => {
     // STEP 1: Create/update contact via API
     // ========================================
     log('Step 1: Creating/updating contact via API...');
+
+    // First, check if contact already exists and get their current type
+    let existingContact = null;
+    try {
+      const searchParams = new URLSearchParams({
+        locationId: LOCATION_ID,
+        query: body.email
+      });
+      const searchResult = await ghlRequest(`/contacts/search/duplicate?${searchParams}`, 'GET', token);
+      if (searchResult.contact) {
+        existingContact = searchResult.contact;
+        log('Found existing contact: ' + existingContact.id + ', type: ' + existingContact.type);
+      }
+    } catch (searchError) {
+      log('Contact search failed (may be new): ' + searchError.message);
+    }
+
+    // Determine contact type - don't downgrade Collective Members to Guest Booked
+    const isAlreadyMember = existingContact?.type === 'Collective Member';
+    const contactType = isAlreadyMember ? undefined : 'Guest Booked';
+
     const contactPayload = {
       firstName: body.firstName,
       lastName: body.lastName,
@@ -283,6 +304,11 @@ export const handler = async (event, context) => {
       source: 'COLLECTIVE Events Website',
       tags: ['COLLECTIVE Event Booking', `COLLECTIVE: ${body.eventTitle}`]
     };
+
+    // Only set type if not already a member
+    if (contactType) {
+      contactPayload.type = contactType;
+    }
 
     const contactResult = await ghlRequest(
       '/contacts/upsert',
@@ -295,7 +321,7 @@ export const handler = async (event, context) => {
     if (!contactId) {
       throw new Error('Failed to create contact - no ID returned');
     }
-    log('Contact created: ' + contactId);
+    log('Contact created/updated: ' + contactId + (isAlreadyMember ? ' (kept Collective Member status)' : ' (set to Guest Booked)'));
 
     // ========================================
     // STEP 2: Trigger webhook to create appointment
